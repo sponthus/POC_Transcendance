@@ -1,73 +1,116 @@
-// router.ts
 export class Router {
-	private static instance: Router;
-	private routes: { [key: string]: () => HTMLElement } = {};
-	private appElement: HTMLElement;
-	
-	private constructor() {
-	  // Trouver l'élément #app pour y afficher le contenu
-	  this.appElement = document.getElementById('app') as HTMLElement;
-	  
-	  if (!this.appElement) {
-		console.error("Élément #app non trouvé dans le DOM");
-	  }
-	  
-	  window.addEventListener("popstate", () => this.handleRouteChange());
-	}
-	
-	// Singleton : s'assurer qu'on utilise toujours la même instance
-	public static getInstance(): Router {
-	  if (!Router.instance) {
-		Router.instance = new Router();
-	  }
-	  return Router.instance;
-	}
-	
-	// Permet d'enregistrer une route avec un callback qui retourne un élément HTML
-	public register(path: string, callback: () => HTMLElement): void {
-	  this.routes[path] = callback;
-	}
-	
-	// Gère la navigation et met à jour l'URL sans recharger la page
-	public navigate(path: string): void {
-	  if (this.routes[path]) {
-		history.pushState({}, "", path);
-		this.renderRoute(path);
-	  } else {
-		console.error(`Route non définie : ${path}`);
-	  }
-	}
-	
-	// Gère les changements de route (ex: bouton "Précédent" du navigateur)
-	private handleRouteChange(): void {
-	  const path = window.location.pathname;
-	  this.renderRoute(path);
-	}
-	
-	// Nouvelle méthode pour rendre le contenu correspondant à une route
-	private renderRoute(path: string): void {
-	  if (!this.appElement) return;
-	  
-	  if (this.routes[path]) {
-		// Vider le contenu actuel
-		while (this.appElement.firstChild) {
-		  this.appElement.removeChild(this.appElement.firstChild);
-		}
-		
-		// Générer et afficher le nouveau contenu
-		const element = this.routes[path]();
-		this.appElement.appendChild(element);
-	  } else {
-		console.error(`Route inconnue : ${path}`);
-		// Optionnel : afficher une page 404 ou rediriger vers la page d'accueil
-		if (this.routes['/']) {
-		  this.navigate('/');
-		}
-	  }
-	}
-	
-	// Initialiser le routeur avec la route actuelle
+    private static instance: Router;
+    private routes: { [key: string]: () => HTMLElement } = {};
+    private appElement: HTMLElement | null;
+  
+    private constructor() {
+        this.appElement = document.getElementById('app');
+      
+        if (!this.appElement) {
+            console.error("Élément #app non trouvé dans le DOM");
+        }
+      
+        window.addEventListener("popstate", () => {
+            console.log("Événement popstate déclenché");
+            this.handleRouteChange();
+        });
+    }
+  
+    public static getInstance(): Router {
+        if (!Router.instance) {
+            Router.instance = new Router();
+        }
+        return Router.instance;
+    }
+  
+    public register(path: string, callback: () => HTMLElement): void {
+        console.log(`Route enregistrée: ${path}`);
+        this.routes[path] = callback;
+    }
+  
+    public navigate(path: string): void {
+        console.log(`Navigation vers: ${path}`);
+        
+        if (this.routes[path]) {
+            window.history.pushState({}, "", path);
+            this.renderCurrentRoute();
+        } else {
+            console.error(`Route non définie: ${path}`);
+        }
+    }
+  
+    private handleRouteChange(): void {
+        this.renderCurrentRoute();
+    }
+    
+    private renderCurrentRoute(): void {
+        if (!this.appElement) {
+            this.appElement = document.getElementById('app');
+            if (!this.appElement) {
+                console.error("Élément #app introuvable");
+                return;
+            }
+        }
+        
+        const path = window.location.pathname;
+        console.log(`Rendu de la route: ${path}`);
+        
+        if (this.routes[path]) {
+            // Vider l'élément app
+            while (this.appElement.firstChild) {
+                this.appElement.removeChild(this.appElement.firstChild);
+            }
+            
+            // Générer et insérer le nouvel élément
+            try {
+                const element = this.routes[path]();
+                this.appElement.appendChild(element);
+                console.log("Contenu rendu avec succès");
+            } catch (error) {
+                console.error("Erreur lors du rendu:", error);
+            }
+        } else {
+            console.error(`Route inconnue: ${path}`);
+            if (this.routes['/']) {
+                this.navigate('/');
+            }
+        }
+    }
+
 	public initialize(): void {
-	  this.handleRouteChange();
-	}
-  }
+        console.log("Initialisation du router");
+        
+        // Exposer l'instance du router globalement
+        (window as any).router = this;
+        
+        // Remplacer la fonction temporaire par la vraie
+        window.navigateTo = (path: string) => {
+            console.log(`navigateTo appelé avec: ${path}`);
+            this.navigate(path);
+        };
+        
+        // Traiter les appels qui ont été stockés avant l'initialisation
+        if ((window as any).navigateCalls && Array.isArray((window as any).navigateCalls)) {
+            const calls = (window as any).navigateCalls;
+            if (calls.length > 0) {
+                console.log(`Traitement de ${calls.length} appels navigateTo retardés`);
+                // Ne traiter que le dernier appel pour éviter les redirections multiples
+                this.navigate(calls[calls.length - 1]);
+            }
+        }
+        
+        // Rendre la route initiale si aucun appel n'a été stocké
+        else {
+            this.renderCurrentRoute();
+        }
+    }
+}
+
+// Déclarer les types pour window
+declare global {
+    interface Window {
+        navigateTo: (path: string) => void;
+        router: Router;
+        navigateCalls: string[];
+    }
+}

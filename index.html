@@ -21,11 +21,17 @@
 	</style>
 	<script>
         // Définir navigateTo globalement avant le chargement du module
-        window.navigateTo = function(route) {
-            console.log("Navigating to:", route);
-            window.history.pushState({}, "", route);
-            window.dispatchEvent(new Event("popstate"));
-        }
+		window.navigateCalls = [];
+        window.navigateTo = function(path) {
+            console.log("Version temporaire de navigateTo appelée avec:", path);
+            // Si le router est déjà initialisé, utiliser sa méthode navigate
+            if (window.router && typeof window.router.navigate === 'function') {
+                window.router.navigate(path);
+            } else {
+                // Sinon, stocker l'appel pour plus tard
+                window.navigateCalls.push(path);
+            }
+        };
     </script>
 </head>
 <body>
