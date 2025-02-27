@@ -30,17 +30,6 @@
 
 	<div id="app"></div>
 
-	<script type="module">
-		import { App } from "./dist/main.js"; // Assurez-vous que `main.ts` compile en `.js`
-		new App();
-
-		function navigateTo(route) {
-			console.log("Navigating to:", route);
-			window.history.pushState({}, "", route);
-			window.dispatchEvent(new Event("popstate"));
-		}
-
-		window.navigateTo = navigateTo;
-	</script>
+	<script type="module" src="./dist/main.js"></script>
 </body>
 </html>
