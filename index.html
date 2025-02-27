@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Pong Game</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			text-align: center;
+			margin: 50px;
+		}
+		button {
+			display: block;
+			width: 200px;
+			margin: 10px auto;
+			padding: 10px;
+			font-size: 16px;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<h1>Pong Game</h1>
+	<p>Bienvenue sur le projet Pong !</p>
+
+	<button onclick="navigateTo('/')">🏠 Accueil</button>
+	<button onclick="navigateTo('/game')">🎮 Jouer</button>
+	<button onclick="navigateTo('/tournament')">🏆 Tournoi</button>
+
+	<div id="app"></div>
+
+	<script type="module">
+		import { App } from "./src/main.ts"; // Assurez-vous que `main.ts` compile en `.js`
+		new App();
+
+		function navigateTo(route) {
+			console.log("Navigating to:", route);
+			window.history.pushState({}, "", route);
+			window.dispatchEvent(new Event("popstate"));
+		}
+
+		window.navigateTo = navigateTo;
+	</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+import { State } from "../state";
+
+export class GameUI {
+  private state = State.getInstance();
+
+  render(): HTMLElement {
+    const container = document.createElement("div");
+
+    const canvas = document.createElement("canvas");
+    canvas.id = "gameCanvas";
+
+    const score = document.createElement("div");
+    score.innerText = `Score : ${this.state.player.score}`;
+
+    container.append(canvas, score);
+    return container;
+  }
+}
