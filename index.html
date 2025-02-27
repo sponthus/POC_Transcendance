@@ -19,17 +19,25 @@
 			cursor: pointer;
 		}
 	</style>
+	<script>
+        // Définir navigateTo globalement avant le chargement du module
+        window.navigateTo = function(route) {
+            console.log("Navigating to:", route);
+            window.history.pushState({}, "", route);
+            window.dispatchEvent(new Event("popstate"));
+        }
+    </script>
 </head>
 <body>
 	<h1>Pong Game</h1>
 	<p>Bienvenue sur le projet Pong !</p>
-
+	
 	<button onclick="navigateTo('/')">🏠 Accueil</button>
 	<button onclick="navigateTo('/game')">🎮 Jouer</button>
 	<button onclick="navigateTo('/tournament')">🏆 Tournoi</button>
-
+	
 	<div id="app"></div>
-
 	<script type="module" src="./dist/main.js"></script>
+
 </body>
 </html>
