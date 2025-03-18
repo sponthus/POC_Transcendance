@@ -1,22 +1,30 @@
 // App.ts : Entrypoint from UI
-import { Router } from "../router";
-import { Menu } from "./Menu";
-import { GameUI } from "./GameUI";
-import { TournamentUI } from "./TournamentUI";
+// ui/App.ts
+import { Router } from "../router.js";
+import { Menu } from "./Menu.js";
+import { GameUI } from "./GameUI.js";
+import { TournamentUI } from "./TournamentUI.js";
+import { State } from "../state.js";
 export class App {
     constructor() {
-        this.router = Router.getInstance(); // ✅ Utilisation correcte du singleton
-        this.root = document.getElementById("app");
-        this.setupRoutes();
-        this.router.navigate(window.location.pathname); // Charge la bonne route au démarrage
+        this.state = State.getInstance();
+        this.initializeState();
+        this.initializeRoutes();
+        this.router = Router.getInstance();
+        this.router.initialize();
     }
-    setupRoutes() {
-        this.router.register("/", () => this.render(new Menu()));
-        this.router.register("/game", () => this.render(new GameUI()));
-        this.router.register("/tournament", () => this.render(new TournamentUI()));
+    initializeState() {
+        if (this.state.tournament.players.length === 0) {
+            this.state.setTournament(['Alice', 'Bob', 'Charlie', 'Diana'], [['Alice', 'Bob'], ['Charlie', 'Diana']]);
+        }
+        if (!this.state.player.name) {
+            this.state.setPlayer("Joueur 1");
+        }
     }
-    render(component) {
-        this.root.innerHTML = "";
-        this.root.appendChild(component.render());
+    initializeRoutes() {
+        this.router = Router.getInstance();
+        this.router.register('/', () => new Menu().render());
+        this.router.register('/game', () => new GameUI().render());
+        this.router.register('/tournament', () => new TournamentUI().render());
     }
 }

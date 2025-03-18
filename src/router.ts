@@ -46,32 +46,34 @@ export class Router {
     private renderCurrentRoute(): void {
         if (!this.appElement) {
             this.appElement = document.getElementById('app');
+            console.log("Élément app trouvé?", !!this.appElement);
             if (!this.appElement) {
                 console.error("Élément #app introuvable");
                 return;
             }
         }
         
-        const path = window.location.pathname;
-        console.log(`Rendu de la route: ${path}`);
+        let path = window.location.pathname;
+        const normalizedPath = path === '' || path === '/' ? '/' : path;
         
-        if (this.routes[path]) {
-            // Vider l'élément app
+        if (this.routes[normalizedPath]) {
+            console.log(`Route trouvée pour ${normalizedPath}`);
             while (this.appElement.firstChild) {
                 this.appElement.removeChild(this.appElement.firstChild);
             }
-            
-            // Générer et insérer le nouvel élément
             try {
-                const element = this.routes[path]();
+                const element = this.routes[normalizedPath]();
                 this.appElement.appendChild(element);
                 console.log("Contenu rendu avec succès");
-            } catch (error) {
+            }
+            catch (error) {
                 console.error("Erreur lors du rendu:", error);
             }
         } else {
-            console.error(`Route inconnue: ${path}`);
+            console.error(`Route inconnue: ${normalizedPath}`);
+            console.log("Routes disponibles:", Object.keys(this.routes));
             if (this.routes['/']) {
+                console.log("Redirection vers la route par défaut '/'");
                 this.navigate('/');
             }
         }
@@ -80,7 +82,7 @@ export class Router {
 	public initialize(): void {
         console.log("Initialisation du router");
         
-        // Exposer l'instance du router globalement
+        // Exposes router instance everywhere
         (window as any).router = this;
         
         // Remplacer la fonction temporaire par la vraie
@@ -99,7 +101,7 @@ export class Router {
             }
         }
         
-        // Rendre la route initiale si aucun appel n'a été stocké
+        // // Rendre la route initiale si aucun appel n'a été stocké
         else {
             this.renderCurrentRoute();
         }

@@ -1,4 +1,4 @@
-import { State } from "../state";
+import { State } from "../state.js";
 
 export class TournamentUI {
   private state = State.getInstance();

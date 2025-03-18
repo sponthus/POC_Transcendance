@@ -1,11 +1,11 @@
-import { State } from "../state";
+import { State } from "../state.js";
 
 export class GameUI {
   private state = State.getInstance();
 
   render(): HTMLElement {
     const container = document.createElement("div");
-
+    
     const canvas = document.createElement("canvas");
     canvas.id = "gameCanvas";
 

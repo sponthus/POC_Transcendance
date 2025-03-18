@@ -1,12 +1,6 @@
-import { App } from "./ui/App";
+import { App } from "./ui/App.js";
+window.navigateCalls = [];
 document.addEventListener("DOMContentLoaded", () => {
     new App();
+    console.log("App created");
 });
-function navigateTo(route) {
-    console.log("Navigating to:", route);
-    window.history.pushState({}, "", route);
-    window.dispatchEvent(new Event("popstate"));
-}
-console.log("Defining navigateTo");
-window.navigateTo = navigateTo;
-console.log("window.navigateTo : ", window.navigateTo);
