@@ -1,8 +1,6 @@
 import { State } from "../state.js";
 export class TournamentUI {
-    constructor() {
-        this.state = State.getInstance();
-    }
+    state = State.getInstance();
     render() {
         const container = document.createElement("div");
         const title = document.createElement("h2");

@@ -5,12 +5,12 @@ export class State {
   private static instance: State;
 
   // Données stockées
-  public player: { name: string; score: number };
+  public player: { id: number; name: string; score: number };
   public gameState: GameState;
   public tournament: { players: string[]; matches: string[][] };
 
   private constructor() {
-    this.player = { name: "", score: 0 };
+    this.player = { id: 0, name: "", score: 0 };
     this.gameState = "idle";
     this.tournament = { players: [], matches: [] };
   }

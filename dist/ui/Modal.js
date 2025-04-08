@@ -1,5 +1,7 @@
 // Pop-up for errors, end of game, welcome ...
 export class Modal {
+    message;
+    onClose;
     constructor(message, onClose) {
         this.message = message;
         this.onClose = onClose;

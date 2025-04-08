@@ -6,8 +6,9 @@ import { GameUI } from "./GameUI.js";
 import { TournamentUI } from "./TournamentUI.js";
 import { State } from "../state.js";
 export class App {
+    router;
+    state = State.getInstance();
     constructor() {
-        this.state = State.getInstance();
         this.initializeState();
         this.initializeRoutes();
         this.router = Router.getInstance();

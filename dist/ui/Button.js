@@ -1,4 +1,6 @@
 export class Button {
+    text;
+    onClick;
     constructor(text, onClick) {
         this.text = text;
         this.onClick = onClick;

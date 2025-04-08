@@ -1,6 +1,11 @@
 export class State {
+    static instance;
+    // Données stockées
+    player;
+    gameState;
+    tournament;
     constructor() {
-        this.player = { name: "", score: 0 };
+        this.player = { id: 0, name: "", score: 0 };
         this.gameState = "idle";
         this.tournament = { players: [], matches: [] };
     }

@@ -1,6 +1,8 @@
 export class Router {
+    static instance;
+    routes = {};
+    appElement;
     constructor() {
-        this.routes = {};
         this.appElement = document.getElementById('app');
         if (!this.appElement) {
             console.error("Élément #app non trouvé dans le DOM");
