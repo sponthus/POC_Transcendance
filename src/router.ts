@@ -2,7 +2,8 @@ export class Router {
     private static instance: Router;
     private routes: { [key: string]: () => HTMLElement } = {};
     private appElement: HTMLElement | null;
-  
+    private currentComponent: any = null;
+
     private constructor() {
         this.appElement = document.getElementById('app');
       
@@ -58,11 +59,16 @@ export class Router {
         
         if (this.routes[normalizedPath]) {
             console.log(`Route trouvée pour ${normalizedPath}`);
+            if (this.currentComponent && typeof this.currentComponent.destroy === 'function') {
+                this.currentComponent.destroy();
+            }
+
             while (this.appElement.firstChild) {
                 this.appElement.removeChild(this.appElement.firstChild);
             }
             try {
                 const element = this.routes[normalizedPath]();
+                this.currentComponent = element; // Allows to call destroy before leaving
                 this.appElement.appendChild(element);
                 console.log("Contenu rendu avec succès");
             }

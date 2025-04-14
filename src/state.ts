@@ -45,3 +45,12 @@ appState.setGameState("playing");
 
 console.log(appState.player.name); // Alice
 console.log(appState.gameState); // playing
+
+export const game_width: number = 600;
+export const game_height: number = 400;
+export const paddle_height: number = 60;
+export const paddle_width: number = 5;
+export const paddle_padding: number = 10;
+export const paddle_speed: number = 10;
+export const ball_speed: number = 8;
+export const ball_size: number = 10;
