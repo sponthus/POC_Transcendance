@@ -5,6 +5,8 @@ import { Menu } from "./Menu.js";
 import { GameUI } from "./GameUI.js";
 import { TournamentUI } from "./TournamentUI.js";
 import { State } from "../state.js";
+import { LoginUI } from "./LoginUI.js";
+// import db from "../backend/database.js";
 
 export class App {
   private router: Router;
@@ -13,7 +15,8 @@ export class App {
   constructor() {
 	  this.initializeState();
 	  this.initializeRoutes();
-	  
+      // db.exec();
+
 	  this.router = Router.getInstance();
     this.router.initialize();
 }
@@ -26,9 +29,9 @@ private initializeState(): void {
       );
     }
 	
-    if (!this.state.player.name) {
-		this.state.setPlayer("Joueur 1");
-    }
+    // if (!this.state.player.name) {
+	// 	this.state.setPlayer("Joueur 1");
+    // }
 }
 
   private initializeRoutes(): void {
@@ -37,5 +40,6 @@ private initializeState(): void {
 	  this.router.register('/', () => new Menu().render());
 	  this.router.register('/game', () => new GameUI().render());
 	  this.router.register('/tournament', () => new TournamentUI().render());
-	}
+      this.router.register('/login', () => new LoginUI().render());
+  }
 }

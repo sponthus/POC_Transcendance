@@ -1,7 +1,0 @@
-{
-  "execMap": {
-    "ts": "ts-node"
-  },
-  "watch": ["src"],
-  "ext": "ts,json"
-}

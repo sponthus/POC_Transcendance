@@ -1,23 +1,31 @@
-import { State, game_width, game_height, paddle_height, paddle_width, paddle_padding, ball_size } from "../state.js";
+import { State } from "../state.js";
+import { Router } from '../router';
 
 const state = State.getInstance();
+const router = Router.getInstance();
 
 export class GameUI {
   private socket!: WebSocket; // ! Non-null assertion operator, promises compiler that socket will be initialized
+  private playerA = state.getLocalPlayerA();
+  private playerB = state.getLocalPlayerB();
 
   render(): HTMLElement {
+    if (!this.playerA || !this.playerB) {
+      router.navigate('/login');
+      return document.createElement("div");
+    }
+
     const container = document.createElement("div");
 
     const canvas = document.createElement("canvas");
     canvas.id = "gameCanvas";
-    canvas.width = game_width;
-    canvas.height = game_height;
-    canvas.style.border = "1px solid red"; // Pour test visuel
+    canvas.width = state.game_width;
+    canvas.height = state.game_height;
+    canvas.style.border = "1px solid red";
 
     const score = document.createElement("div");
-    score.innerText = `Score : ${state.player.score}`;
+    score.innerText = `${this.playerA.name} ${this.playerA.score} - ${this.playerB.name} ${this.playerB.score}`;
     this.createPauseOverlay();
-    this.createIdleOverlay();
 
     document.addEventListener("keydown", this.handleKeyDown);
 
@@ -33,16 +41,23 @@ export class GameUI {
     this.socket.onopen = () => {
       console.log("Connected to WebSocket server");
       this.socket.send(JSON.stringify({
-        type: "join",
-        player: state.player.id }));
+        type: "join" }));
     };
 
     this.socket.onmessage = (event) => {
+      if (!this.playerA || !this.playerB) {
+        router.navigate('/login');
+        return document.createElement("div");
+      }
+
       const data = JSON.parse(event.data);
 
       if (data.type === "updateScore") {
-        state.player.score = data.score;
-        scoreElement.innerText = `Score : ${state.player.score}`;
+        if (data.player == "A")
+          this.playerA.score = data.score;
+        else if (data.player == "B")
+          this.playerB.score = data.score;
+        scoreElement.innerText = `${this.playerA.name} ${this.playerA.score} - ${this.playerB.name} ${this.playerB.score}`;
       }
 
       if (data.type === "ballMove") {
@@ -51,10 +66,11 @@ export class GameUI {
       }
 
       if (data.type == "gameState") {
+        state.setGameState(data.state);
         if (data.state === "paused") {
-          this.hidePauseScreen(); // Affiche overlay
+          this.showPauseScreen();
         } else if (data.state === "playing") {
-          this.showPauseScreen(); // Cache overlay
+          this.hidePauseScreen();
         }
       }
     };
@@ -115,31 +131,6 @@ export class GameUI {
     document.body.appendChild(pauseOverlay);
   }
 
-  private createIdleOverlay() {
-    const idleOverlay = document.createElement("div");
-    idleOverlay.id = "pauseOverlay";
-    idleOverlay.style.position = "absolute";
-    idleOverlay.style.top = "0";
-    idleOverlay.style.left = "0";
-    idleOverlay.style.right = "0";
-    idleOverlay.style.bottom = "0";
-    idleOverlay.style.background = "rgba(0, 0, 0, 0.6)";
-    idleOverlay.style.color = "white";
-    idleOverlay.style.fontSize = "2em";
-    idleOverlay.style.display = "none";
-    idleOverlay.style.justifyContent = "center";
-    idleOverlay.style.alignItems = "center";
-    idleOverlay.style.zIndex = "999";
-    idleOverlay.innerText = "Pause";
-
-    document.body.appendChild(idleOverlay);
-  }
-
-  private showIdleScreen() {
-    const idleOverlay = document.getElementById("idleOverlay");
-    if (idleOverlay) idleOverlay.style.display = "flex";
-  }
-
   private showPauseScreen() {
     const pauseOverlay = document.getElementById("pauseOverlay");
     if (pauseOverlay) pauseOverlay.style.display = "flex";
@@ -159,9 +150,9 @@ export class GameUI {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "black";
-    ctx.fillRect(data.x, data.y, ball_size, ball_size); // Dessiner la balle
-    ctx.fillRect(paddle_padding, data.pa - paddle_height / 2, paddle_width, paddle_height); // Dessiner le paddle a, coordonnees en haut a gauche
-    ctx.fillRect(game_width - paddle_padding - paddle_width, data.pb - paddle_height / 2, paddle_width, paddle_height); // Dessiner le paddle b, coordonnees en haut a gauche puis largeur puis hauteur
+    ctx.fillRect(data.x, data.y, state.ball_size, state.ball_size); // Dessiner la balle
+    ctx.fillRect(state.paddle_padding, data.pa - state.paddle_height / 2, state.paddle_width, state.paddle_height); // Dessiner le paddle a, coordonnees en haut a gauche
+    ctx.fillRect(state.game_width - state.paddle_padding - state.paddle_width, data.pb - state.paddle_height / 2, state.paddle_width, state.paddle_height); // Dessiner le paddle b, coordonnees en haut a gauche puis largeur puis hauteur
     // console.log("Drawing ball at", data.x, data.y);
     // console.log("pa at ", data.pa, "/ pb at ", data.pb);
   }
@@ -179,7 +170,7 @@ export class GameUI {
       overlay.parentNode.removeChild(overlay);
     }
 
-    this.state.gameState = "idle";
+    state.setGameState("idle");
   }
 }
 

@@ -1,21 +1,30 @@
 import { createServer } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
-import { State, game_width, game_height, ball_speed, paddle_height, ball_size, paddle_padding, paddle_width, paddle_speed } from '../state.js'
+import { State } from '../state.js'
 
 const server = createServer();
 const wss = new WebSocketServer({ server });
 const state = State.getInstance();
 
-let players: WebSocket[] = [];
-let ball = { x: game_width / 2, y: game_height / 2, dx: ball_speed, dy: ball_speed };
-let paddle_a = { pos: game_height / 2, x: paddle_padding, y: game_height / 2 - paddle_height / 2 };
-let paddle_b = { pos: game_height / 2 , x: game_width - paddle_padding - paddle_width, y: game_height / 2 - paddle_height / 2 };
+let playersWs: WebSocket[] = [];
+let ball = { x: state.game_width / 2, y: state.game_height / 2, dx: state.ball_speed, dy: state.ball_speed };
+let paddle_a = { pos: state.game_height / 2, x: state.paddle_padding, y: state.game_height / 2 - state.paddle_height / 2 };
+let paddle_b = { pos: state.game_height / 2 , x: state.game_width - state.paddle_padding - state.paddle_width, y: state.game_height / 2 - state.paddle_height / 2 };
 let playerAScore = 0;
 let playerBScore = 0;
 
+function broadcast(message: any) {
+    const msg = JSON.stringify(message);
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(msg);
+        }
+    });
+}
+
 wss.on('connection', (ws: WebSocket) => {
     console.log('Player connected');
-    players.push(ws);
+    playersWs.push(ws);
 
 	// Handles new client connections
     ws.on('message', (message: string) => {
@@ -23,18 +32,19 @@ wss.on('connection', (ws: WebSocket) => {
         ws.send(JSON.stringify({ type: "ballMove", x: ball.x, y: ball.y, pa: paddle_a.pos, pb: paddle_b.pos}));
 
         if (data.type === "join") {
-            console.log(`Player ${data.player} joined`);
-            wss.clients.forEach(client => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({
-                        type: "ballMove",
-                        x: ball.x,
-                        y: ball.y,
-                        pa: paddle_a.pos,
-                        pb: paddle_b.pos }));
-                    console.log(`Sent ball state`)
-                }
-            });
+            console.log(`Players joined for local game`);
+
+            state.setGameState("playing");
+            broadcast({
+                type: "gameState",
+                state: state.gameState });
+
+            broadcast({
+                type: "ballMove",
+                x: ball.x,
+                y: ball.y,
+                pa: paddle_a.pos,
+                pb: paddle_b.pos });
         }
 
         if (data.type === "move" && state.gameState === "playing")
@@ -43,39 +53,34 @@ wss.on('connection', (ws: WebSocket) => {
             {
                 if (data.dir == "up")
                 {
-                    if (paddle_a.pos - paddle_speed >= paddle_height / 2)
-                        paddle_a.pos -= paddle_speed;
+                    if (paddle_a.pos - state.paddle_speed >= state.paddle_height / 2)
+                        paddle_a.pos -= state.paddle_speed;
                 }
                 else if (data.dir == "down")
                 {
-                    if (paddle_a.pos + paddle_speed <= game_height - paddle_height / 2)
-                        paddle_a.pos += paddle_speed;
+                    if (paddle_a.pos + state.paddle_speed <= state.game_height - state.paddle_height / 2)
+                        paddle_a.pos += state.paddle_speed;
                 }
-                paddle_a.y = paddle_a.pos - paddle_height / 2;
+                paddle_a.y = paddle_a.pos - state.paddle_height / 2;
             }
 
             if (data.paddle === 'b') {
                 if (data.dir == "up") {
-                    if (paddle_b.pos - ball_speed >= paddle_height / 2)
-                        paddle_b.pos -= ball_speed;
+                    if (paddle_b.pos - state.ball_speed >= state.paddle_height / 2)
+                        paddle_b.pos -= state.ball_speed;
                 } else if (data.dir == "down") {
-                    if (paddle_b.pos + ball_speed <= game_height - paddle_height / 2)
-                        paddle_b.pos += ball_speed;
+                    if (paddle_b.pos + state.ball_speed <= state.game_height - state.paddle_height / 2)
+                        paddle_b.pos += state.ball_speed;
                 }
-                paddle_b.y = paddle_b.pos - paddle_height / 2;
+                paddle_b.y = paddle_b.pos - state.paddle_height / 2;
             }
 
-            wss.clients.forEach(client => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({
-                        type: "ballMove",
-                        x: ball.x,
-                        y: ball.y,
-                        pa: paddle_a.pos,
-                        pb: paddle_b.pos }));
-                    console.log(`Sent ball state`)
-                }
-            });
+            broadcast({
+                type: "ballMove",
+                x: ball.x,
+                y: ball.y,
+                pa: paddle_a.pos,
+                pb: paddle_b.pos });
         }
 
         if (data.type === "togglePause")
@@ -91,23 +96,21 @@ wss.on('connection', (ws: WebSocket) => {
                     console.log("Game resumed");
             }
 
-            wss.clients.forEach(client => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({ type: "gameState", state: state.gameState }));
-                }
-            });
+            broadcast({
+                type: "gameState",
+                state: state.gameState });
         }
     });
 
     ws.on('close', () => {
-        players = players.filter(player => player !== ws);
+        playersWs = playersWs.filter(player => player !== ws);
         console.log('Player disconnected');
     });
 });
 
 function handlePaddleBounce(paddleY: number) {
-    const impactY = (ball.y + ball_size / 2) - paddleY;
-    const relativeImpact = impactY / (paddle_height / 2);
+    const impactY = (ball.y + state.ball_size / 2) - paddleY;
+    const relativeImpact = impactY / (state.paddle_height / 2);
 
     const maxBounceAngle = Math.PI / 4;
     const bounceAngle = relativeImpact * maxBounceAngle;
@@ -123,46 +126,42 @@ function handlePaddleBounce(paddleY: number) {
 }
 
 function resetBall(direction: number = 1) {
-    ball.x = game_width / 2;
-    ball.y = game_height / 2;
+    ball.x = state.game_width / 2;
+    ball.y = state.game_height / 2;
     const angle = (Math.random() * Math.PI / 2) - Math.PI / 4; // entre -45° et 45°
-    ball.dx = direction * ball_speed * Math.cos(angle);
-    ball.dy = ball_speed * Math.sin(angle);
+    ball.dx = direction * state.ball_speed * Math.cos(angle);
+    ball.dy = state.ball_speed * Math.sin(angle);
 }
 
 // Not functionnal
 function score(player: string) {
     if (player == "A")
     {
-        playerAScore++;
-        wss.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({
-                    type: "updateScore",
-                    player: "A",
-                    score: playerAScore
-                }));
-            }
+        playerAScore+= 1;
+        broadcast({
+            type: "updateScore",
+            player: "A",
+            score: playerAScore
         });
     }
     else if (player == "B")
     {
-        playerBScore++;
-        wss.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({
-                    type: "updateScore",
-                    player: "B",
-                    score: playerBScore
-                }));
-            }
+        playerBScore += 1;
+        broadcast({
+            type: "updateScore",
+            player: "B",
+            score: playerBScore
         });
     }
 }
 
 // Simulation du déplacement de la balle
 setInterval((): void => {
-    if (state.gameState != "playing") return;
+    if (state.gameState != "playing")
+    {
+        // console.log("game is ", state.gameState);
+        return;
+    }
 
 // Move ball
     ball.x += ball.dx;
@@ -170,17 +169,17 @@ setInterval((): void => {
 
     // Score to paddle_a
     if (ball.x <= 0) {
-        console.log("Point pour le joueur B !");
-        resetBall(1); // Goes right
+        console.log("Score for player B !");
         score("B");
+        resetBall(1); // Goes right
         return;
     }
 
     // Score to paddle_b
-    if (ball.x >= game_width - ball_size) {
+    if (ball.x >= state.game_width - state.ball_size) {
         console.log("Score for player A !");
-        resetBall(-1); // Goes left
         score("A");
+        resetBall(-1); // Goes left
         return;
     }
 
@@ -189,23 +188,23 @@ setInterval((): void => {
         ball.y = 0;
         ball.dy *= -1;
     }
-    if (ball.y >= game_height - ball_size) {
-        ball.y = game_height - ball_size;
+    if (ball.y >= state.game_height - state.ball_size) {
+        ball.y = state.game_height - state.ball_size;
         ball.dy *= -1;
     }
 
     // Then handle paddle collisions (left/right zones)
     const collisionA: boolean =
-        ball.x <= paddle_a.x + paddle_width &&
-        ball.x + ball_size >= paddle_a.x &&
-        ball.y + ball_size >= paddle_a.y &&
-        ball.y <= paddle_a.y + paddle_height;
+        ball.x <= paddle_a.x + state.paddle_width &&
+        ball.x + state.ball_size >= paddle_a.x &&
+        ball.y + state.ball_size >= paddle_a.y &&
+        ball.y <= paddle_a.y + state.paddle_height;
 
     const collisionB: boolean =
-        ball.x + ball_size >= paddle_b.x &&
-        ball.x <= paddle_b.x + paddle_width &&
-        ball.y + ball_size >= paddle_b.y &&
-        ball.y <= paddle_b.y + paddle_height;
+        ball.x + state.ball_size >= paddle_b.x &&
+        ball.x <= paddle_b.x + state.paddle_width &&
+        ball.y + state.ball_size >= paddle_b.y &&
+        ball.y <= paddle_b.y + state.paddle_height;
 
     if (collisionA) {
         handlePaddleBounce(paddle_a.pos);
@@ -215,7 +214,7 @@ setInterval((): void => {
     }
 
     // Send ball position
-    players.forEach(player => {
+    playersWs.forEach(player => {
         if (player.readyState === WebSocket.OPEN) {
             player.send(JSON.stringify({
                 type: "ballMove",

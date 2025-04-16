@@ -8,14 +8,14 @@ export class Menu {
     const tournamentButton = document.createElement("button");
     tournamentButton.innerText = "Tournament";
     tournamentButton.addEventListener("click", () => {
-        window.navigateTo("/tournament"); // ✅ Appel correct via l'instance
+        window.navigateTo("/tournament");
     
     });
   
     const startGameButton = document.createElement("button");
     startGameButton.innerText = "Start Game";
     startGameButton.addEventListener("click", () => {
-        window.navigateTo("/game"); // ✅ Appel correct via l'instance
+        window.navigateTo("/login");
     });
 
     menu.appendChild(startGameButton);
