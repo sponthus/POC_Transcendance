@@ -1,0 +1,6 @@
+srcs/tools/*/dist
+srcs/tools/*/node_modules
+srcs/tools/*/package-lock.json
+*.js
+dist
+test*
