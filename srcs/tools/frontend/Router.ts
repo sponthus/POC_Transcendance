@@ -1,37 +1,37 @@
 export class Router {
     private static instance: Router;
-    private routes: { [key: string]: () => HTMLElement } = {};
+    private routes: { [key: string]: () => { render: () => HTMLElement, destroy?: () => void } } = {};
     private appElement: HTMLElement | null;
     private currentComponent: any = null;
 
     private constructor() {
         this.appElement = document.getElementById('app');
-      
+
         if (!this.appElement) {
             console.error("Élément #app non trouvé dans le DOM");
         }
-      
+
         window.addEventListener("popstate", () => {
             console.log("Événement popstate déclenché");
             this.handleRouteChange();
         });
     }
-  
+
     public static getInstance(): Router {
         if (!Router.instance) {
             Router.instance = new Router();
         }
         return Router.instance;
     }
-  
-    public register(path: string, callback: () => HTMLElement): void {
+
+    public register(path: string, callback: () => { render: () => HTMLElement, destroy?: () => void }): void {
         console.log(`Route enregistrée: ${path}`);
         this.routes[path] = callback;
     }
-  
+
     public navigate(path: string): void {
         console.log(`Navigation vers: ${path}`);
-        
+
         if (this.routes[path]) {
             window.history.pushState({}, "", path);
             this.renderCurrentRoute();
@@ -39,11 +39,22 @@ export class Router {
             console.error(`Route non définie: ${path}`);
         }
     }
-  
+
+    public setCurrentComponent(component: { render: () => HTMLElement, destroy?: () => void }): void {
+        this.currentComponent = component;
+    }
+
+    private destroyCurrentComponent(): void {
+        if (this.currentComponent?.destroy) {
+            console.log("call destroy");
+            this.currentComponent.destroy();
+        }
+    }
+
     private handleRouteChange(): void {
         this.renderCurrentRoute();
     }
-    
+
     private renderCurrentRoute(): void {
         if (!this.appElement) {
             this.appElement = document.getElementById('app');
@@ -53,68 +64,68 @@ export class Router {
                 return;
             }
         }
-        
+
         let path = window.location.pathname;
         const normalizedPath = path === '' || path === '/' ? '/' : path;
-        
-        if (this.routes[normalizedPath]) {
-            console.log(`Route trouvée pour ${normalizedPath}`);
-            if (this.currentComponent && typeof this.currentComponent.destroy === 'function') {
-                this.currentComponent.destroy();
-            }
+
+        const componentFactory = this.routes[normalizedPath];
+        if (componentFactory) {
+            console.log(`Route found for ${normalizedPath}`);
+            this.destroyCurrentComponent();
 
             while (this.appElement.firstChild) {
                 this.appElement.removeChild(this.appElement.firstChild);
             }
             try {
-                const element = this.routes[normalizedPath]();
-                this.currentComponent = element; // Allows to call destroy before leaving
+                const newComponent = componentFactory();
+                this.setCurrentComponent(newComponent); // Allows to call destroy before leaving
+
+                const element = newComponent.render();
                 this.appElement.appendChild(element);
-                console.log("Contenu rendu avec succès");
+                console.log("Successful content render");
             }
             catch (error) {
-                console.error("Erreur lors du rendu:", error);
+                console.error("Error while render:", error);
             }
         } else {
-            console.error(`Route inconnue: ${normalizedPath}`);
-            console.log("Routes disponibles:", Object.keys(this.routes));
+            console.error(`Unknown path: ${normalizedPath}`);
+            console.log("Available paths:", Object.keys(this.routes));
             if (this.routes['/']) {
-                console.log("Redirection vers la route par défaut '/'");
+                console.log("Redirecting to '/'");
                 this.navigate('/');
             }
         }
     }
 
 	public initialize(): void {
-        console.log("Initialisation du router");
-        
+        console.log("Router initialization");
+
         // Exposes router instance everywhere
         (window as any).router = this;
-        
-        // Remplacer la fonction temporaire par la vraie
+
         window.navigateTo = (path: string) => {
-            console.log(`navigateTo appelé avec: ${path}`);
+            console.log(`navigateTo called with: ${path}`);
             this.navigate(path);
         };
-        
-        // Traiter les appels qui ont été stockés avant l'initialisation
+
+        // Treat calls stocked before initialization
         if ((window as any).navigateCalls && Array.isArray((window as any).navigateCalls)) {
             const calls = (window as any).navigateCalls;
             if (calls.length > 0) {
-                console.log(`Traitement de ${calls.length} appels navigateTo retardés`);
-                // Ne traiter que le dernier appel pour éviter les redirections multiples
+                console.log(`Treating ${calls.length} delayed calls to navigateTo`);
+                // Only treat last call to avoid multiple redirections
                 this.navigate(calls[calls.length - 1]);
             }
         }
-        
-        // // Rendre la route initiale si aucun appel n'a été stocké
+
+        // Render initial route if no call has been stocked
         else {
             this.renderCurrentRoute();
         }
     }
 }
 
-// Déclarer les types pour window
+// Declare types for window
 declare global {
     interface Window {
         navigateTo: (path: string) => void;

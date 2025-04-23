@@ -1,5 +1,5 @@
 import { State, Player } from "../../shared/state.js"
-import { Router } from "../router.js";
+import { Router } from "../Router";
 
 const state = State.getInstance();
 const router = Router.getInstance();

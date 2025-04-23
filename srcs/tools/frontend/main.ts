@@ -1,4 +1,4 @@
-import { App } from "./ui/App.js";
+import { App } from "./App";
 
 window.navigateCalls = [];
 

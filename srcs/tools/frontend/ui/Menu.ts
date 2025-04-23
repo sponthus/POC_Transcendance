@@ -1,5 +1,5 @@
 import { Button } from "./Button.js";
-import { Router } from "../router.js";
+import { Router } from "../Router";
 
 export class Menu {
   render(): HTMLElement {

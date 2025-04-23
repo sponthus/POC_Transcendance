@@ -5,8 +5,6 @@ services:
     build:
       context: ./
       dockerfile: requirements/frontend/Dockerfile
-#    ports:
-#      - "5173:5173"  # Vite preview
     volumes:
       - ./tools/frontend:/app
     depends_on:
@@ -19,9 +17,6 @@ services:
     build:
       context: ./
       dockerfile: requirements/backend/Dockerfile
-#    ports:
-#      - "3000:3000"
-#      - "8080:8080"
     volumes:
       - ./tools/backend:/app
     networks:

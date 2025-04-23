@@ -36,7 +36,7 @@ wss.on('connection', (ws: WebSocket) => {
         if (data.type === "join") {
             console.log(`Players joined for local game`);
 
-            state.setGameState("playing");
+            // state.setGameState("playing");
             broadcast({
                 type: "gameState",
                 state: state.gameState });
@@ -47,6 +47,24 @@ wss.on('connection', (ws: WebSocket) => {
                 y: ball.y,
                 pa: paddle_a.pos,
                 pb: paddle_b.pos });
+        }
+
+        if (data.type === "play")
+        {
+            console.log("players want to play");
+            state.setGameState("playing");
+            broadcast({
+                type: "gameState",
+                state: state.gameState });
+        }
+
+        if (data.type === "stop")
+        {
+            console.log("players want to stop");
+            state.setGameState("idle");
+            broadcast({
+                type: "gameState",
+                state: state.gameState });
         }
 
         if (data.type === "move" && state.gameState === "playing")
@@ -108,6 +126,10 @@ wss.on('connection', (ws: WebSocket) => {
         playersWs = playersWs.filter(player => player !== ws);
         console.log('Player disconnected');
     });
+});
+
+server.listen(3000, () => {
+    console.log('WebSocket server listens on wws://localhost:3000');
 });
 
 function handlePaddleBounce(paddleY: number) {
@@ -226,9 +248,6 @@ setInterval((): void => {
                 pb: paddle_b.pos }));
         }
     });
-    // console.log("Sending ball to", players.length, "players");
+    // console.log("Sending ball to players");
 }, 50);
 
-server.listen(3000, () => {
-    console.log('WebSocket server listens on ws://localhost:3000');
-});

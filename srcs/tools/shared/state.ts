@@ -1,4 +1,3 @@
-// state.ts : Gestion de l'état global
 // import db from './backend/database.js'
 
 type GameState = "idle" | "playing" | "paused" | "gameover";
