@@ -5,7 +5,7 @@ import { State } from '../shared/state.js'
 
 console.log("== Beginning server.ts ==");
 const server = createServer();
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ server, path: '/ws/' });
 const state = State.getInstance();
 
 let playersWs: WebSocket[] = [];
@@ -229,6 +229,6 @@ setInterval((): void => {
     // console.log("Sending ball to", players.length, "players");
 }, 50);
 
-server.listen(8080, () => {
-    console.log('WebSocket server listens on ws://localhost:8080');
+server.listen(3000, () => {
+    console.log('WebSocket server listens on ws://localhost:3000');
 });

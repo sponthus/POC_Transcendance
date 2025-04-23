@@ -36,7 +36,7 @@ export class GameUI {
   }
 
   private initWebSocket(scoreElement: HTMLElement) {
-    this.socket = new WebSocket("ws://localhost:8080");
+    this.socket = new WebSocket("wss://localhost:4443/ws/");
 
     this.socket.onopen = () => {
       console.log("Connected to WebSocket server");
