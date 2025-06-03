@@ -1,0 +1,50 @@
+services:
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./
+      dockerfile: frontend/Dockerfile
+    volumes:
+      - ./frontend:/app
+      - ./frontend/dist:/app/dist
+    networks:
+      - pongnet
+
+  backend:
+    container_name: backend-api
+    build:
+      context: ./
+      dockerfile: backend/Dockerfile
+    volumes:
+      - ./backend:/app
+      - ./frontend/dist:/app/dist
+    depends_on:
+      - frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - pongnet
+
+#  nginx:
+#    container_name: nginx
+#    image: nginx
+#    build:
+#      context: ./nginx
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:80"
+#      - "4443:443"
+#    restart: always
+#    volumes:
+#      - ./nginx/conf:/etc/nginx/conf.d
+#      - ./nginx/ssl:/etc/nginx/ssl
+#    networks:
+#      - pongnet
+#    depends_on:
+#      - frontend
+#      - backend
+
+networks:
+  pongnet:
+    driver: bridge

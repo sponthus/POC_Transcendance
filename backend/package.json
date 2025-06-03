@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Backend service",
+  "main": "main.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "server": "npm run start"
+  },
+  "author": "sponthus",
+  "devDependencies": {
+    "typescript": "^5.8.1"
+  },
+  "dependencies": {
+    "@fastify/static": "^8.2.0",
+    "ajv": "^8.17.1",
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^11.10.0",
+    "env-schema": "^6.0.1",
+    "fastify": "^5.3.3",
+    "fastify-jwt": "^4.1.3",
+    "path": "^0.12.7",
+    "slugify": "^1.6.6",
+    "typescript": "^5.8.3"
+  }
+}

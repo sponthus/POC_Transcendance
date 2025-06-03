@@ -1,0 +1,16 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Frontend service",
+  "main": "main.js",
+  "scripts": {
+    "build": "tsc --watch"
+  },
+  "author": "sponthus",
+  "devDependencies": {
+    "typescript": "^5.8.1"
+  },
+  "dependencies": {
+    "typescript": "^5.8.3"
+  }
+}
