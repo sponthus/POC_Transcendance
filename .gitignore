@@ -1,6 +1,8 @@
-srcs/tools/*/dist
-srcs/tools/*/node_modules
-srcs/tools/*/package-lock.json
-*.js
 dist
+*/node_modules
+*/dist/*
 test*
+.idea
+node_modules/*
+*-lock.json
+*.db
