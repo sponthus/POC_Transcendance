@@ -3,19 +3,18 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ./
-      dockerfile: frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     volumes:
-      - ./frontend:/app
-      - ./frontend/dist:/app/dist
+      - ./frontend:/app # Pour le dev seulement, en prod pas de volume monte.
     networks:
       - pongnet
 
   backend:
     container_name: backend-api
     build:
-      context: ./
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     volumes:
       - ./backend:/app
       - ./frontend/dist:/app/dist
