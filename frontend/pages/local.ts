@@ -1,7 +1,10 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
+import { renderBanner } from './menu.js';
 
 export function getLocalGamePage() {
+    renderBanner();
+
     const app = document.getElementById('app');
     if (!app)
         return;
@@ -18,7 +21,6 @@ export function getLocalGamePage() {
         <p>Controls : ⬆️ ⬇️ and 🇪 🇩 - Pause : SPACE bar</p>
         <div id="score"> Score : </div>
         <canvas id="game"> Game canvas. </canvas>
-        <a href="/" data-link>Back to home</a>
     `;
 
     const canvas = document.getElementById('game') as HTMLCanvasElement;

@@ -6,7 +6,7 @@ import envSchema from "env-schema"; // Allows change and validation of variables
 // properties defines expected types and default values if absent
 const schema = {
     type: "object",
-    required: ["PORT", "LOG_LEVEL", "NODE_ENV", "DB_FILE"],
+    required: ["PORT", "LOG_LEVEL", "NODE_ENV", "DB_FILE", "SECRET"],
     properties: {
         PORT: {
             type: "number",
@@ -15,16 +15,20 @@ const schema = {
         LOG_LEVEL: {
             type: "string",
             default: "info",
-        },
+        }, // Level des logs affiches : en general info, mais on peut n'afficher que les erreurs
         NODE_ENV: {
             type: "string",
             default: "development",
-            enum: ["development", "testing", "production", "staging"],
+            enum: ["development", "testing", "production"],
         },
         DB_FILE: {
             type: "string",
             default: "./users.db",
         },
+        SECRET: {
+            type: "string",
+            default: "secret_key",
+        }
     },
 };
 
@@ -45,6 +49,7 @@ const envConfig = {
     logLevel: config.LOG_LEVEL,
     nodeEnv: config.NODE_ENV,
     dbFile: config.DB_FILE,
+    secret: config.SECRET,
 };
 
 // envConfig becomes default export from env.js file

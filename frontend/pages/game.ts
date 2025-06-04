@@ -1,11 +1,8 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
+import { renderBanner } from './menu.js';
 
-export function getGamePage() {
-    const app = document.getElementById('app');
-    if (!app)
-        return;
-
+function generateGamePage(app: HTMLElement) {
     // Check user connexion
     if (!state.user) {
         navigate('/login');
@@ -22,10 +19,40 @@ export function getGamePage() {
             <button id="online-btn" disabled>🌐 Online vs Player (coming soon)</button>
             <button id="ai-btn" disabled>🤖 AI Opponent (coming soon)</button>
         </div>
-        <p><a href="/" data-link>Back</a></p>
     `;
 
     document.getElementById('local-btn')?.addEventListener('click', () => {
         navigate('/local'); // TODO : Create /local page
     });
+}
+
+export async function getGamePage() {
+    renderBanner();
+    const app = document.getElementById('app');
+    if (!app)
+        return;
+
+    app.innerHTML = `<h1>Loading game...</h1>`;
+
+    const token = localStorage.getItem("token");
+    if (!token)
+        return;
+    try {
+        const res = await fetch('/api/game', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        if (!res.ok)
+            throw new Error('Failed to load game page info');
+        const data = await res.json(); // Possibility to update state with data
+
+        generateGamePage(app);
+    } catch (err) {
+        console.error(err);
+        document.getElementById('app')!.innerHTML = `<h1>Error loading game page, try to log in.</h1>`;
+    }
 }

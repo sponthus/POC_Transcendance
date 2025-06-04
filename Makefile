@@ -1,10 +1,10 @@
-NETWORK = srcs_network
+NETWORK = pongnet
 
-IMAGE =
+IMAGES =
 
 CONTAINER =
 
-VOLUMES =
+# VOLUMES =
 
 ENV = .env
 
@@ -14,17 +14,14 @@ all: up
 
 re: fclean all
 
-$(ENV) : env
-
-# env:
-# 	@if [ ! -f "$(ENV)" ]; then \
-# 		echo " ✘ No .env found"; \
-# 		sh srcs/tools/init.sh; \
-# 	fi
-# 	@echo " ✔ .env present, feel free to modify informations if needed"
+build:
+	docker compose -f $(COMPOSE_FILE) up --build
 
 up:
-	docker compose -f $(COMPOSE_FILE) up -d --build
+	docker compose -f $(COMPOSE_FILE) up
+
+detach:
+	docker compose -f $(COMPOSE_FILE) up -d
 
 down:
 	docker compose -f $(COMPOSE_FILE) down
@@ -33,7 +30,7 @@ ps:
 	docker compose -f $(COMPOSE_FILE) ps
 
 clean:
-	docker compose -f $(COMPOSE_FILE) down --rmi all -v --remove-orphans;
+	docker compose -f $(COMPOSE_FILE) down --rmi all -v --remove-orphans
 #
 # manual_clean: clean_network
 #
@@ -57,8 +54,8 @@ clean:
 # 	@echo "② Suppressing docker images"
 # 	@if [ ! "$$(docker image ls -q)" ]; then echo " ✘ No images found"; fi
 # 	@for image in $(IMAGE); do \
-# 		if [ -n "$$(docker images -qa --filter=reference="$$image")" ]; then \
-# 			docker image rm $$(docker images --filter=reference="$$image" --format="{{.ID}}"); \
+# 		if [ -n "$$(docker images -qa --filter=reference="$$images")" ]; then \
+# 			docker image rm $$(docker images --filter=reference="$$images" --format="{{.ID}}"); \
 # 			echo "  ➥ Suppressed $$image"; \
 # 		fi; \
 # 	done

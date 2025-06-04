@@ -7,10 +7,13 @@ export const state = {
 
     login(username: string) {
         this.user = { username };
+        localStorage.setItem('username', JSON.stringify(this.user));
     },
 
     logout() {
         this.user = null;
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
     },
 
     isLoggedIn() {

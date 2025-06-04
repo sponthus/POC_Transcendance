@@ -7,4 +7,4 @@ if [ ! -d "node_modules" ]; then
   npm install
 fi
 
-exec npx nodemon --watch  src src/app.js
+exec npm run dev

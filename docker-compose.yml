@@ -6,7 +6,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     volumes:
-      - ./frontend:/app # Pour le dev seulement, en prod pas de volume monte.
+      - ./frontend:/app # Dev only,prod = pas de volume, seulement copie des fichiers.
     networks:
       - pongnet
 
@@ -16,8 +16,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend:/app
-      - ./frontend/dist:/app/dist
+      - ./backend:/app  # Dev only,prod = pas de volume, seulement copie des fichiers.
+      - ./frontend/dist:/app/dist  # Dev only,prod = pas de volume, seulement copie des fichiers.
     depends_on:
       - frontend
     ports:

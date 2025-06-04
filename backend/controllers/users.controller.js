@@ -28,35 +28,64 @@ const postSchema = {
 // Compiles validation scheme into a validation function
 const validatePost = ajv.compile(postSchema);
 
+// For password hash
 const saltRounds = 10;
 
-export function createUser(request, reply) {
-    console.log("Creating user");
+function generateUniqueSlug(baseSlug, db) {
+    let slug = baseSlug;
+    let counter = 1;
+
+    const dbFindings = db.prepare("SELECT COUNT(*) AS count FROM users WHERE slug = ?");
+
+    while (dbFindings.get(slug).count > 0) {
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+    }
+
+    return slug;
+}
+
+export async function createUser(request, reply) {
     const { username, password } = request.body;
+    console.log("Creating user " + username + ' ' + password);
 
     const valid = validatePost({ username, password });
     if (!valid) {
         return reply.status(400).send({
-            error: "Invalid input",
+            error: "Invalid input format",
             details: validatePost.errors,
         });
     }
 
-    const slug = slugify(username, { lower: true, strict: true });
+    const { db } = request.server;
+
+    // Creates a slug possible to pass as a URL for API, ex : Jean Claude -> jean-claude
+    const baseSlug = slugify(username, { lower: true, strict: true });
+    const slug = generateUniqueSlug(baseSlug, db);
 
     const pw_hash = bcrypt.hashSync(password, saltRounds);
 
-    const { db } = request.server;
-
-    const insertStatement = db.prepare(
-        "INSERT INTO users (username, slug, pw_hash) VALUES (?, ?, ?)"
-    );
-    insertStatement.run(username, slug, pw_hash);
-
-    return reply.status(201).send({ success: true });
+    const checkUser = db.prepare("SELECT id FROM users WHERE username = ?").get(username);
+    if (checkUser) {
+        return reply.status(409).send({
+            error: "Username already exists",
+        });
+    }
+    else
+    {
+        const avatar = 'default-avatar.jpg';
+        const insertStatement = db.prepare(
+            "INSERT INTO users (username, slug, avatar, pw_hash) VALUES (?, ?, ?, ?)"
+        );
+        insertStatement.run(username, slug, avatar, pw_hash);
+    }
+    const token = await reply.jwtSign({ username: username });
+    return reply.status(200).send({ token, username: username });
 }
 
-export function loginUser(request, reply) {
+export async function loginUser(request, reply) {
+    console.log('loginUser controller called');
+
     const { username, password } = request.body;
 
     if (!username || !password) {
@@ -77,8 +106,55 @@ export function loginUser(request, reply) {
         return reply.status(401).send({ error: "Invalid password" });
     }
 
-    // TODO : Generate JWT token, right now just responds OK
-    return reply.status(200).send({ success: true, user: { username: user.username } });
+
+    const token = await reply.jwtSign({ username: user.username });
+    return reply.status(200).send({ token, username: user.username });
+}
+
+export async function getUser(request, reply) {
+    const { username } = request.params;
+    const { db } = request.server;
+
+    console.log("Trying to find user " + username);
+    const user = db.prepare('SELECT username, slug, avatar, id, created_at FROM users WHERE username = ?').get(username);
+
+    if (!user) {
+        return reply.status(404).send({ error: 'User not found' });
+    }
+
+    return reply.send(user);
+}
+
+export async function modifyUser(request, reply) {
+    const username = request.user.username;
+    const { db } = request.server;
+
+    console.log("Trying to find user " + username);
+    const user = db.prepare('SELECT username, slug, avatar, id, created_at FROM users WHERE username = ?').get(username);
+
+    if (!user) {
+        return reply.status(404).send({ error: 'User not found' });
+    }
+
+    const parts = request.parts();
+    let avatarPath = null;
+    let nickname = null;
+    for await (const part of parts) {
+        if (part.file) {
+            // Looking for 'avatar' field
+            if (part.fieldname === 'avatar') {
+                const filename = `avatar-${Date.now()}-${part.filename}`;
+                const filepath = path.join(__dirname, 'public', filename);
+                await part.toFile(filepath);
+                avatarPath = `/public/${filename}`;
+            }
+        }
+    }
+
+    if (avatarPath) {
+        db.prepare('UPDATE users SET avatar = ? WHERE username = ?').run(avatarPath, username);
+        return reply.send({ success: true, avatar: avatarPath });
+    } // TODO delete old avatar
 }
 
 // export function authenticateUser(username, password) {

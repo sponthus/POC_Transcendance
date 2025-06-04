@@ -1,12 +1,57 @@
-import { createUser, loginUser } from "../controllers/users.controller.js";
+import { createUser, getUser, loginUser, modifyUser } from "../controllers/users.controller.js";
 
 export default async function routes(fastify, options) {
-    // Register post routes with /post prefix
+    console.log('Registering routes');
+
+    // Register post routes
     fastify.register(
         async function (postRoutes) {
-            postRoutes.post("/", createUser);
-            postRoutes.post("/login", loginUser)
+            // postRoutes.addHook('preHandler', async (request, reply) => {
+            //     console.log('preHandler called for:', request.url);
+            // });
+
+            postRoutes.post("/user",
+                createUser);
+            postRoutes.post("/login",
+                loginUser);
         },
-        { prefix: "/post" }
+        { prefix: "/api" }
+    );
+
+    // Register get routes
+    fastify.register(
+        async function (getRoutes) {
+            getRoutes.get('/me',
+                {preHandler: [fastify.authenticate]},
+                async (req, reply) => {
+                    // req.log.info({userId: req.user.id}, 'User accessed /me');
+                    return {
+                        username: req.user.username,
+                    };
+                });
+
+            getRoutes.get('/game',
+                {preHandler: [fastify.authenticate]},
+                async (req, reply) => {
+                    req.log.info({userId: req.user.id}, 'User accessed /game');
+                    return {
+                        username: req.user.username,
+                    };
+                });
+
+            getRoutes.get('/user/:username',
+                {preHandler: [fastify.authenticate]},
+                getUser);
+        },
+        { prefix: "/api" }
+    );
+
+    fastify.register(
+        async function (putRoutes) {
+            putRoutes.put('/user/:username',
+                {preHandler: [fastify.authenticate]},
+                modifyUser);
+        },
+        { prefix: "/api" }
     );
 }
