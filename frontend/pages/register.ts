@@ -1,13 +1,25 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
 import { renderBanner } from './menu.js';
+import { checkLog } from "../api/check-log.js";
+import {registerUser} from "../api/user.js";
 
-export function getRegisterPage() {
+export async function getRegisterPage() {
     renderBanner();
 
     const app = document.getElementById('app');
     if (!app)
         return;
+
+    const res = await checkLog();
+    if (res.ok)
+    {
+        app.innerHTML = `
+                <h1></h1>
+                <h1>Already logged in as ${res.user.username}.</h1>
+            `;
+        return ;
+    }
 
     app.innerHTML = `
         <h1></h1>
@@ -28,27 +40,13 @@ export function getRegisterPage() {
         const username = formData.get('username') as string;
         const password = formData.get('password') as string;
 
-        try {
-            const res = await fetch('/api/user', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                console.log('token is ' + data.token);
-                localStorage.setItem("token", data.token);
-                state.login(data.username); // local login
-                navigate('/'); // back to home
-            } else {
-                const error = await res.json();
-                alert("Error : " + error?.error || "Account creation impossible");
-            }
-
-        } catch (err) {
-            alert("Connexion error with server");
-            console.error(err);
+        const req = await registerUser(username, password);
+        if (req.ok) {
+            await navigate('/');
+            return ; // back to home
+        }
+        else {
+            alert("Registration failure" + req.error);
         }
     });
 }

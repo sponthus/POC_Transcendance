@@ -1,6 +1,8 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
 import { renderBanner } from './menu.js';
+import {checkLog} from "../api/check-log";
+import {startLocalGame} from "../api/game";
 
 function generateGamePage(app: HTMLElement) {
     // Check user connexion
@@ -28,6 +30,15 @@ function generateGamePage(app: HTMLElement) {
 
 export async function getGamePage() {
     renderBanner();
+
+    // Check user connexion
+    const res = await checkLog();
+    if (!res.ok)
+    {
+        await navigate('/login');
+        return;
+    }
+
     const app = document.getElementById('app');
     if (!app)
         return;
@@ -37,22 +48,13 @@ export async function getGamePage() {
     const token = localStorage.getItem("token");
     if (!token)
         return;
-    try {
-        const res = await fetch('/api/game', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-        });
 
-        if (!res.ok)
-            throw new Error('Failed to load game page info');
-        const data = await res.json(); // Possibility to update state with data
-
+    const req = await startLocalGame();
+    if (req.ok) {
         generateGamePage(app);
-    } catch (err) {
-        console.error(err);
+    }
+    else {
+        console.error(req.error);
         document.getElementById('app')!.innerHTML = `<h1>Error loading game page, try to log in.</h1>`;
     }
 }

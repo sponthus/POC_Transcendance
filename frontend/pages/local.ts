@@ -1,19 +1,23 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
 import { renderBanner } from './menu.js';
+import {checkLog} from "../api/check-log";
 
-export function getLocalGamePage() {
+export async function getLocalGamePage() {
     renderBanner();
+
+    // Check user connexion
+    const res = await checkLog();
+    if (!res.ok)
+    {
+        await navigate('/login');
+        return;
+    }
 
     const app = document.getElementById('app');
     if (!app)
-        return;
+    return;
 
-    // Check user connexion
-    if (!state.user) {
-        navigate('/login');
-        return;
-    }
 
     // Show game options
     app.innerHTML = `

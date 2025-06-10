@@ -22,11 +22,11 @@ export function renderBanner(): void {
     navLinks.className = 'nav-links';
 
     if (state.isLoggedIn() && state.user?.username) {
-        userInfo.innerHTML = `Connected as : <strong>${state.user?.username}</strong>`;
+        userInfo.innerHTML = `Connected as : <strong>${state.user.username}</strong>`;
 
         const profileItem = document.createElement('li');
         const profileLink = document.createElement('a');
-        profileLink.href = `/user/${state.user.username}`;
+        profileLink.href = `/user/${state.user.slug}`;
         profileLink.textContent = 'Profile';
         profileItem.appendChild(profileLink);
         navLinks.appendChild(profileItem);

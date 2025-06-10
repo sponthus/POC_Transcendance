@@ -1,6 +1,9 @@
 import Ajv from "ajv"; // json data validation, fastify built-in support
 import slugify from "slugify";
 import bcrypt from "bcrypt";
+import path from "path";
+import pump from 'pump';
+import fs from 'fs'; // file system : to write a file
 
 const ajv = new Ajv;
 
@@ -80,7 +83,7 @@ export async function createUser(request, reply) {
         insertStatement.run(username, slug, avatar, pw_hash);
     }
     const token = await reply.jwtSign({ username: username });
-    return reply.status(200).send({ token, username: username });
+    return reply.status(200).send({ token, username: username, slug: slug });
 }
 
 export async function loginUser(request, reply) {
@@ -107,10 +110,11 @@ export async function loginUser(request, reply) {
     }
 
 
-    const token = await reply.jwtSign({ username: user.username });
-    return reply.status(200).send({ token, username: user.username });
+    const token = await reply.jwtSign({ username: user.username, slug: user.slug });
+    return reply.status(200).send({ token, username: user.username, slug: user.slug });
 }
 
+// TODO : Control what info is given or not
 export async function getUser(request, reply) {
     const { username } = request.params;
     const { db } = request.server;
@@ -136,6 +140,7 @@ export async function modifyUser(request, reply) {
         return reply.status(404).send({ error: 'User not found' });
     }
 
+    // TODO check this absolutely not tested
     const parts = request.parts();
     let avatarPath = null;
     let nickname = null;
@@ -144,9 +149,9 @@ export async function modifyUser(request, reply) {
             // Looking for 'avatar' field
             if (part.fieldname === 'avatar') {
                 const filename = `avatar-${Date.now()}-${part.filename}`;
-                const filepath = path.join(__dirname, 'public', filename);
+                // const filepath = path.join(__dirname, 'public', filename); // Not necessary now because / is served but we will arrange stuff later
                 await part.toFile(filepath);
-                avatarPath = `/public/${filename}`;
+                avatarPath = `${filename}`;
             }
         }
     }
@@ -155,6 +160,55 @@ export async function modifyUser(request, reply) {
         db.prepare('UPDATE users SET avatar = ? WHERE username = ?').run(avatarPath, username);
         return reply.send({ success: true, avatar: avatarPath });
     } // TODO delete old avatar
+}
+
+// TODO = Test me plz + link me to frontend
+export async function modifyAvatar(request, reply) {
+    // TODO check the logic here in checking user auth
+    const username = request.user.slug;
+    const user = request.user; // JWT token
+
+    if (user.username !== username)
+        return reply.code(403).send({ error: "Not authorized to change this avatar" });
+
+    const { db } = request.server;
+
+    const parts = request.parts(); // fastify-multipart
+    for await (const part of parts) {
+        // Check it's a file and it's an avatar
+        if (part.type === 'file' && part.fieldname === 'avatar') {
+            // Path on server
+            const avatarDir = path.join('..', 'public', 'avatars');
+            // If doesn't exist creates it
+            if (!fs.existsSync(avatarDir)) {
+                fs.mkdirSync(avatarDir, { recursive: true });
+            }
+
+            // File name = /pulic/avatars/filename
+            const filePath = path.join(avatarDir, `${username}.jpg`);
+
+            try {
+                await pump(part.file, fs.createWriteStream(filePath));
+                console.log(`Avatar uploaded for user: ${username}`);
+
+                const relativePath = path.join('avatars', `${username}.jpg`);
+
+                // Update field in database
+                db.prepare('UPDATE users SET avatar = ? WHERE username = ?').run(relativePath, username);
+                console.log('Avatar path updated in DB is :' + relativePath);
+
+                // Reply = It worked
+                return reply.send({ avatar: relativePath });
+            }
+            catch (err) {
+                console.log(err);
+                return reply.code(500).send({error: 'Failed upload :' + err.message});
+            }
+
+            // No avatar in request
+            return reply.code(400).send({ error: "No avatar file uploaded" });
+        }
+    }
 }
 
 // export function authenticateUser(username, password) {

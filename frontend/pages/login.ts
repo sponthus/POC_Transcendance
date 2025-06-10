@@ -1,13 +1,24 @@
-import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
 import { renderBanner } from './menu.js';
+import { checkLog } from "../api/check-log.js";
+import { loginUser } from "../api/user.js";
 
-export function getLoginPage() {
+export async function getLoginPage() {
     renderBanner();
 
     const app = document.getElementById('app');
     if (!app)
         return;
+
+    const res = await checkLog();
+    if (res.ok)
+    {
+        app.innerHTML = `
+                <h1></h1>
+                <h1>Already logged in as ${res.user.username}.</h1>
+            `;
+        return ;
+    }
 
     app.innerHTML = `
     <h1></h1>
@@ -27,21 +38,13 @@ export function getLoginPage() {
         const username = formData.get('username') as string;
         const password = formData.get('password') as string;
 
-        // Appel au backend ici
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
-        });
-
-        if (res.ok) {
-            const data = await res.json();
-            localStorage.setItem("token", data.token);
-            state.login(data.username);
-            console.log('token is ' + data.token);
-            navigate('/');
-        } else {
-            alert("Connexion failure");
+        const req = await loginUser(username, password);
+        if (req.ok) {
+            await navigate('/');
+            return ;
+        }
+        else {
+            alert("Connexion failure" + req.error);
         }
     });
 }

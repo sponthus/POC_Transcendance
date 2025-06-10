@@ -19,7 +19,7 @@ export async function renderRoute(path: string) {
         document.getElementById('app')!.innerHTML = `<h1>404 - Page not found</h1>`;
     });
 
-    const savedUser = localStorage.getItem('user');
+    const savedUser = localStorage.getItem('user-info');
     if (savedUser) {
         state.user = JSON.parse(savedUser);
     }

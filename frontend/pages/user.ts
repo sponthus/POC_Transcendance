@@ -1,6 +1,7 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
 import { renderBanner } from './menu.js';
+import {checkLog} from "../api/check-log.js";
 
 function showUserPage(app: HTMLElement, userData: any) {
     app.innerHTML = `
@@ -10,12 +11,13 @@ function showUserPage(app: HTMLElement, userData: any) {
         `;
 }
 
-function changeAvatar(app: HTMLElement, userData: any) {
+// TODO = Factorize plz
+function uploadAvatar(app: HTMLElement, userData: any) {
 
 }
 
 function showUserOwnPage(app: HTMLElement, userData: any) {
-    const avatarSrc = `/public/${userData.avatar}`;
+    const avatarSrc = `/avatars/${userData.avatar}`;
     app.innerHTML = `
             <h1>${userData.username} profile - me</h1>
             <img src="${avatarSrc}" alt="Avatar" width="300" />
@@ -68,8 +70,9 @@ function showUserOwnPage(app: HTMLElement, userData: any) {
             if (!token)
                 return;
 
+            // TODO try me and connect me
             try {
-                const response = await fetch(`/api/user/avatar`, {
+                const response = await fetch(`/api/avatar`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -89,7 +92,7 @@ function showUserOwnPage(app: HTMLElement, userData: any) {
                 const avatarImg = document.getElementById('avatar-img') as HTMLImageElement;
                 if (avatarImg && result.avatar) {
                     // Add timestamp to force image reload (cache busting)
-                    avatarImg.src = `/public/${result.avatar}?t=${Date.now()}`;
+                    avatarImg.src = `${result.avatar}?t=${Date.now()}`;
                 }
                 alert("Avatar updated successfully!");
             } catch (err) {
@@ -112,21 +115,23 @@ export async function getUserPage(usernameInUrl: string) {
         return;
 
     app.innerHTML = `<h1>Loading user page...</h1>`;
-    console.log("Loading user page...");
+    console.log("Loading user page with username = " + usernameInUrl);
 
-    const savedUser = localStorage.getItem("username");
-    const username = savedUser ? JSON.parse(savedUser).username : null;
-    if (!username) {
-        alert('Not logged in : No user username found in localStorage');
-        navigate('/login');
-        return;
+    const res = await checkLog();
+    if (!res.ok)
+    {
+        app.innerHTML = `
+                <h1></h1>
+                <h1>Not logged in, no access allowed</h1>
+            `;
+        return ;
     }
 
+    const slug = res.user.slug;
     const token = localStorage.getItem("token");
-    if (!token)
-        return;
+
     try {
-        const res = await fetch(`/api/user/${username}`, {
+        const res = await fetch(`/api/user/${usernameInUrl}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -144,12 +149,7 @@ export async function getUserPage(usernameInUrl: string) {
 
         const userData = await res.json();
 
-        // Check coherence with local identity
-        if (userData.username !== username) {
-            throw new Error("Incoherent identity detected");
-        }
-
-        const isOwnProfile = username === usernameInUrl;
+        const isOwnProfile = slug === usernameInUrl;
         if (isOwnProfile) {
             showUserOwnPage(app, userData);
         }
