@@ -1,8 +1,8 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
 import { renderBanner } from './menu.js';
-import {checkLog} from "../api/check-log";
-import {startLocalGame} from "../api/game";
+import {checkLog} from "../api/check-log.js";
+import {startLocalGame} from "../api/game.js";
 
 function generateGamePage(app: HTMLElement) {
     // Check user connexion
@@ -24,7 +24,7 @@ function generateGamePage(app: HTMLElement) {
     `;
 
     document.getElementById('local-btn')?.addEventListener('click', () => {
-        navigate('/local'); // TODO : Create /local page
+        navigate('/local');
     });
 }
 

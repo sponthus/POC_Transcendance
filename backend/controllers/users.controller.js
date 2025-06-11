@@ -5,6 +5,8 @@ import path from "path";
 import pump from 'pump';
 import fs from 'fs'; // file system : to write a file
 
+import {__dirname} from "../src/app.js";
+
 const ajv = new Ajv;
 
 // Define the schema for post data
@@ -159,33 +161,38 @@ export async function modifyUser(request, reply) {
     if (avatarPath) {
         db.prepare('UPDATE users SET avatar = ? WHERE username = ?').run(avatarPath, username);
         return reply.send({ success: true, avatar: avatarPath });
-    } // TODO delete old avatar
+    }
 }
 
-// TODO = Test me plz + link me to frontend
 export async function modifyAvatar(request, reply) {
     // TODO check the logic here in checking user auth
     const username = request.user.slug;
     const user = request.user; // JWT token
+
+    console.log("Changing avatar for user = " + username);
 
     if (user.username !== username)
         return reply.code(403).send({ error: "Not authorized to change this avatar" });
 
     const { db } = request.server;
 
+    // TODO = Control file type
     const parts = request.parts(); // fastify-multipart
     for await (const part of parts) {
         // Check it's a file and it's an avatar
         if (part.type === 'file' && part.fieldname === 'avatar') {
             // Path on server
-            const avatarDir = path.join('..', 'public', 'avatars');
+            const avatarDir = path.join(__dirname, '..', 'dist', 'avatars');
             // If doesn't exist creates it
             if (!fs.existsSync(avatarDir)) {
+                console.log("Creating avatarDir " + avatarDir);
                 fs.mkdirSync(avatarDir, { recursive: true });
             }
 
             // File name = /pulic/avatars/filename
             const filePath = path.join(avatarDir, `${username}.jpg`);
+            console.log("file path = " + filePath);
+            // const filePath = `${username}.jpg`;
 
             try {
                 await pump(part.file, fs.createWriteStream(filePath));

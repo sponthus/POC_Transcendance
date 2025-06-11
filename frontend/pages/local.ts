@@ -1,7 +1,7 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
 import { renderBanner } from './menu.js';
-import {checkLog} from "../api/check-log";
+import {checkLog} from "../api/check-log.js";
 
 export async function getLocalGamePage() {
     renderBanner();

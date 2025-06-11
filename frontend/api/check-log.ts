@@ -7,9 +7,14 @@ type Result =
 // GET /me request using the token found in memory, and updates the local infos for user
 // -> Returns ok: true | false, and if ok, user: { username: string; slug: string }
 export async function checkLog(): Promise<Result> {
+    console.log("Checking log...");
     const token = localStorage.getItem("token");
     if (!token)
+    {
+        console.log("No token - disconnected");
+        localStorage.removeItem("user-info");
         return { ok: false};
+    }
 
     const res = await fetch('/api/me', {
         method: 'GET',
@@ -22,10 +27,13 @@ export async function checkLog(): Promise<Result> {
     if (res.ok) {
         const data = await res.json();
         state.login(data.username, data.slug); // Restore user in local state
+        console.log("Log check successful"); // Debug
         return { ok: true, user: { username: data.username, slug: data.slug } };
     } else {
         // Invalid or expired token = Disconnect
         localStorage.removeItem("token");
+        localStorage.removeItem("user-info");
+        console.log("Log check failure");
     }
     return { ok: false };
 }

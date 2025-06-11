@@ -1,7 +1,7 @@
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static"; // Serves files in html, CSS, js, img to fastify, used in SPA for basic application
-import fastifyJwt from "fastify-jwt";
-import fastifyMultipart from "fastify-multipart"; // Allows multipart API requests (ie : images)
+import fastifyJwt from "@fastify/jwt";
+import multipart from "@fastify/multipart"; // Allows multipart API requests (ie : images)
 import { fileURLToPath } from "url"; // Transforms ESM paths to system paths
 import path from 'path'; // utilities for working with file and directory paths
 import env from "../config/env.js";
@@ -10,7 +10,7 @@ import logger from "../config/logger.js";
 import routes from "./routes.js";
 
 const __filename = fileURLToPath(import.meta.url); // This filename, from ESM expression to classic path
-const __dirname = path.dirname(__filename); // Parent folder to this file
+export const __dirname = path.dirname(__filename); // Parent folder to this file
 
 const app = Fastify({
     logger: logger,
@@ -26,7 +26,7 @@ app.register(fastifyStatic, {
 
 app.register(dbConnector);
 
-app.register(fastifyMultipart);
+await app.register(multipart);
 
 app.register(fastifyJwt, {
     secret: env.secret,

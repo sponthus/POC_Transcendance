@@ -2,6 +2,8 @@ import fp from "fastify-plugin";
 import Database from "better-sqlite3";
 import env from "./env.js";
 
+// TODO = REFRESH TOKEN
+
 // Initializes database from a file spec. in env variables, default = ./blog.db
 async function dbConnector(fastify, options) {
     const dbFile = env.dbFile || "./users.db";

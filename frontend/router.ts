@@ -1,17 +1,12 @@
-import { getHomePage } from './pages/home.js';
-import { getLoginPage } from './pages/login.js';
-import { getRegisterPage } from './pages/register.js';
-import { getGamePage } from "./pages/game.js";
-import { getLocalGamePage } from "./pages/local.js";
 import { getUserPage } from "./pages/user.js";
 import { state } from "./ui/state.js";
 
-const routes: Record<string, () => void> = {
-    '/': getHomePage,
-    '/login': getLoginPage,
-    '/register': getRegisterPage,
-    '/game': getGamePage,
-    '/local': getLocalGamePage,
+const routes: Record<string, () => Promise<void>> = {
+    '/': async () => (await import('./pages/home.js')).getHomePage(),
+    '/login': async () => (await import('./pages/login.js')).getLoginPage(),
+    '/register': async () => (await import('./pages/register.js')).getRegisterPage(),
+    '/game': async () => (await import('./pages/game.js')).getGamePage(),
+    '/local': async () => (await import('./pages/local.js')).getLocalGamePage(),
 };
 
 export async function renderRoute(path: string) {

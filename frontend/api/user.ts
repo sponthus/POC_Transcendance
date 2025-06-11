@@ -1,13 +1,30 @@
 import { state } from "../ui/state.js";
-import {navigate} from "../router";
 
-type Result =
-    | { ok: true; token: string, user: { username: string; slug: string } }
-    | { ok: false; error: string }
+// User infos possible to give back
+type UserBasic = {
+    username: string;
+    slug: string;
+};
+type UserFull = UserBasic & {
+    id: number;
+    avatar: string;
+    created_at: string;
+};
+
+// Possible results for request
+type AuthSuccess = { ok: true; token: string; user: UserBasic };
+type AuthFullSuccess = { ok: true; token: string; user: UserFull };
+type AvatarUploadSuccess = { ok: true; avatar: string };
+type Failure = { ok: false; error: string };
+
+// Union of possibilities for the type of answer
+export type LoginResult = AuthSuccess | Failure;
+export type RegisterResult = AuthSuccess | Failure;
+export type GetUserResult = AuthFullSuccess | Failure;
+export type AvatarUploadResult = AvatarUploadSuccess | Failure;
 
 // POST /api/login request to log in with username + login, updates local infos about user
-// -> Returns  ok: true | false, if ok, token: string, user: { username: string; slug: string } | if false, error: string
-export async function loginUser(username: string, password: string): Promise<Result> {
+export async function loginUser(username: string, password: string): Promise<LoginResult> {
     const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -29,8 +46,7 @@ export async function loginUser(username: string, password: string): Promise<Res
 }
 
 // POST /api/user request to register a new user with username + login, updates local infos about user
-// -> Returns  ok: true | false, if ok, token: string, user: { username: string; slug: string } | if false, error: string
-export async function registerUser(username: string, password: string): Promise<Result> {
+export async function registerUser(username: string, password: string): Promise<RegisterResult> {
     const res = await fetch('/api/user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,3 +65,63 @@ export async function registerUser(username: string, password: string): Promise<
         return { ok: false, error: error?.error || "Account creation impossible" };
     }
 }
+
+// GET /api/user/:slug request to get user infos
+export async function getUserInfo(slug: string): Promise<GetUserResult> {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        return { ok: false, error: "No token found" };
+    }
+
+    const res = await fetch(`/api/user/${slug}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    });
+
+    if (res.ok) {
+        console.log("Request for user info accepted");
+        const data = await res.json();
+        return { ok: true, token: data.token, user: {
+            username: data.username,
+            slug: data.slug,
+            id: data.id,
+            avatar: data.avatar,
+            created_at: data.created_at } };
+    }
+    else {
+        const error = await res.json();
+        return { ok: false,
+            error: error?.error || "Info not received from back" };
+    }
+}
+
+// POST /api/user/:slug/avatar to upload a new avatar file to the system
+export async function uploadAvatar(slug: string, formData: FormData): Promise<AvatarUploadResult> {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        return { ok: false, error: "No token found" };
+    }
+
+    const res = await fetch(`/api/user/${slug}/avatar`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: formData,
+    });
+
+    if (res.ok) {
+        console.log("Request for user info accepted");
+        const data = await res.json();
+        return { ok: true, avatar: data.avatar }
+    }
+    else {
+        const error = await res.json();
+        return { ok: false,
+            error: error?.error || "Upload problem" }
+    }
+}
+

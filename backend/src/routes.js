@@ -1,5 +1,5 @@
 import { createUser, getUser, loginUser, modifyUser, modifyAvatar } from "../controllers/users.controller.js";
-import { getGame } from "../controllers/games.controller.js";
+import { getGame } from "../controllers/game.controller.js";
 
 export default async function routes(fastify, options) {
     console.log('Registering routes');
@@ -23,9 +23,9 @@ export default async function routes(fastify, options) {
     fastify.register(
         async function (getRoutes) {
             getRoutes.get('/me',
-                {preHandler: [fastify.authenticate]},
+                {onRequest: [fastify.authenticate]},
                 async (req, reply) => {
-                    // req.log.info({userId: req.user.id}, 'User accessed /me');
+                    req.log.info({userId: req.user.id}, 'User accessed /me');
                     return {
                         username: req.user.username,
                         slug: req.user.slug,
@@ -50,7 +50,7 @@ export default async function routes(fastify, options) {
                 modifyUser);
             putRoutes.put('/user/:username/avatar',
                 {preHandler: [fastify.authenticate]},
-                modifyAvatar); // TODO = Code me
+                modifyAvatar);
         },
         { prefix: "/api" }
     );

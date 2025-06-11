@@ -1,9 +1,11 @@
 import { state } from "../ui/state.js";
 import { navigate } from "../router.js";
 import { renderBanner } from './menu.js';
+import {checkLog} from "../api/check-log.js";
 
 export function getHomePage() {
     renderBanner();
+    checkLog();
     const app = document.getElementById('app');
     if (!app)
         return;
