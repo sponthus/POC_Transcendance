@@ -1,0 +1,131 @@
+import * as Babylon from "@babylonjs/core"
+
+interface BallMesh extends Babylon.Mesh {
+  direction: Babylon.Vector3;
+}
+
+export class BabylonSceneBuilder
+{
+	private _canvas: HTMLCanvasElement;
+
+	private _engine!: Babylon.Engine;
+	private _scene!: Babylon.Scene;
+	private _camera!: Babylon.ArcRotateCamera;
+	private _light!: Babylon.HemisphericLight;
+	private _ground!: Babylon.Mesh;
+	private _wallLeft: Babylon.Mesh;
+	private _wallRight: Babylon.Mesh;
+	private _ball: BallMesh;
+	private _paddle1: Babylon.Mesh;
+	private _paddle2: Babylon.Mesh;
+
+
+	constructor(canvas: HTMLCanvasElement)
+	{
+		this._canvas = canvas;
+
+		this.initializeEngine();
+		this.initializeScene();
+		this.initializeCamera();
+		this.initializeLight();
+		this.initializePlayground();
+		this.initializeBall();
+		this.initializePaddle();
+
+		this.startRendering();
+	}
+
+	private initializeEngine()
+	{
+		this._engine = new Babylon.Engine(this._canvas);
+	}
+
+	private initializeScene()
+	{
+		this._scene = new Babylon.Scene(this._engine);
+	}
+
+	private initializeCamera()
+	{
+		this._camera = new Babylon.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 15, Babylon.Vector3.Zero(), this._scene);
+		this._camera.attachControl(this._canvas, true);
+	}
+
+	private initializeLight()
+	{
+		this._light = new Babylon.HemisphericLight("light", new Babylon.Vector3(1, 1, 0), this._scene);
+		this._light.intensity = 0.7;
+	}
+
+	private initializePlayground()
+	{
+		//sol
+		this._ground = Babylon.MeshBuilder.CreateGround("ground", { width: 10, height: 12 }, this._scene);
+		this._ground.isVisible = false;
+	
+		//mur gauche
+		this._wallLeft = Babylon.MeshBuilder.CreateBox("wallLeft", { width: 0.5, height: 1, depth: 12}, this._scene);
+		this._wallLeft.position.x = -5;
+		//mur droit
+		this._wallRight = Babylon.MeshBuilder.CreateBox("wallRight", { width: 0.5, height: 1, depth: 12}, this._scene);
+		this._wallRight.position.x = 5;
+	}
+
+	private initializeBall()
+	{
+		this._ball = Babylon.MeshBuilder.CreateSphere("ball", { diameter: 0.8}, this._scene) as BallMesh;
+		this._ball.position.y = 0.4;
+		this._ball.direction = new Babylon.Vector3(0.1, 0, 0.5);
+	}
+
+	private initializePaddle()
+	{
+		this._paddle1 = Babylon.MeshBuilder.CreateBox("paddle1", {width: 3, height: 0.5, depth: 0.5}, this._scene);
+		this._paddle1.position.z = -5;
+  		this._paddle1.position.y = 0.25;
+
+		this._paddle2 = Babylon.MeshBuilder.CreateBox("paddle2", {width: 3, height: 0.5, depth: 0.5}, this._scene);
+		this._paddle2.position.z = 5;
+  		this._paddle2.position.y = 0.25;
+	}
+
+	get wallLeft(): Babylon.Mesh
+	{
+		return this._wallLeft;
+	}
+
+	get wallRight(): Babylon.Mesh
+	{
+		return this._wallRight;
+	}
+
+	get ball(): BallMesh
+	{
+		return this._ball;
+	}
+
+	get paddle1(): Babylon.Mesh
+	{
+		return this._paddle1;
+	}
+
+	get paddle2(): Babylon.Mesh
+	{
+		return this._paddle2;
+	}
+
+	get scene(): Babylon.Scene
+	{
+		return this._scene;
+	}
+
+	get engine(): Babylon.Engine
+	{
+		return this._engine;
+	}
+
+	private startRendering()
+	{
+		this._engine.runRenderLoop(() => {this._scene.render();});
+	}
+}
