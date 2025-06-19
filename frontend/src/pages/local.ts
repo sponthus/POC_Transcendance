@@ -21,8 +21,16 @@ export async function getLocalGamePage() {
         return;
 
 
-    app.innerHTML = `<h1>Loading game...</h1>
-                    <canvas id="game"> Game canvas. </canvas>`;
+    app.innerHTML = `<h1>Loading game...</h1>`;
+    // Insert here logic to check which game to join + ws initialization
+
+    // Show game options
+    app.innerHTML = `
+        <h1>Local game</h1>
+        <p>Controls : ⬆️ ⬇️ (not implemented - auto right now) and  🇦 🇩  - Pause : SPACE bar (not implemented)</p>
+        <div id="score"> Score : </div>
+        <canvas id="game"> Game canvas. </canvas>
+    `;
 
     const canvas = document.getElementById('game') as HTMLCanvasElement;
     if (!canvas) {
@@ -31,7 +39,7 @@ export async function getLocalGamePage() {
     }
     resizeCanvas(canvas);
 
-    const game = new PongGame();
+    new PongGame();
     console.log("Pong game created");
 
     // const req = await startLocalGame();
