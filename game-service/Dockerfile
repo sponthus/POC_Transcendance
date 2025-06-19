@@ -1,4 +1,4 @@
-FROM node:20-alpine AS build
+FROM node:20-alpine
 
 COPY    ./config/entrypoint.sh /usr/local/bin/
 RUN		chmod +x /usr/local/bin/entrypoint.sh
@@ -6,6 +6,7 @@ RUN		chmod +x /usr/local/bin/entrypoint.sh
 RUN mkdir app
 WORKDIR /app
 
-ENTRYPOINT ["entrypoint.sh"]
+EXPOSE 3002
+EXPOSE 4000
 
-#In prod, becomes the 1st step of a multistep docker with nginx
+ENTRYPOINT ["entrypoint.sh"]

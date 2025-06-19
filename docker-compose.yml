@@ -1,29 +1,101 @@
+name: pong
+
 services:
+
+  api-gateway:
+    container_name: api-gateway
+    build: ./api-gateway
+    depends_on:
+      - user-service
+      - game-service
+    volumes:
+      - ./api-gateway:/app
+      - ./config:/app/config
+    networks:
+      - pongnet
+    restart: always
+
+  user-service:
+    container_name: user-service
+    build: ./user-service
+    volumes:
+      - ./user-service:/app # Dev only,prod = pas de volume, seulement copie des fichiers.
+      - ./config:/app/config
+    networks:
+      - pongnet
+    restart: always
+
+  game-service:
+    container_name: game-service
+    build: ./game-service
+    volumes:
+      - ./game-service:/app # Dev only,prod = pas de volume, seulement copie des fichiers.
+      - ./config:/app/config
+    networks:
+      - pongnet
+    restart: always
+
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    ports:
+      - "8080:80"
+      - "4443:443"
+    depends_on:
+      - api-gateway
+      - frontend
+      - upload-service
+    volumes:
+      - frontend_dist:/usr/share/nginx/html # necessary in prod
+      - avatar_uploads:/app/uploads:ro #share with upload service
+    networks:
+      - pongnet
+    restart: always
 
   frontend:
     container_name: frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    depends_on:
+      - api-gateway
+    ports:
+      - "5173:5173" # Dev only for vite server, in prod = build, nginx serves it
     volumes:
       - ./frontend:/app # Dev only,prod = pas de volume, seulement copie des fichiers.
+      - frontend_dist:/app/dist # Necessary in prod
     networks:
       - pongnet
 
-  backend:
-    container_name: backend-api
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+  upload-service:
+    build: ./upload-service
+    container_name: upload-service
     volumes:
-      - ./backend:/app  # Dev only,prod = pas de volume, seulement copie des fichiers.
-      - ./frontend/dist:/app/dist  # Dev only,prod = pas de volume, seulement copie des fichiers.
+      - ./upload-service:/app # Dev only,prod = pas de volume, seulement copie des fichiers.
+      - avatar_uploads:/app/uploads # share with nginx
+      - ./config:/app/config
     depends_on:
+      - api-gateway
       - frontend
-    ports:
-      - "3000:3000"
     networks:
       - pongnet
+    restart: always
+
+## Future auth service
+#  backend:
+#    container_name: backend-api
+#    build:
+#      context: ./backend
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ./backend:/app  # Dev only,prod = pas de volume, seulement copie des fichiers.
+#      - ./frontend/dist:/app/dist  # Dev only,prod = pas de volume, seulement copie des fichiers.
+#    depends_on:
+#      - frontend
+#    ports:
+#      - "3000:3000"
+#    networks:
+#      - pongnet
 
 #  nginx:
 #    container_name: nginx
@@ -43,6 +115,26 @@ services:
 #    depends_on:
 #      - frontend
 #      - backend
+#
+#  game:
+#    container_name: game-api
+#    build:
+#      context: ./game
+#      dockerfile: Dockerfile
+## TO DETERMINE
+##    volumes:
+##      - ./backend:/app  # Dev only,prod = pas de volume, seulement copie des fichiers.
+##      - ./frontend/dist:/app/dist  # Dev only,prod = pas de volume, seulement copie des fichiers.
+#    depends_on:
+#      - frontend
+#    ports:
+#      - "3000:3000"
+#    networks:
+#      - pongnet
+
+volumes:
+  frontend_dist:
+  avatar_uploads:
 
 networks:
   pongnet:

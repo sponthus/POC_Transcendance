@@ -1,0 +1,53 @@
+import { createUser, getUser, loginUser, modifyUser, modifyAvatar } from "./users.controller.js";
+
+// TODO implement routes
+export default async function routes(fastify, options) {
+    console.log('Registering routes');
+
+    // Register post routes
+    fastify.register(
+        async function (postRoutes) {
+            // postRoutes.addHook('preHandler', async (request, reply) => {
+            //     console.log('preHandler called for:', request.url);
+            // });
+
+            postRoutes.post("/",
+                createUser);
+            postRoutes.post("/login",
+                loginUser);
+        }
+        // { prefix: "/api" }
+    );
+
+    // Register get routes
+    fastify.register(
+        async function (getRoutes) {
+            getRoutes.get('/me',
+                {onRequest: [fastify.authenticate]},
+                async (req, reply) => {
+                    req.log.info({userId: req.user.id}, 'User accessed /me');
+                    return {
+                        username: req.user.username,
+                        slug: req.user.slug,
+                    };
+                });
+
+            getRoutes.get('/:username',
+                {preHandler: [fastify.authenticate]},
+                getUser);
+        }
+        // { prefix: "/api" }
+    );
+
+    fastify.register(
+        async function (putRoutes) {
+            putRoutes.put('/:username',
+                {preHandler: [fastify.authenticate]},
+                modifyUser);
+            putRoutes.put('/:username/avatar',
+                {preHandler: [fastify.authenticate]},
+                modifyAvatar);
+        }
+        // { prefix: "/api" }
+    );
+}
