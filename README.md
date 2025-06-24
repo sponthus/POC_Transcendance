@@ -17,14 +17,16 @@
 ## :memo: Status
 <p align="center">
   <strong>Ongoing :</strong> <br>
-  :star: Learn machine learning basics to create an IA opponent trained by a neural network<br>
-  :star: Allow basic user authentification + fix scores<br>
-  :star: Implement a database docker and REST API to store game history
+  :star: Confirm global architecture of the project
+  :star: Complete game basics to allow work about IA opponent<br>
+  :star: Complete user authentification (2 tokens) <br>
+  :star: Implement needed databases and REST API
 </p>
 
 ## :orange_book: Features
 + Basic SPA website with router and back/forward navigation working
-+ Basic pong game (local)
++ Basic 3D pong game (local)
++ Basic authentication, 1 token for now
 + Using `docker-compose` to launch the project with micro-services architecture :<br>
      - Nginx
      - Vite server for frontend (temp)
