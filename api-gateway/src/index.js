@@ -56,19 +56,25 @@ app.decorate("authenticate", async function (request, reply) {
 app.register(proxy, {
     upstream: 'http://user-service:3001',
     prefix: '/api/user',
-    rewritePrefix: '/'
+    rewritePrefix: '/',
+    body: true,
+    http2: false // Security
 });
 
 app.register(proxy, {
     upstream: 'http://game-service:3002',
     prefix: '/api/games',
-    rewritePrefix: '/'
+    rewritePrefix: '/',
+    body: true,
+    http2: false
 });
 
 app.register(proxy, {
     upstream: 'http://upload-service:3003',
     prefix: '/api/avatars',
-    rewritePrefix: '/'
+    rewritePrefix: '/',
+    body: true,
+    http2: false,
 });
 
 // await app.register(routes);

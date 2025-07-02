@@ -12,22 +12,25 @@ export async function uploadAvatar(request, reply) {
     if (user.slug !== slug)
         return reply.code(403).send({ error: "Not authorized to change this avatar" });
 
+    // Path of actual dir
     console.log("dirname = " + __dirname);
+    // Path on server
+    const avatarDir = path.join(__dirname, '..', 'uploads');
+    console.log("final dirname = " + avatarDir);
+    // If it doesn't exist creates it
+    if (!fs.existsSync(avatarDir)) {
+        console.log("Creating avatarDir " + avatarDir);
+        fs.mkdirSync(avatarDir, { recursive: true });
+    }
+
     // TODO = Control file type
     const parts = await request.parts(); // fastify-multipart
-    console.log("here is ok");
+    console.log("Parts are = ", parts);
+
     for await (const part of parts) {
-        console.log("there too");
+        console.log(`me here`);
         // Check it's a file and it's an avatar
         if (part.type === 'file') {
-            // Path on server
-            const avatarDir = path.join(__dirname, '..', 'uploads');
-            // If it doesn't exist creates it
-            if (!fs.existsSync(avatarDir)) {
-                console.log("Creating avatarDir " + avatarDir);
-                fs.mkdirSync(avatarDir, { recursive: true });
-            }
-
             // File name = slug.jpg
             const fileName = `${slug}.jpg`;
             // File path = /uploads/filename

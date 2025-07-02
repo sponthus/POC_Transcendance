@@ -30,6 +30,7 @@ fastify.register(fastifyJwt, {
 });
 
 await fastify.register(multipart);
+console.log(`multipart loaded`);
 
 // TODO implement routes
 await fastify.register(routes);

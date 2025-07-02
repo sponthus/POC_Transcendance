@@ -13,11 +13,11 @@ export class BabylonSceneBuilder
 	private _camera!: Babylon.ArcRotateCamera;
 	private _light!: Babylon.HemisphericLight;
 	private _ground!: Babylon.Mesh;
-	private _wallLeft: Babylon.Mesh;
-	private _wallRight: Babylon.Mesh;
-	private _ball: BallMesh;
-	private _paddle1: Babylon.Mesh;
-	private _paddle2: Babylon.Mesh;
+	private _wallLeft!: Babylon.Mesh;
+	private _wallRight!: Babylon.Mesh;
+	private _ball!: BallMesh;
+	private _paddle1!: Babylon.Mesh;
+	private _paddle2!: Babylon.Mesh;
 
 
 	constructor(canvas: HTMLCanvasElement)

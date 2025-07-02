@@ -21,7 +21,7 @@ fi
 #   cp -r public/avatars dist/avatars
 #fi
 
-cp assets/favicon.ico dist/favicon.ico
+cp public/favicon.ico dist/favicon.ico
 echo copy done
 
 exec npm run dev
