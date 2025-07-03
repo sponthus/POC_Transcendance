@@ -38,9 +38,19 @@ export class LocalGamePage extends BasePage {
             return;
         }
         this.resizeCanvas(canvas);
-
-        new PongGame();
+	
+	// a verifier car risque de pb await
+        const pongGameApp = new PongGame();
+	await pongGameApp.start();
         console.log("Pong game created");
+//	--------------------------------------
+//	window.addEventListener("load", () => {
+//		const app = new PongGame();
+//		(async () => {
+//			await app.start();
+//	})();
+//	---------------------------------------
+})
     }
 
     // TODO = Add this in a listener of resizing ?
