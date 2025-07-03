@@ -38,7 +38,7 @@ const app = Fastify({
 
 console.log('Parameters for app are being set'); // debug
 
-await app.register(multipart);
+// await app.register(multipart);
 
 app.register(fastifyJwt, {
     secret: env.secret,
@@ -73,7 +73,6 @@ app.register(proxy, {
     upstream: 'http://upload-service:3003',
     prefix: '/api/avatars',
     rewritePrefix: '/',
-    body: true,
     http2: false,
 });
 

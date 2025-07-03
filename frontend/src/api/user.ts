@@ -98,3 +98,33 @@ export async function getUserInfo(slug: string): Promise<GetUserResult> {
     }
 }
 
+// PUT /api/user/:slug request to change avatar path
+export async function modifyUserInfo(slug: string, avatar: string): Promise<AvatarUploadResult> {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        return { ok: false, error: "No token found" };
+    }
+
+    const res = await fetch(`/api/user/${slug}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ avatar }),
+    });
+
+    if (res.ok) {
+        console.log("Request for avatar path change accepted");
+        const data = await res.json();
+        return {
+            ok: true, avatar: data.avatar
+        };
+    }
+    else {
+        const error = await res.json();
+        return { ok: false,
+            error: error?.error || "Info not received from back" };
+    }
+}
+

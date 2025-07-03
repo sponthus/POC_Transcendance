@@ -1,6 +1,6 @@
 import { navigate } from '../router.js';
 import { checkLog } from "../api/check-log.js";
-import { getUserInfo } from "../api/user.js";
+import {getUserInfo, modifyUserInfo} from "../api/user.js";
 import { uploadAvatar } from "../api/avatar.js";
 import { BasePage } from "./BasePage.js";
 
@@ -62,10 +62,11 @@ export class UserPage extends BasePage {
 
     async showUserOwnPage(userData: any) {
         console.log(`show user own page`);
-        const avatarSrc = `/uploads/${userData.avatar}`;
+        const avatarSrc = userData.avatar;
+        console.log(`looking for avatar at ${avatarSrc}`);
         this.app.innerHTML = `
             <h1>${userData.username} profile - me</h1>
-            <img src="${avatarSrc}" alt="Avatar" width="300" />
+            <img src="https://localhost:4443/uploads/${avatarSrc}" alt="Avatar" width="300" />
             <div> ------ </div>
             <div id="avatar-action"><button id="edit-avatar-btn">Change avatar</button></div>
             <p>User slug : <strong>${userData.slug}</strong></p>
@@ -120,11 +121,19 @@ export class UserPage extends BasePage {
             const formData = new FormData();
             formData.append('avatar', file);
             console.log(`sending file: ${file}`);
+
+            // Makes 2 requests : upload to upload service + change avatar in user db
             const req = await uploadAvatar(userData.slug, formData);
             if (req.ok) {
                 alert("Avatar updated successfully!");
-                await navigate(`/user/${userData.slug}`);
-                return ;
+                const pathReq = await modifyUserInfo(userData.slug, req.avatar);
+                if (pathReq.ok) {
+                    await navigate(`/user/${userData.slug}`);
+                    return ;
+                }
+                else {
+                    alert("Error while uploading avatar path in db" + (pathReq.error || "Unknown error"));
+                }
             }
             else {
                 alert("Upload failed: " + (req.error || "Unknown error"));
@@ -133,44 +142,3 @@ export class UserPage extends BasePage {
     }
 
 }
-
-// export async function getUserPage(slug: string) {
-//     console.log('getUserPage', slug);
-//     renderBanner();
-//     const app = document.getElementById('app');
-//     if (!app)
-//         return;
-//     app.innerHTML = `<h1>Loading user page...</h1>`;
-//     console.log("Loading user page with username = " + slug);
-//
-//     const res = await checkLog();
-//     if (!res.ok) {
-//         app.innerHTML = `
-//                 <h1></h1>
-//                 <h1>Not logged in, no access allowed</h1>
-//             `;
-//         return;
-//     }
-//     const connectedUser = res.user.slug;
-//
-//     const req = await getUserInfo(slug);
-//     if (req.ok) {
-//         const userData = req.user;
-//         const isOwnProfile = slug === connectedUser;
-//         if (isOwnProfile) {
-//             showUserOwnPage(app, userData);
-//         } else {
-//             showUserPage(app, userData);
-//         }
-//     }
-//     else {
-//         // console.error(userData.error);
-//         app.innerHTML = `
-//             <h1>Error while loading profile</h1>
-//             <button id="retry">Try again</button>
-//         `;
-//         document.getElementById('retry')?.addEventListener('click', () => {
-//             getUserPage(slug);
-//         });
-//     }
-// }

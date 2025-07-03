@@ -14,6 +14,9 @@ const fastify = Fastify({
     logger: logger,
 });
 
+await fastify.register(multipart);
+console.log(`multipart loaded`);
+
 console.log('Parameters for app are being set'); // debug
 
 fastify.decorate("authenticate", async function (request, reply) {
@@ -28,9 +31,6 @@ fastify.decorate("authenticate", async function (request, reply) {
 fastify.register(fastifyJwt, {
     secret: env.secret,
 });
-
-await fastify.register(multipart);
-console.log(`multipart loaded`);
 
 // TODO implement routes
 await fastify.register(routes);

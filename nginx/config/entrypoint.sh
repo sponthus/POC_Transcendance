@@ -33,7 +33,7 @@ fi
 # but he is the main process and should stay front otherwise the container would stop
 # -g : Allow ability to give global directions in command lines, taking over nginx.conf
 
-chmod -R 755 /app/uploads
+#chmod -R 755 /app/uploads
 
 echo "Launching nginx"
 

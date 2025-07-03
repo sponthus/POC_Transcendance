@@ -1,12 +1,18 @@
 import path from "path";
 import fs from "fs";
 import {__dirname} from "./index.js";
+import pump from "pump";
 
 // TODO = Fix me please I do not work
 export async function uploadAvatar(request, reply) {
     const slug = request.user.slug;
     const user = request.user; // JWT token
+    const { db } = request.server;
 
+    if (!request.isMultipart()) {
+        console.log("Request not multipart");
+        return reply.code(400).send({ error: 'Expected multipart/form-data' });
+    }
     console.log("Uploading avatar for user = " + slug);
 
     if (user.slug !== slug)
@@ -36,14 +42,10 @@ export async function uploadAvatar(request, reply) {
             // File path = /uploads/filename
             const filePath = path.join(avatarDir, fileName);
             console.log("file path resulting = " + filePath);
-
+            // const storedFilePath = path.join('uploads', fileName);
             try {
                 await pump(part.file, fs.createWriteStream(filePath));
-                console.log(`Avatar uploaded for user: ${username}`);
-
-                // Update field in database
-                db.prepare('UPDATE users SET avatar = ? WHERE username = ?').run(fileName, username);
-                console.log('Avatar path updated in DB is :' + fileName);
+                console.log(`Avatar uploaded for user: ${slug}`);
 
                 // Reply = It worked
                 return reply.send({ avatar: fileName });

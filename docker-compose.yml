@@ -47,7 +47,7 @@ services:
       - upload-service
     volumes:
       - frontend_dist:/usr/share/nginx/html # necessary in prod
-      - avatar_uploads:/app/uploads:ro #share with upload service
+      - avatar_uploads:/app/uploads #share with upload service
     networks:
       - pongnet
     restart: always

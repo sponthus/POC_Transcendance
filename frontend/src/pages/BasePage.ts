@@ -24,7 +24,7 @@ export abstract class BasePage {
     // Mandatory : Implement this in pages
     abstract render(): Promise<void>;
 
-    protected async renderBanner(): void {
+    protected async renderBanner(): Promise<void> {
        renderBaseBanner(this.banner);
 
         if (state.isLoggedIn()) {

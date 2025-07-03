@@ -146,24 +146,15 @@ export async function modifyUser(request, reply) {
         return reply.status(404).send({ error: 'User not found' });
     }
 
-    // TODO check this absolutely not tested
-    const parts = request.parts();
     let avatarPath = null;
     let nickname = null;
-    for await (const part of parts) {
-        if (part.file) {
-            // Looking for 'avatar' field
-            if (part.fieldname === 'avatar') {
-                const filename = `avatar-${Date.now()}-${part.filename}`;
-                // const filepath = path.join(__dirname, 'public', filename); // Not necessary now because / is served but we will arrange stuff later
-                await part.toFile(filepath);
-                avatarPath = `${filename}`;
-            }
-        }
-    }
 
+    if (request.body.avatar) {
+        avatarPath = request.body.avatar;
+    }
     if (avatarPath) {
         db.prepare('UPDATE users SET avatar = ? WHERE username = ?').run(avatarPath, username);
+        console.log("path for avatar has been updated with " + avatarPath);
         return reply.send({ success: true, avatar: avatarPath });
     }
 }
@@ -171,8 +162,6 @@ export async function modifyUser(request, reply) {
 export async function modifyAvatar(request, reply) {
     const user = request.user; // JWT token data
     const { username, slug } = user;
-
-    // TODO = path in request
 
     // TODO = Admin rights
     if (request.user.slug !== slug)
