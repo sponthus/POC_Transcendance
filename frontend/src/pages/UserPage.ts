@@ -1,6 +1,6 @@
 import { navigate } from '../router.js';
 import { checkLog } from "../api/check-log.js";
-import {getUserInfo, modifyUserInfo} from "../api/user.js";
+import { getUserInfo, modifyUserAvatar, modifyUserInfo } from "../api/user.js";
 import { uploadAvatar } from "../api/avatar.js";
 import { BasePage } from "./BasePage.js";
 
@@ -14,7 +14,7 @@ export class UserPage extends BasePage {
     }
 
     async render(): Promise<void> {
-        this.renderBanner();
+        await this.renderBanner();
         console.log('getUserPage', this.slug);
 
         this.app.innerHTML = `<h1>Loading user page...</h1>`;
@@ -33,6 +33,7 @@ export class UserPage extends BasePage {
         const req = await getUserInfo(this.slug);
         if (req.ok) {
             const userData = req.user;
+            console.log(`user data = ` + JSON.stringify(userData));
             const isOwnProfile = this.slug === connectedUser;
             if (isOwnProfile) {
                 await this.showUserOwnPage(userData);
@@ -126,7 +127,7 @@ export class UserPage extends BasePage {
             const req = await uploadAvatar(userData.slug, formData);
             if (req.ok) {
                 alert("Avatar updated successfully!");
-                const pathReq = await modifyUserInfo(userData.slug, req.avatar);
+                const pathReq = await modifyUserAvatar(userData.slug, req.avatar);
                 if (pathReq.ok) {
                     await navigate(`/user/${userData.slug}`);
                     return ;

@@ -3,12 +3,12 @@ import fs from "fs";
 import {__dirname} from "./index.js";
 import pump from "pump";
 
-// TODO = Fix me please I do not work
+// TODO : Check stuff on the file : real img file ? size ?
 export async function uploadAvatar(request, reply) {
-    const slug = request.user.slug;
+    const { slug } = request.params;
     const user = request.user; // JWT token
-    const { db } = request.server;
 
+    // Check if there is a file
     if (!request.isMultipart()) {
         console.log("Request not multipart");
         return reply.code(400).send({ error: 'Expected multipart/form-data' });
@@ -18,9 +18,9 @@ export async function uploadAvatar(request, reply) {
     if (user.slug !== slug)
         return reply.code(403).send({ error: "Not authorized to change this avatar" });
 
-    // Path of actual dir
+    // Path of actual dir on the computer
     console.log("dirname = " + __dirname);
-    // Path on server
+    // Path on server to find the upload
     const avatarDir = path.join(__dirname, '..', 'uploads');
     console.log("final dirname = " + avatarDir);
     // If it doesn't exist creates it
@@ -29,7 +29,6 @@ export async function uploadAvatar(request, reply) {
         fs.mkdirSync(avatarDir, { recursive: true });
     }
 
-    // TODO = Control file type
     const parts = await request.parts(); // fastify-multipart
     console.log("Parts are = ", parts);
 

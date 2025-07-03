@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 // For schema
 const ajv = new Ajv;
 
-// Define the schema for post data
+// Define the schema for post data (passwords), in Regex format
 const postSchema = {
     type: "object",
     properties: {
@@ -29,24 +29,23 @@ const postSchema = {
 // Compiles validation scheme into a validation function
 const validatePost = ajv.compile(postSchema);
 
-// For password hash
+// For password hash = 10 rounds
 const saltRounds = 10;
 
 async function generateToken(reply, username, slug) {
     return await reply.jwtSign({username, slug}) ;
 }
 
+// Generates a unique slug corresponding to the Username entered
 function generateUniqueSlug(baseSlug, db) {
     let slug = baseSlug;
     let counter = 1;
 
     const dbFindings = db.prepare("SELECT COUNT(*) AS count FROM users WHERE slug = ?");
-
     while (dbFindings.get(slug).count > 0) {
         slug = `${baseSlug}-${counter}`;
         counter++;
     }
-
     return slug;
 }
 
@@ -61,7 +60,7 @@ export async function createUser(request, reply) {
             details: validatePost.errors,
         });
     }
-    if (username == "default")
+    if (username === "default")
         return reply.status(400).send({
             error: "Username is not allowed to be \'Default\'",
         });
@@ -120,68 +119,71 @@ export async function loginUser(request, reply) {
     return reply.status(200).send({ token, username: user.username, slug: user.slug });
 }
 
-// TODO : Control what info is given or not
+// TODO : Control what info is given or not ? For now not necessary
 export async function getUser(request, reply) {
-    const { username } = request.params;
+    const { slug } = request.params; // gets :slug in the request
     const { db } = request.server;
 
-    console.log("Trying to find user " + username);
-    const user = db.prepare('SELECT username, slug, avatar, id, created_at FROM users WHERE username = ?').get(username);
+    console.log("Trying to find user with slug " + slug);
+    const user = db.prepare('SELECT username, slug, avatar, id, created_at FROM users WHERE slug = ?').get(slug);
+    if (!user) {
+        return reply.status(404).send({ error: 'User not found' });
+    }
+    return reply.send(user);
+}
 
+// TODO: NOT TESTED because no corresponding ui in frontend
+export async function modifyUser(request, reply) {
+    const initialUsername = request.user.username;
+    const { slug } = request.params;
+    const { db } = request.server;
+
+    console.log("Trying to find user " + initialUsername);
+    const user = db.prepare('SELECT username, slug, id, created_at FROM users WHERE username = ?').get(initialUsername);
     if (!user) {
         return reply.status(404).send({ error: 'User not found' });
     }
 
-    return reply.send(user);
+    let newUsername = null;
+    if (request.body.username && request.body.username.length > 0) {
+        newUsername = request.body.username;
+    }
+    if (newUsername) {
+        const alreadyExistingUser = db.prepare('SELECT username, slug, avatar, id, created_at FROM users WHERE username = ?').get(newUsername);
+        if (alreadyExistingUser) {
+            return reply.status(401).send({ error: "Username already exists"});
+        }
+        db.prepare('UPDATE users SET username = ? WHERE slug = ?').run(newUsername, slug);
+        console.log("Username for" + initialUsername + " has been updated with " + newUsername);
+        // TODO = Check JWT token if a modification has been done?
+        return reply.status(200).send({ user: { newUsername, slug } });
+    }
+    // else if () // If other modifications are possible
+    else {
+        return reply.status(400).send({ error: "No modifications found"});
+    }
 }
 
-export async function modifyUser(request, reply) {
-    const username = request.user.username;
+export async function modifyAvatar(request, reply) {
+    const { slug } = request.params;
     const { db } = request.server;
 
-    console.log("Trying to find user " + username);
-    const user = db.prepare('SELECT username, slug, avatar, id, created_at FROM users WHERE username = ?').get(username);
-
+    console.log("Trying to find user with slug" + slug);
+    const user = db.prepare('SELECT username, slug, avatar, id, created_at FROM users WHERE slug = ?').get(slug);
     if (!user) {
         return reply.status(404).send({ error: 'User not found' });
     }
 
     let avatarPath = null;
-    let nickname = null;
-
+    // TODO = Check if the file at this path is available
     if (request.body.avatar) {
         avatarPath = request.body.avatar;
     }
     if (avatarPath) {
-        db.prepare('UPDATE users SET avatar = ? WHERE username = ?').run(avatarPath, username);
-        console.log("path for avatar has been updated with " + avatarPath);
-        return reply.send({ success: true, avatar: avatarPath });
-    }
-}
-
-export async function modifyAvatar(request, reply) {
-    const user = request.user; // JWT token data
-    const { username, slug } = user;
-
-    // TODO = Admin rights
-    if (request.user.slug !== slug)
-        return reply.code(403).send({error: 'Change forbidden'});
-
-    console.log("Changing avatar for user = " + username);
-    const avatarPath = `${slug}.jpg`;
-    // TODO = Test file presence
-
-    const { db } = request.server;
-
-    try {
-        // Update field in database
         db.prepare('UPDATE users SET avatar = ? WHERE slug = ?').run(avatarPath, slug);
-        console.log(`Avatar path updated in DB for ${slug} is :` + avatarPath);
-
-        return reply.send({ avatar: avatarPath });
+        console.log("path for avatar has been updated with " + avatarPath);
+        return reply.status(200).send({ avatarPath });
     }
-    catch (err) {
-        console.log(err);
-        return reply.code(500).send({error: 'Failed update : ' + err.message});
-    }
+    else
+        return reply.status(400).send({ error: "No avatar found" });
 }

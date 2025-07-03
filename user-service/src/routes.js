@@ -21,6 +21,7 @@ export default async function routes(fastify, options) {
 
     // Register get routes
     fastify.register(
+        // TODO : Function probably not working, weird stuff; when you delete DB the request still says OK ...
         async function (getRoutes) {
             getRoutes.get('/me',
                 {onRequest: [fastify.authenticate]},
@@ -32,7 +33,7 @@ export default async function routes(fastify, options) {
                     };
                 });
 
-            getRoutes.get('/:username',
+            getRoutes.get('/:slug',
                 {preHandler: [fastify.authenticate]},
                 getUser);
         }
@@ -41,10 +42,10 @@ export default async function routes(fastify, options) {
 
     fastify.register(
         async function (putRoutes) {
-            putRoutes.put('/:username',
+            putRoutes.put('/:slug',
                 {preHandler: [fastify.authenticate]},
                 modifyUser);
-            putRoutes.put('/:username/avatar',
+            putRoutes.put('/:slug/avatar',
                 {preHandler: [fastify.authenticate]},
                 modifyAvatar);
         }
