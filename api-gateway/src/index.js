@@ -18,9 +18,7 @@
 // });
 
 import Fastify from "fastify";
-// import fastifyStatic from "@fastify/static"; // Serves files in html, CSS, js, img to fastify, used in SPA for basic application
 import fastifyJwt from "@fastify/jwt";
-import multipart from "@fastify/multipart"; // Allows multipart API requests (ie : images)
 import proxy from "@fastify/http-proxy";
 import { fileURLToPath } from "url"; // Transforms ESM paths to system paths
 import path from 'path'; // utilities for working with file and directory paths
@@ -38,7 +36,6 @@ const app = Fastify({
 
 console.log('Parameters for app are being set'); // debug
 
-// await app.register(multipart);
 
 app.register(fastifyJwt, {
     secret: env.secret,

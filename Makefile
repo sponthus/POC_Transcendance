@@ -4,7 +4,20 @@ IMAGES =
 
 CONTAINER =
 
-# VOLUMES =
+NGINX_DIR = nginx
+FRONTEND_DIR = frontend
+USERS_DIR = user-service
+UPLOAD_DIR = upload-service
+GAMES_DIR = game-service
+API_DIR = api-gateway
+
+USERS_DB_NAME = users.db
+GAMES_DB_NAME = games.db
+USERS_DB = $(USERS_DIR)/$(USERS_DB_NAME)
+GAMES_DB = $(GAMES_DIR)/$(GAMES_DB_NAME)
+
+DB = $(USERS_DB) \
+    $(GAMES_DB)
 
 ENV = .env
 
@@ -29,9 +42,9 @@ down:
 ps:
 	docker compose -f $(COMPOSE_FILE) ps
 
-clean:
+clean: clean-db clean-modules
 	docker compose -f $(COMPOSE_FILE) down --rmi all -v --remove-orphans
-#
+
 # manual_clean: clean_network
 #
 # clean_containers:
@@ -102,4 +115,21 @@ subject:
 	docker volume rm $$(docker volume ls -q)
 	docker network rm $$(docker network ls -q)
 
-.PHONY: all re clean fclean down up subject env
+clean-db:
+	@rm -f $(DB)
+	@echo " ✔ DB deleted";
+
+clean-modules:
+	@rm -rf $(FRONTEND_DIR)/node_modules \
+		$(USERS_DIR)/node_modules \
+		$(UPLOAD_DIR)/node_modules \
+		$(GAMES_DIR)/node_modules \
+		$(API_DIR)/node_modules
+	@rm -f $(FRONTEND_DIR)/package-lock.json \
+    	$(USERS_DIR)/package-lock.json \
+    	$(UPLOAD_DIR)/package-lock.json \
+    	$(GAMES_DIR)/package-lock.json \
+    	$(API_DIR)/package-lock.json
+	@echo " ✔ Node modules deleted";
+
+.PHONY: all re clean fclean down up subject env clean-modules clean-db

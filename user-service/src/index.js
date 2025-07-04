@@ -1,5 +1,4 @@
 import Fastify from "fastify";
-import multipart from "@fastify/multipart"; // Allows multipart API requests (ie : images)
 import fastifyJwt from '@fastify/jwt';
 import { fileURLToPath } from "url"; // Transforms ESM paths to system paths
 import path from 'path'; // utilities for working with file and directory paths
@@ -31,8 +30,6 @@ fastify.register(fastifyJwt, {
 });
 
 fastify.register(dbConnector);
-
-await fastify.register(multipart);
 
 // TODO implement routes
 await fastify.register(routes);

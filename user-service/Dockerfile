@@ -5,8 +5,6 @@ RUN		chmod +x /usr/local/bin/entrypoint.sh
 
 RUN mkdir app
 WORKDIR /app
-#COPY ./src/index.js ./
-#RUN npm install fastify @fastify/http-proxy
 
 EXPOSE 3001
 
