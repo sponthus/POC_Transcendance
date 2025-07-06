@@ -39,7 +39,8 @@ export class LocalGamePage extends BasePage {
         }
         this.resizeCanvas(canvas);
 
-        new PongGame();
+        const pongGameApp = new PongGame();
+        await pongGameApp.start();
         console.log("Pong game created");
     }
 
