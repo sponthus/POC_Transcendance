@@ -1,40 +1,11 @@
 import { state } from "./ui/state.js";
-import { BasePage } from './pages/BasePage.js';
+import {App} from "./pages/main.js"
+import { BasePage } from "./pages/BasePage.js";
+import { LoginPage } from "./pages/LoginPage.js";
+import { RegisterPage } from "./pages/RegisterPage.js";
 import { HomePage } from './pages/HomePage.js';
-import { LoginPage } from './pages/LoginPage.js';
-import { RegisterPage } from './pages/RegisterPage.js';
-import { LocalGamePage } from './pages/LocalGamePage.js';
 
-// Typed by abstraction : needs to inherit from BasePage
 let currentPage: BasePage | null = null;
-
-// const routes: Record<string, () => Promise<void>> = {
-//     '/': async () => (await import('./pages/home.js')).getHomePage(),
-//     '/login': async () => (await import('./pages/login.js')).getLoginPage(),
-//     '/register': async () => (await import('./pages/register.js')).getRegisterPage(),
-//     '/game': async () => (await import('./pages/game.js')).getGamePage(),
-//     '/local': async () => (await import('./pages/local.js')).getLocalGamePage(),
-// };
-
-// export async function renderRoute(path: string) {
-//     const view = routes[path] || (() => {
-//         document.getElementById('app')!.innerHTML = `<h1>404 - Page not found</h1>`;
-//     });
-//
-//     const savedUser = localStorage.getItem('user-info');
-//     if (savedUser) {
-//         state.user = JSON.parse(savedUser);
-//     }
-//
-//     // Dynamic routes : ie user/me
-//     if (path.startsWith('/user/')) {
-//         const username = path.slice('/user/'.length);
-//         await getUserPage(username);
-//         return;
-//     }
-//
-//     view();
-// }
 
 export async function renderRoute(path: string) {
     currentPage?.destroy();
@@ -43,14 +14,14 @@ export async function renderRoute(path: string) {
     if (path.startsWith('/user/')) {
         const username = path.slice('/user/'.length);
         const { UserPage } = await import('./pages/UserPage');
-        currentPage = new UserPage(username);
+		currentPage = new UserPage("username");
     }
     else {
         // Static routes
-        switch (path) {
-            case '/':
-                currentPage = new HomePage();
-                break;
+	switch (path) {
+	    	case '/':
+			currentPage = new HomePage();
+				break;
             case '/login':
                 currentPage = new LoginPage();
                 break;
@@ -58,14 +29,7 @@ export async function renderRoute(path: string) {
                 currentPage = new RegisterPage();
                 break;
             case '/game':
-                const { GamePage } = await import('./pages/GamePage.js');
-                currentPage = new GamePage();
-                break;
-            case '/local':
-                currentPage = new LocalGamePage();
-                break;
-            default:
-                currentPage = null;
+                currentPage = new App();
                 break;
         }
     }
@@ -76,7 +40,6 @@ export async function renderRoute(path: string) {
     else {
         document.getElementById('app')!.innerHTML = `<h1>404 - Page not found</h1>`;
     }
-
     const savedUser = localStorage.getItem('user-info');
     if (savedUser) {
         state.user = JSON.parse(savedUser);

@@ -2,7 +2,7 @@
 
 // This page is the basic logic : every page should inherit from her.
 // Has render() and destroy()
-import {renderBaseBanner, renderLoggedInBanner, renderLoggedOutBanner} from "./Banner";
+import {renderBaseBanner, renderLoggedInBanner, renderLoggedOutBanner} from "./Banner.js";
 import {state} from "../ui/state";
 
 export abstract class BasePage {

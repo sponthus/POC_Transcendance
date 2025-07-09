@@ -4,6 +4,8 @@ if [ ! -d "node_modules" ]; then
   echo "Installing dependencies..."
   npm install
   npm install @babylonjs/loaders
+  npm install @babylonjs/gui
+  npm install @babylonjs/core
 fi
 
 # Copy every static file in dist/ to be served by nginx

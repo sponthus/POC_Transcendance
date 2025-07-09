@@ -1,5 +1,6 @@
 import { setupRouter } from './router.js';
 import { checkLog } from "./api/check-log.js";
+import { App } from './pages/main.js';
 
 console.log("JS loaded !");
 
