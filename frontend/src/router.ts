@@ -20,7 +20,7 @@ export async function renderRoute(path: string) {
         // Static routes
 	switch (path) {
 	    	case '/':
-			currentPage = new HomePage();
+				currentPage = new HomePage();
 				break;
             case '/login':
                 currentPage = new LoginPage();

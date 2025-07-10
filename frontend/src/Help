@@ -16,5 +16,5 @@ on tsconfig.json add '"scripts" : {
   }' --> script to compile typescript
   
   for fedora user : 
-  	sudo setenforce 0 (before make)
+  	sudo setenforce 0 (before make) >> desactivate SELinux which control every processus permissions (sooo not good for security to desactivate but for docker which is not on fedora it's necessary)
 	sudo setenforce 1 (after work)
