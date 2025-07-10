@@ -7,6 +7,8 @@ import {settingMenu} from "./settingMenu";
 import {profileMenu} from "./ProfileMenu";
 import {messageMenu} from "./messageMenu";
 import {historyMenu} from "./historyMenu";
+import { state } from "../../ui/state";
+import { navigate } from '../../router.js';
 
 export class DropDownMenu {
 
@@ -66,10 +68,10 @@ export class DropDownMenu {
 		this._container.addColumnDefinition(40, true);
 		this._container.addColumnDefinition(220, true);
 		this._container.addRowDefinition(40, true);
-		this._container.addRowDefinition(160, true);
+		this._container.addRowDefinition(240, true);
 		
 		this._container.width = "260px";
-		this._container.height = "220px";
+		this._container.height = "260px";
 		this._container.top = "40px";
 		this._container.left = "-10px"; 
 		this._container.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
@@ -89,10 +91,10 @@ export class DropDownMenu {
 		this._container.addControl(this._mainButton,0,1); // add button in container grid
 	}
 	private _initDropdownButtons() {
-		this._optionButton = ["Profile", "Message", "Setting", "History"];
+		this._optionButton = ["Profile", "Message", "Setting", "History", "Logout"];
 		let i: number = 0;
 		this._optionButton.forEach( option => {
-			const button = GUI.Button.CreateSimpleButton("option", option);
+			const button = GUI.Button.CreateSimpleButton(`option${option}`, option);
 			button.width = "220px";
 			button.height = "40px";
 			button.fontFamily = "sans-serif";
@@ -100,7 +102,8 @@ export class DropDownMenu {
 			button.fontSize = "20px";
 			button.background = this._colorBackground._color4ToCss();
 			button.color = this._colorText._color4ToCss();
-			button.onPointerUpObservable.add(() => {
+			console.log("option : ",option);
+			button.onPointerUpObservable.add(async () => {
 				this._scene.onKeyboardObservable.add((kb) => {
 					const key = kb.event.key.toLowerCase();
 					if ((key == "escape" || key == "tab"))
@@ -115,8 +118,15 @@ export class DropDownMenu {
 					this._messageMenu.getWindow()._setVisible(!this._messageMenu.getWindow()._isVisible());
 				if (option == "History")
 					this._historyMenu.getWindow()._setVisible(!this._historyMenu.getWindow()._isVisible());
+				if (option == "Logout")
+				{	
+					/*************don't work as expect*******/
+					state.logout;
+					await navigate('/');
+				}
 				this._optionPanel.isVisible = false;
 			})
+			console.log("add button : ", option);
 			this._optionPanel.addControl(button); // add every option button on option panel
 		});
 
@@ -171,9 +181,9 @@ export class DropDownMenu {
 	}
 	private	_animateoptionPanel(visible: boolean) {
 		let fromHeight: number = visible ? 0: this._optionPanel.heightInPixels;
-		let toHeight: number = visible ? 160: 0;
-		let fromTop: number = visible ? -160: 0;
-		let toTop: number = visible ? 0: -160;
+		let toHeight: number = visible ? 240: 0;
+		let fromTop: number = visible ? -240: 0;
+		let toTop: number = visible ? 0: -240;
 		const	toptAnimation = new BABYLON.Animation(
 			"PanelHeight",
 			"topInPixels",

@@ -42,7 +42,6 @@ export class HomePage extends BasePage {
 				</div>
 			`;
         }
-
         document.getElementById('play-btn')?.addEventListener('click', async (e) => {
             e.preventDefault();
             navigate('/game');

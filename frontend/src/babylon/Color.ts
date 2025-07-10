@@ -10,7 +10,6 @@ export class Color {
 	public _b: number;
 	public _a: number;
 
-
 	public constructor(r: number, g: number, b:number, a:number) {
 		this._r = r;
 		this._g = g;

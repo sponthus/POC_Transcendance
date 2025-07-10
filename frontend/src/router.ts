@@ -1,5 +1,5 @@
 import { state } from "./ui/state.js";
-import {App} from "./pages/main.js"
+import {App} from "./babylon/main.js"
 import { BasePage } from "./pages/BasePage.js";
 import { LoginPage } from "./pages/LoginPage.js";
 import { RegisterPage } from "./pages/RegisterPage.js";
