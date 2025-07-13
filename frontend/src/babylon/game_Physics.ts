@@ -2,6 +2,7 @@ import * as Babylon from "@babylonjs/core";
 import { spawnImpactFX } from "./impactFX";
 import { spawnExplosionFX } from "./impactFX";
 import { crabmehamehaFX } from "./impactFX";
+import { Score } from "./score";
 
 interface BallMesh extends Babylon.Mesh {
 	direction: Babylon.Vector3;
@@ -31,6 +32,9 @@ export class GamePhysics {
 	private _specialCooldown2 = 0;
 	private _specialCooldownDuration2 = 2.5;
 
+	private _score!: Score;
+	private _scoreValue1 = 0;
+	private _scoreValue2 = 0;
 
 	constructor(
 		wallLeft: Babylon.Mesh,
@@ -52,6 +56,8 @@ export class GamePhysics {
 		this._engine = engine;
 		this._crab1 = crab1;
 		this._crab2 = crab2;
+		
+		this._score = new Score(this._scene, this._wallRight, this._scoreValue1, this._scoreValue2);
 
 		this.setupControls();
 	}
@@ -105,6 +111,16 @@ export class GamePhysics {
 			{
 				this._specialCooldown2 -= dt;
     		}
+
+		// fonction bobSpeak
+			this._timeBobSpeak -= this._dt;
+			if (this._timeBobSpeak < 0)
+			{
+				this._score._drawSpeak();
+				this._timeBobSpeak = 3;
+			}
+			// -----------------
+
 		});
 	}
 
@@ -200,6 +216,10 @@ export class GamePhysics {
 	{
 		if (Math.abs(this._ball.position.z) > 6)
 		{
+			if (this._ball.position.z > 6)
+				this._scoreValue2++;
+			else
+				this._scoreValue1++;
 			this._ball.speed = 90;
 			this._ball.position = new Babylon.Vector3(0, 0.4, 0);
 			this._ball.direction = new Babylon.Vector3(
