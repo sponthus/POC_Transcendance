@@ -36,6 +36,8 @@ export class GamePhysics {
 	private _scoreValue1 = 0;
 	private _scoreValue2 = 0;
 
+	private _timeBobSpeak = 0;
+
 	constructor(
 		wallLeft: Babylon.Mesh,
 		wallRight: Babylon.Mesh,
