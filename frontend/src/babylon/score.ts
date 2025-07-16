@@ -78,7 +78,7 @@ export class Score {
 	private _bobGoal()
 	{
 		this._dynamicTextureSpeak.getContext().clearRect(0, 0, 1024, 256);
-		const text = this._phrases[Math.floor(Math.random() * this._goalBob.length)];
+		const text = this._goalBob[Math.floor(Math.random() * this._goalBob.length)];
 		this._dynamicTextureSpeak.drawText(text, null, 140, "bold 60px Arial", "white", "transparent", true);
 		this._dynamicTextureSpeak.update();
 	}
