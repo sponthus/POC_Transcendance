@@ -64,6 +64,7 @@ services:
     volumes:
       - ./frontend:/app # Dev only,prod = pas de volume, seulement copie des fichiers.
       - frontend_dist:/app/dist # Necessary in prod
+      - ./config:/app/config
     networks:
       - pongnet
 
@@ -139,3 +140,4 @@ volumes:
 networks:
   pongnet:
     driver: bridge
+

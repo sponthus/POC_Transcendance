@@ -1,7 +1,7 @@
 import { state } from "../ui/state.js";
 
 type Result =
-    | { ok: true; user: { username: string; slug: string } }
+    | { ok: true; user: { username: string; slug: string; id: number } }
     | { ok: false };
 
 // GET /me request using the token found in memory, and updates the local infos for user
@@ -26,9 +26,9 @@ export async function checkLog(): Promise<Result> {
 
     if (res.ok) {
         const data = await res.json();
-        state.login(data.username, data.slug); // Restore user in local state
+        state.login(data.username, data.slug, data.id); // Restore user in local state
         console.log("Log check successful"); // Debug
-        return { ok: true, user: { username: data.username, slug: data.slug } };
+        return { ok: true, user: { username: data.username, slug: data.slug, id: data.id } };
     } else {
         // Invalid or expired token = Disconnect
         localStorage.removeItem("token");

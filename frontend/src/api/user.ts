@@ -4,6 +4,7 @@ import { state } from "../ui/state.js";
 type UserBasic = {
     username: string;
     slug: string;
+    id: number;
 };
 type UserFull = UserBasic & {
     id: number;
@@ -36,10 +37,10 @@ export async function loginUser(username: string, password: string): Promise<Log
     if (res.ok) {
         const data = await res.json();
         localStorage.setItem("token", data.token); // Store token
-        state.login(data.username, data.slug); // Login in local state
+        state.login(data.username, data.slug, data.id); // Login in local state
         console.log('token is ' + data.token); // debug
         console.log('slug is ' + data.slug); // debug
-        return { ok: true, token: data.token, user: { username: data.username, slug: data.slug } };
+        return { ok: true, token: data.token, user: { username: data.username, slug: data.slug, id: data.id } };
     } else {
         const error = await res.json();
         console.error(error?.error || "Account creation impossible");
@@ -59,8 +60,8 @@ export async function registerUser(username: string, password: string): Promise<
         const data = await res.json();
         console.log('token is ' + data.token); // Debug
         localStorage.setItem("token", data.token); // Store token in local storage
-        state.login(data.username, data.slug); // Login in local state
-        return { ok: true, token: data.token, user: { username: data.username, slug: data.slug } };
+        state.login(data.username, data.slug, data.id); // Login in local state
+        return { ok: true, token: data.token, user: { username: data.username, slug: data.slug, id: data.id } };
     } else {
         const error = await res.json();
         alert("Error : " + error?.error || "Account creation impossible");

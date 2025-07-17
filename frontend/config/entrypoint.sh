@@ -9,4 +9,4 @@ fi
 cp public/favicon.ico dist/favicon.ico
 echo copy done
 
-exec npm run dev
+exec npm run build

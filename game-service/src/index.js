@@ -1,10 +1,11 @@
 import Fastify from "fastify";
-import { WebSocketServer } from "ws";
 import { createServer } from "http";
 import { fileURLToPath } from "url";
 import path from "path";
 import env from "../config/env.js";
 import logger from "../config/logger.js";
+import { WebSocketServer } from "ws";
+import WebSocketManager from "./WebSocketManager.js";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -33,28 +34,14 @@ app.listen({ port: 3002, host: "0.0.0.0" }, (err, address) => {
     app.log.info(`Game API running at ${address}`);
 });
 
-// WebSocket server sur port 4000
+// WebSocket server on port 4000
 const server = createServer();
 const wss = new WebSocketServer({ server, path: "/ws/" });
+console.log("Ws server created");
 
-wss.on("connection", (socket) => {
-    console.log("Client connected to WS");
-
-    socket.on("message", (msg) => {
-        const data = JSON.parse(msg.toString());
-
-        if (data.type === "join") {
-            console.log("Game service received WS to join");
-        }
-
-        // TODO: Add ping/pong or broadcast logic
-    });
-
-    socket.on("close", () => {
-        console.log("Client disconnected");
-    });
-});
+const WSManager = new WebSocketManager(wss);
 
 server.listen(4000, () => {
     console.log("WebSocket server listening on port 4000");
 });
+

@@ -23,7 +23,16 @@ ENV = .env
 
 COMPOSE_FILE = ./docker-compose.yml
 
-all: up
+all: $(ENV) up
+
+$(ENV) : env
+
+env:
+    @if [ ! -f "$(ENV)" ]; then \
+        echo " ✘ No .env found"; \
+        sh config/init_env.sh; \
+    fi
+    @echo " ✔ .env present"
 
 re: fclean all
 

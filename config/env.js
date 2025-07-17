@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "path";
 import envSchema from "env-schema"; // Allows change and validation of variables by confronting them to a JSON scheme
 
 // Definition of JSON scheme, everything expected in .env
