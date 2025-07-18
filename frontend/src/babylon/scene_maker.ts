@@ -13,9 +13,6 @@ export class BabylonSceneBuilder
 	private _scene!: Babylon.Scene;
 	private _camera!: Babylon.ArcRotateCamera;
 	private _light!: Babylon.HemisphericLight;
-	private _ground!: Babylon.Mesh;
-	private _wallLeft: Babylon.Mesh;
-	private _wallRight: Babylon.Mesh;
 	private _ball: BallMesh;
 	private _paddle1: Babylon.Mesh;
 	private _paddle2: Babylon.Mesh;
@@ -28,7 +25,6 @@ export class BabylonSceneBuilder
 		this.initializeScene();
 		this.initializeCamera();
 		this.initializeLight();
-		this.initializePlayground();
 		this.initializeBall();
 		this.initializePaddle();
 
@@ -51,7 +47,7 @@ export class BabylonSceneBuilder
 
 	private initializeCamera()
 	{
-		this._camera = new Babylon.ArcRotateCamera("camera", 0, 0, 27, Babylon.Vector3.Zero(), this._scene);
+		this._camera = new Babylon.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 15, Babylon.Vector3.Zero(), this._scene);
 		this._camera.attachControl(this._canvas, true);
 	}
 
@@ -59,22 +55,6 @@ export class BabylonSceneBuilder
 	{
 		this._light = new Babylon.HemisphericLight("light", new Babylon.Vector3(1, 1, 0), this._scene);
 		this._light.intensity = 1;
-	}
-
-	private initializePlayground()
-	{
-		//sol
-		this._ground = Babylon.MeshBuilder.CreateGround("ground", { width: 10, height: 12 }, this._scene);
-		this._ground.isVisible = false;
-	
-		//mur gauche
-		this._wallLeft = Babylon.MeshBuilder.CreateBox("wallLeft", { width: 0.5, height: 1, depth: 12}, this._scene);
-		this._wallLeft.position.x = -6;
-		this._wallLeft.isVisible = false;
-		//mur droit
-		this._wallRight = Babylon.MeshBuilder.CreateBox("wallRight", { width: 0.5, height: 1, depth: 12}, this._scene);
-		this._wallRight.position.x = 6;
-		this._wallRight.isVisible = false;
 	}
 
 	private initializeBall()
@@ -96,16 +76,6 @@ export class BabylonSceneBuilder
 		this._paddle2.position.z = 5;
   		this._paddle2.position.y = 0.25;
 		this._paddle2.isVisible = false;
-	}
-
-	get wallLeft(): Babylon.Mesh
-	{
-		return this._wallLeft;
-	}
-
-	get wallRight(): Babylon.Mesh
-	{
-		return this._wallRight;
 	}
 
 	get ball(): BallMesh
