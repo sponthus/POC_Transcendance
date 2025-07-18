@@ -2,7 +2,6 @@ import * as Babylon from "@babylonjs/core";
 
 export class Score {
 	private _scene: Babylon.Scene;
-	private _mesh: Babylon.Mesh;
 	private _scorePlayer1: number;
 	private _scorePlayer2: number;
 
@@ -14,17 +13,15 @@ export class Score {
 	private _materialSpeak: Babylon.StandardMaterial;
 
 
-	constructor(scene: Babylon.Scene, mesh: Babylon.Mesh, scorePlayer1: number, scorePlayer2: number)
+	constructor(scene: Babylon.Scene, scorePlayer1: number, scorePlayer2: number)
 	{
 		this._scene = scene;
-		this._mesh = mesh;
 		this._scorePlayer1 = scorePlayer1;
 		this._scorePlayer2 = scorePlayer2;
 
 		// === SCORE PLANE ===
 		this._scorePlane = Babylon.MeshBuilder.CreatePlane("scorePlane", { width: 2, height: 1 }, this._scene);
-		this._scorePlane.parent = this._mesh;
-		this._scorePlane.position = new Babylon.Vector3(2, 2, 2);
+		this._scorePlane.position = new Babylon.Vector3(8, 2, 2);
 		this._scorePlane.billboardMode = Babylon.Mesh.BILLBOARDMODE_ALL;
 
 		this._dynamicTextureScore = new Babylon.DynamicTexture("scoreTexture", { width: 512, height: 256 }, this._scene, false);
@@ -38,8 +35,7 @@ export class Score {
 
 		// === BOB SPEAK PLANE ===
 		this._bobSpeak = Babylon.MeshBuilder.CreatePlane("_bobSpeak", { width: 4, height: 1 }, this._scene);
-		this._bobSpeak.parent = this._mesh;
-		this._bobSpeak.position = new Babylon.Vector3(2, 2, -2);
+		this._bobSpeak.position = new Babylon.Vector3(8, 2, -2);
 		this._bobSpeak.billboardMode = Babylon.Mesh.BILLBOARDMODE_ALL;
 
 		this._dynamicTextureSpeak = new Babylon.DynamicTexture("speakTexture", { width: 1024, height: 256 }, this._scene, false);
@@ -79,6 +75,7 @@ export class Score {
 	{
 		this._dynamicTextureSpeak.getContext().clearRect(0, 0, 1024, 256);
 		const text = this._goalBob[Math.floor(Math.random() * this._goalBob.length)];
+		console.log(text);
 		this._dynamicTextureSpeak.drawText(text, null, 140, "bold 60px Arial", "white", "transparent", true);
 		this._dynamicTextureSpeak.update();
 	}
@@ -129,3 +126,4 @@ export class Score {
 	];
 	
 }
+
