@@ -10,12 +10,10 @@ interface BallMesh extends Babylon.Mesh {
 }
 
 export class GamePhysics {
+	private _dt = 0;
 	private _gameMode = 1;
 	private _bounceCooldownPaddle = 0;
-	private _bounceCooldownWall = 0;
 	private _valueBounceCooldown = 0.1;
-	private _wallLeft: Babylon.Mesh;
-	private _wallRight: Babylon.Mesh;
 	private _ball: BallMesh;
 	private _paddle1: Babylon.Mesh;
 	private _paddle2: Babylon.Mesh;
@@ -37,10 +35,9 @@ export class GamePhysics {
 	private _scoreValue2 = 0;
 
 	private _timeBobSpeak = 0;
+	private _timeout = 5;
 
 	constructor(
-		wallLeft: Babylon.Mesh,
-		wallRight: Babylon.Mesh,
 		ball: BallMesh,
 		paddle1: Babylon.Mesh,
 		paddle2: Babylon.Mesh,
@@ -49,8 +46,6 @@ export class GamePhysics {
 		crab1: Babylon.AbstractMesh | null,
 		crab2: Babylon.AbstractMesh | null
 	) {
-		this._wallLeft = wallLeft;
-		this._wallRight = wallRight;
 		this._ball = ball;
 		this._paddle1 = paddle1;
 		this._paddle2 = paddle2;
@@ -59,8 +54,9 @@ export class GamePhysics {
 		this._crab1 = crab1;
 		this._crab2 = crab2;
 		
-		this._score = new Score(this._scene, this._wallRight, this._scoreValue1, this._scoreValue2);
+		this._score = new Score(this._scene, this._scoreValue1, this._scoreValue2);
 
+		this._ball.speed = 0;
 		this.setupControls();
 	}
 
@@ -82,17 +78,22 @@ export class GamePhysics {
 		);
 
 		this._scene.onBeforeRenderObservable.add(() => {
-			const dt = this._engine.getDeltaTime() / 1000;
-
+			this._dt = this._engine.getDeltaTime() / 1000;
+			this._timeout -= this._dt;
+			if (this._timeout < 0)
+			{
+				this._ball.speed = 90;
+			}
+			else
+				this._ball.speed = 0;
 			// Déplacement joueur 1
-			this.movePlayer1(inputMap, dt);
-			this.movePlayer2(inputMap, dt);
+			this.movePlayer1(inputMap);
+			this.movePlayer2(inputMap);
 
 			// Bouge balle
-			this._ball.position.addInPlace(this._ball.direction.scale(this._ball.speed * dt));
+			this._ball.position.addInPlace(this._ball.direction.scale(this._ball.speed * this._dt));
 
-			this._bounceCooldownPaddle -= dt;
-			this._bounceCooldownWall -= dt;
+			this._bounceCooldownPaddle -= this._dt;
 
 			// Collisions murs
 			this.collisionWall();
@@ -103,15 +104,15 @@ export class GamePhysics {
 
 			this.crabmehaha(inputMap);
 			this.crabmehaha2(inputMap);
-			this.updateProjectiles(dt);
-			this.updateProjectiles2(dt);
+			this.updateProjectiles();
+			this.updateProjectiles2();
 			if (this._specialCooldown > 0)
 			{
-        		this._specialCooldown -= dt;
+        		this._specialCooldown -= this._dt;
     		}
 			if (this._specialCooldown2 > 0)
 			{
-				this._specialCooldown2 -= dt;
+				this._specialCooldown2 -= this._dt;
     		}
 
 		// fonction bobSpeak
@@ -122,39 +123,39 @@ export class GamePhysics {
 				this._timeBobSpeak = 3;
 			}
 			// -----------------
-
+		//}
 		});
 	}
 
-	private movePlayer1(inputMap: Record<string, boolean>, dt: number)
+	private movePlayer1(inputMap: Record<string, boolean>)
 	{
 		if (inputMap["q"] && this._paddle1.position.x > -4.5)
 		{
-			this._paddle1.position.x -= 20 * dt;
+			this._paddle1.position.x -= 20 * this._dt;
 			if (this._crab1)
 				this._crab1.position.x = this._paddle1.position.x;
 		}
 		if (inputMap["e"] && this._paddle1.position.x < 4.5)
 		{
-			this._paddle1.position.x += 20 * dt;
+			this._paddle1.position.x += 20 * this._dt;
 			if (this._crab1)
 				this._crab1.position.x = this._paddle1.position.x;
 		}
 	}
 
-	private movePlayer2(inputMap: Record<string, boolean>, dt: number)
+	private movePlayer2(inputMap: Record<string, boolean>)
 	{
 		if (this._gameMode === 1)
 		{
 			if (inputMap["9"] && this._paddle2.position.x > -4.5)
 			{
-				this._paddle2.position.x -= 20 * dt;
+				this._paddle2.position.x -= 20 * this._dt;
 				if (this._crab2)
 					this._crab2.position.x = this._paddle2.position.x;
 			}
 			if (inputMap["7"] && this._paddle2.position.x < 4.5)
 			{
-				this._paddle2.position.x += 20 * dt;
+				this._paddle2.position.x += 20 * this._dt;
 				if (this._crab2)
 					this._crab2.position.x = this._paddle2.position.x;
 			}
@@ -170,18 +171,16 @@ export class GamePhysics {
 
 	private collisionWall()
 	{
-		if (this._bounceCooldownWall <= 0 && this._ball.intersectsMesh(this._wallLeft, false))
+		if (this._ball.position.x > 6)
 		{
 			this._ball.direction.x *= -1;
-			this._ball.position.x = this._wallLeft.position.x + 0.6;
-			this._bounceCooldownWall = this._valueBounceCooldown;
+			this._ball.position.x = 6;
 			spawnImpactFX(this._scene, this._ball.position);
 		}
-		if (this._bounceCooldownWall <= 0 && this._ball.intersectsMesh(this._wallRight, false))
+		if (this._ball.position.x < -6)
 		{
 			this._ball.direction.x *= -1;
-			this._ball.position.x = this._wallRight.position.x - 0.6;
-			this._bounceCooldownWall = this._valueBounceCooldown;
+			this._ball.position.x = -6;
 			spawnImpactFX(this._scene, this._ball.position);
 		}
 	}
@@ -222,6 +221,7 @@ export class GamePhysics {
 				this._scoreValue2++;
 			else
 				this._scoreValue1++;
+			this._score.updateScore(this._scoreValue1, this._scoreValue2);
 			this._ball.speed = 90;
 			this._ball.position = new Babylon.Vector3(0, 0.4, 0);
 			this._ball.direction = new Babylon.Vector3(
@@ -247,6 +247,7 @@ export class GamePhysics {
 			}
 			this._specialCooldown = 0;
 			this._specialCooldown2 = 0;
+			this._timeout = 3;
 		}
 	}
 
@@ -281,7 +282,7 @@ export class GamePhysics {
 		this._projectiles.push(projectile);
 	}
 
-	private updateProjectiles(dt: number)
+	private updateProjectiles()
 	{
 		const speed = 30;
 
@@ -289,13 +290,12 @@ export class GamePhysics {
 		{
 			const proj = this._projectiles[i];
 
-			proj.position.z += speed * dt; // avance vers l'adversaire (vers le -Z)
+			proj.position.z += speed * this._dt; // avance vers l'adversaire (vers le -Z)
 
 			// Check si touche le paddle2
 			if (proj.intersectsMesh(this._paddle2, false))
 			{
 				spawnExplosionFX(this._scene, this._paddle2.position);
-				console.log("🔥 HIT !");
 				if (this._crab2) {
 					this._crab2.position.y = -4;
 				}
@@ -334,7 +334,7 @@ export class GamePhysics {
 		this._projectiles2.push(projectile);
 	}
 
-	private updateProjectiles2(dt: number)
+	private updateProjectiles2()
 	{
 		const speed = 30;
 
@@ -342,13 +342,12 @@ export class GamePhysics {
 		{
 			const proj = this._projectiles2[i];
 
-			proj.position.z -= speed * dt; // avance vers l'adversaire (vers le -Z)
+			proj.position.z -= speed * this._dt; // avance vers l'adversaire (vers le -Z)
 
 			// Check si touche le paddle2
 			if (proj.intersectsMesh(this._paddle1, false))
 			{
 				spawnExplosionFX(this._scene, this._paddle1.position);
-				console.log("🔥 HIT !");
 				if (this._crab1) {
 					this._crab1.position.y = -4;
 				}
