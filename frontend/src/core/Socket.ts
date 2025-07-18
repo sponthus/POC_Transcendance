@@ -42,10 +42,10 @@ export class Socket {
         };
     }
     private getWsUrl(): string {
-        // const status = import.meta.env.MODE;
-        // if (status === "development")
-        //     return 'ws://localhost:8080/ws/';
-        // else
+        const status = import.meta.NODE_ENV;
+        if (status === "development")
+            return 'ws://localhost:8080/ws/';
+        else
             return `wss://${window.location.host}/ws/`;
     }
 

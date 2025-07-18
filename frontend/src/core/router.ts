@@ -1,9 +1,9 @@
-import { state } from "./ui/state.js";
-import { BasePage } from './pages/BasePage.js';
-import { HomePage } from './pages/HomePage.js';
-import { LoginPage } from './pages/LoginPage.js';
-import { RegisterPage } from './pages/RegisterPage.js';
-import { LocalGamePage } from './pages/LocalGamePage.js';
+import { state } from "./state.js";
+import { BasePage } from '../pages/BasePage.js';
+import { HomePage } from '../pages/HomePage.js';
+import { LoginPage } from '../pages/LoginPage.js';
+import { RegisterPage } from '../pages/RegisterPage.js';
+import { LocalGamePage } from '../pages/LocalGamePage.js';
 
 // Typed by abstraction : needs to inherit from BasePage
 let currentPage: BasePage | null = null;

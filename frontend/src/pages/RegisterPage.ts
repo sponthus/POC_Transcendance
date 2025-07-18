@@ -1,4 +1,4 @@
-import { navigate } from '../router.js';
+import { navigate } from '../core/router.js';
 import { checkLog } from "../api/check-log.js";
 import { registerUser } from "../api/user.js";
 import { BasePage } from "./BasePage.js";

@@ -1,4 +1,4 @@
-import { state } from "../ui/state.js";
+import { state } from "../core/state.js";
 
 // User infos possible to give back
 type UserBasic = {

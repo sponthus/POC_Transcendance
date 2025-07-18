@@ -1,4 +1,4 @@
-import { state } from "../ui/state.js";
+import { state } from "../core/state.js";
 
 type Result =
     | { ok: true; id: number }

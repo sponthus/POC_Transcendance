@@ -1,5 +1,5 @@
-import { state } from '../ui/state.js';
-import { navigate } from '../router.js';
+import { state } from '../core/state.js';
+import { navigate } from '../core/router.js';
 import { checkLog } from "../api/check-log.js";
 // import { startLocalGame } from "../api/game.js";
 import { PongGame } from "../game/pong_game.js";

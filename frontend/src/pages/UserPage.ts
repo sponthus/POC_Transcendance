@@ -1,4 +1,4 @@
-import { navigate } from '../router.js';
+import { navigate } from '../core/router.js';
 import { checkLog } from "../api/check-log.js";
 import { getUserInfo, modifyUserAvatar, modifyUserInfo } from "../api/user.js";
 import { uploadAvatar } from "../api/avatar.js";

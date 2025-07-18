@@ -9,4 +9,10 @@ fi
 cp public/favicon.ico dist/favicon.ico
 echo copy done
 
-exec npm run build
+echo "--------------------- $NODE_ENV"
+
+if grep -q "^NODE_ENV=development"; then
+	exec npm run dev
+else
+	exec npm run build
+fi

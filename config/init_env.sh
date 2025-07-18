@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "---- Configuration of your environment ----"
+echo "------- Creation of your environment ------"
 echo "-------------------------------------------"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" &>/dev/null && pwd)"
