@@ -20,8 +20,6 @@ export class PongGame {
 		await this._displayAssets.load();
 		
 		this._gamePhysics = new GamePhysics(
-			this._sceneBuilder!.wallLeft,
-			this._sceneBuilder!.wallRight,
 			this._sceneBuilder!.ball,
 			this._sceneBuilder!.paddle1,
 			this._sceneBuilder!.paddle2,
