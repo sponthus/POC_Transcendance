@@ -15,6 +15,7 @@ export default class WebSocketManager {
             ws.on('message', (data) => {
                 try {
                     const message = JSON.parse(data);
+                    console.log(message);
                     this.handleMessage(ws, message);
                 } catch (error) {
                     console.error('Invalid JSON:', error);
@@ -22,6 +23,7 @@ export default class WebSocketManager {
             });
 
             ws.on('close', () => {
+                console.log('Connection closed');
                 this.handleDisconnection(ws);
             });
         });

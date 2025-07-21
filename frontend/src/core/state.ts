@@ -12,14 +12,17 @@ export const state = {
     ws: null as Socket | null,
 
     login(username: string, slug: string, id: number) {
+        console.log("login called on state", username, slug, id);
         this.user = { username, slug, id };
         this.game.state = "idle";
         this.game.id = 0;
         localStorage.setItem('user-info', JSON.stringify(this.user));
-        try {
-            this.ws = new Socket();
-        } catch (error) {
-            console.error("Failed to create socket because ", error);
+        if (this.ws === null) {
+            try {
+                this.ws = new Socket();
+            } catch (error) {
+                console.error("Failed to create socket because ", error);
+            }
         }
     },
 

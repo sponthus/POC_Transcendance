@@ -26,7 +26,7 @@ export abstract class BasePage {
        renderBaseBanner(this.banner);
 
         if (state.isLoggedIn()) {
-            const user: null | { username: string, slug: string } = state.user;
+            const user: null | { username: string, slug: string, id: number } = state.user;
             if (user) {
                 await renderLoggedInBanner(this.banner);
             }

@@ -86,8 +86,8 @@ export async function createUser(request, reply) {
         );
         const result = insertStatement.run(username, slug, avatar, pw_hash);
         const id = result.lastInsertRowid;
-        const token = await generateToken(reply, username, slug);
-        return reply.status(200).send({ token, username: username, slug: slug });
+        const token = await generateToken(reply, username, slug, id);
+        return reply.status(200).send({ token, username: username, slug: slug, id: id });
     }
     catch (error) {
         db.prepare("DELETE FROM users WHERE id = ?").run(userId);
@@ -115,8 +115,8 @@ export async function loginUser(request, reply) {
         return reply.status(401).send({ error: "Invalid password" });
     }
 
-    const token = await generateToken(reply, user.username, user.slug);
-    return reply.status(200).send({ token, username: user.username, slug: user.slug });
+    const token = await generateToken(reply, user.username, user.slug, user.id);
+    return reply.status(200).send({ token, username: user.username, slug: user.slug, id: user.id });
 }
 
 // TODO : Control what info is given or not ? For now not necessary

@@ -21,7 +21,7 @@ fastify.decorate("authenticate", async function (request, reply) {
         await request.jwtVerify();
     } catch (err) {
         console.error("JWT error:", err);
-        reply.send(err);
+        reply.code(401).send(err);
     }
 });
 

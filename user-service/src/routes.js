@@ -26,10 +26,13 @@ export default async function routes(fastify, options) {
             getRoutes.get('/me',
                 {onRequest: [fastify.authenticate]},
                 async (req, reply) => {
-                    req.log.info({userId: req.user.id}, 'User accessed /me');
+                    req.log.info({userId: req.user.id}, `User ${req.user.id} accessed /me`);
+                    const user = req.user;
+                    console.log(user);
                     return {
-                        username: req.user.username,
-                        slug: req.user.slug,
+                        username: user.username,
+                        slug: user.slug,
+                        id: user.id,
                     };
                 });
 

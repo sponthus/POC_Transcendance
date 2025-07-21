@@ -7,7 +7,6 @@ type UserBasic = {
     id: number;
 };
 type UserFull = UserBasic & {
-    id: number;
     avatar: string;
     created_at: string;
 };
@@ -40,6 +39,7 @@ export async function loginUser(username: string, password: string): Promise<Log
         state.login(data.username, data.slug, data.id); // Login in local state
         console.log('token is ' + data.token); // debug
         console.log('slug is ' + data.slug); // debug
+        console.log('id is ' + data.id); // debug
         return { ok: true, token: data.token, user: { username: data.username, slug: data.slug, id: data.id } };
     } else {
         const error = await res.json();

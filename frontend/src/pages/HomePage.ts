@@ -1,6 +1,5 @@
 import { state } from "../core/state.js";
 import { navigate } from "../core/router.js";
-import { checkLog } from "../api/check-log.js";
 import { BasePage } from "./BasePage.js";
 
 export class HomePage extends BasePage {
@@ -9,8 +8,7 @@ export class HomePage extends BasePage {
     }
 
     async render(): Promise<void> {
-        this.renderBanner();
-        checkLog();
+        await this.renderBanner();
 
         if (state.isLoggedIn()) {
             this.app.innerHTML = `

@@ -4,6 +4,8 @@ import { HomePage } from '../pages/HomePage.js';
 import { LoginPage } from '../pages/LoginPage.js';
 import { RegisterPage } from '../pages/RegisterPage.js';
 import { LocalGamePage } from '../pages/LocalGamePage.js';
+import { UserPage } from '../pages/UserPage.js';
+import { GamePage } from '../pages/GamePage.js';
 
 // Typed by abstraction : needs to inherit from BasePage
 let currentPage: BasePage | null = null;
@@ -42,7 +44,7 @@ export async function renderRoute(path: string) {
     // Dynamic routes
     if (path.startsWith('/user/')) {
         const username = path.slice('/user/'.length);
-        const { UserPage } = await import('./pages/UserPage');
+        // const { UserPage } = await import('./pages/UserPage.js');
         currentPage = new UserPage(username);
     }
     else {
@@ -58,7 +60,7 @@ export async function renderRoute(path: string) {
                 currentPage = new RegisterPage();
                 break;
             case '/game':
-                const { GamePage } = await import('./pages/GamePage.js');
+                // const { GamePage } = await import('./pages/GamePage.js');
                 currentPage = new GamePage();
                 break;
             case '/local':

@@ -28,7 +28,7 @@ export class Socket {
             return;
         }
         this.ws.onopen = () => {
-            console.log("Connected to WebSocket server");
+            console.log("Connected to WebSocket server, sending auth with id " + this.userId);
             this.send(JSON.stringify({
                 type: "auth",
                 userId: this.userId
@@ -42,7 +42,8 @@ export class Socket {
         };
     }
     private getWsUrl(): string {
-        const status = import.meta.NODE_ENV;
+        console.log(import.meta.env);
+        const status = import.meta.env.MODE;
         if (status === "development")
             return 'ws://localhost:8080/ws/';
         else
