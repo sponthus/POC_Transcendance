@@ -3,6 +3,7 @@
 if [ ! -d "node_modules" ]; then
   echo "Installing dependencies..."
   npm install
+  npm install @babylonjs/core
   npm install @babylonjs/loaders
 fi
 
