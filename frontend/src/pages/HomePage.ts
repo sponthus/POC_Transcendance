@@ -1,6 +1,8 @@
-import { state } from "../core/state.js";
 import { navigate } from "../core/router.js";
 import { BasePage } from "./BasePage.js";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 export class HomePage extends BasePage {
     constructor() {
@@ -10,7 +12,8 @@ export class HomePage extends BasePage {
     async render(): Promise<void> {
         await this.renderBanner();
 
-        if (state.isLoggedIn()) {
+        // if (state.isLoggedIn()) {
+        if(state.user) {
             this.app.innerHTML = `
             <h1>Welcome to Pong !</h1>
             <p>Ready to play?</p>

@@ -1,9 +1,8 @@
-import { state } from '../core/state.js';
-import { navigate } from '../core/router.js';
-import { checkLog } from "../api/check-log.js";
-// import { startLocalGame } from "../api/game.js";
 import { PongGame } from "../game/pong_game.js";
 import { BasePage } from "./BasePage.js";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 export class LocalGamePage extends BasePage {
     constructor() {
@@ -15,11 +14,11 @@ export class LocalGamePage extends BasePage {
         await this.renderBanner();
 
         // Check user connexion
-        const res = await checkLog();
-        if (!res.ok) {
-            await navigate('/login');
-            return;
-        }
+        // const res = await checkLog();
+        // if (!res.ok) {
+        //     await navigate('/login');
+        //     return;
+        // }
 
         this.app.innerHTML = `<h1>Loading game...</h1>`;
         // Insert here logic to check which game to join + ws initialization

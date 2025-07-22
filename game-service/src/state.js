@@ -25,15 +25,38 @@ class State {
     }
 
     deleteUser(userId) {
-        this.clients.delete(userId);
+        const deleted = this.clients.delete(userId);
+        if (deleted) {
+            console.log(`User ${userId} removed. Remaining clients: ${this.clients.size}`);
+        }
+        return deleted;
     }
 
-    getWsByUserId(userId) {
+    getClientByUserId(userId) {
         return this.clients.get(userId);
     }
 
-    getUserIdByWs(ws) {
-        return this.clients.get(ws);
+    getWsByUserId(userId) {
+        const client = this.clients.get(userId);
+        return client ? client.ws : null;
+    }
+
+    getUserIdByWs(targetWs) {
+        for (const [userId, client] of this.clients.entries()) {
+            if (client.ws === targetWs) {
+                return userId;
+            }
+        }
+        return null;
+    }
+
+    getAllConnectedUsers() {
+        return Array.from(this.clients.keys());
+    }
+
+    isUserConnected(userId) {
+        const client = this.clients.get(userId);
+        return client && client.ws.readyState === 1; // WebSocket.OPEN
     }
 }
 

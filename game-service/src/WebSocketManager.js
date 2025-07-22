@@ -26,11 +26,19 @@ export default class WebSocketManager {
                 console.log('Connection closed');
                 this.handleDisconnection(ws);
             });
+
+            ws.on('error', (error) => {
+                console.error('WebSocket error:', error);
+                this.handleDisconnection(ws);
+            });
         });
     }
 
     handleMessage(ws, message) {
         switch(message.type) {
+            case 'ping':
+                this.pong(ws);
+                break;
             case 'auth':
                 this.authenticateUser(ws, message.userId);
                 break;
@@ -40,6 +48,13 @@ export default class WebSocketManager {
             case 'input':
                 this.handlePlayerInput(ws, message);
                 break;
+        }
+    }
+
+    pong(ws) {
+        if (ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: 'pong' }));
+            console.log('Sent pong response');
         }
     }
     //
@@ -56,12 +71,22 @@ export default class WebSocketManager {
     // }
 
     authenticateUser(ws, userId) {
-        // Check token
-        // if (!token)
-        //     return ;
         if (userId) {
+            if (state.isUserConnected(userId)) {
+                const oldClient = state.getClientByUserId(userId);
+                console.log(`User ${userId} already connected, closing old connection`);
+                oldClient.ws.close(1000, 'New session started');
+            }
             state.addUser(ws, userId);
             console.log("Authenticated user = " + userId);
+
+            this.sendToUser(userId, {
+                type: 'auth_success',
+                userId: userId,
+                timestamp: Date.now()
+            });
+        } else {
+            console.warn('Authentication failed: no userId provided');
         }
     }
 
@@ -71,5 +96,28 @@ export default class WebSocketManager {
             state.deleteUser(userId);
             console.log("Client disconnected : " + userId);
         }
+    }
+
+    sendToUser(userId, message) {
+        const ws = state.getWsByUserId(userId);
+        if (ws && ws.readyState === 1) { // WebSocket.OPEN
+            ws.send(JSON.stringify(message));
+            console.log(`Message sent to user ${userId}:`, message.type);
+            return true;
+        } else {
+            console.warn(`Cannot send message to user ${userId}: not connected`);
+            return false;
+        }
+    }
+
+    sendToUsers(userIds, message) {
+        let sentCount = 0;
+        userIds.forEach(userId => {
+            if (this.sendToUser(userId, message)) {
+                sentCount++;
+            }
+        });
+        console.log(`Message sent to ${sentCount}/${userIds.length} users`);
+        return sentCount;
     }
 }

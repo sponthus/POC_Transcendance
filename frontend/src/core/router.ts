@@ -1,4 +1,3 @@
-import { state } from "./state.js";
 import { BasePage } from '../pages/BasePage.js';
 import { HomePage } from '../pages/HomePage.js';
 import { LoginPage } from '../pages/LoginPage.js';
@@ -6,48 +5,25 @@ import { RegisterPage } from '../pages/RegisterPage.js';
 import { LocalGamePage } from '../pages/LocalGamePage.js';
 import { UserPage } from '../pages/UserPage.js';
 import { GamePage } from '../pages/GamePage.js';
+import { State } from "./state.js";
+
+const state = State.getInstance();
 
 // Typed by abstraction : needs to inherit from BasePage
 let currentPage: BasePage | null = null;
-
-// const routes: Record<string, () => Promise<void>> = {
-//     '/': async () => (await import('./pages/home.js')).getHomePage(),
-//     '/login': async () => (await import('./pages/login.js')).getLoginPage(),
-//     '/register': async () => (await import('./pages/register.js')).getRegisterPage(),
-//     '/game': async () => (await import('./pages/game.js')).getGamePage(),
-//     '/local': async () => (await import('./pages/local.js')).getLocalGamePage(),
-// };
-
-// export async function renderRoute(path: string) {
-//     const view = routes[path] || (() => {
-//         document.getElementById('app')!.innerHTML = `<h1>404 - Page not found</h1>`;
-//     });
-//
-//     const savedUser = localStorage.getItem('user-info');
-//     if (savedUser) {
-//         state.user = JSON.parse(savedUser);
-//     }
-//
-//     // Dynamic routes : ie user/me
-//     if (path.startsWith('/user/')) {
-//         const username = path.slice('/user/'.length);
-//         await getUserPage(username);
-//         return;
-//     }
-//
-//     view();
-// }
 
 export async function renderRoute(path: string) {
     currentPage?.destroy();
 
     // Dynamic routes
     if (path.startsWith('/user/')) {
+        console.log("before navigation" + state.user?.username);
         const username = path.slice('/user/'.length);
         // const { UserPage } = await import('./pages/UserPage.js');
         currentPage = new UserPage(username);
     }
     else {
+        console.log("before navigation" + state.user?.username);
         // Static routes
         switch (path) {
             case '/':
@@ -77,11 +53,6 @@ export async function renderRoute(path: string) {
     }
     else {
         document.getElementById('app')!.innerHTML = `<h1>404 - Page not found</h1>`;
-    }
-
-    const savedUser = localStorage.getItem('user-info');
-    if (savedUser) {
-        state.user = JSON.parse(savedUser);
     }
 }
 

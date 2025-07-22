@@ -1,7 +1,9 @@
 // This page is the basic logic : every page should inherit from her.
 // Has render() and destroy()
 import {renderBaseBanner, renderLoggedInBanner, renderLoggedOutBanner} from "./Banner";
-import {state} from "../core/state";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 export abstract class BasePage {
     protected app: HTMLElement;

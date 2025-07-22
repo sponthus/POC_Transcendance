@@ -12,10 +12,10 @@
 # -nodes = no passphrase
 
 if env | grep -q "^NODE_ENV=development"; then
-	mv /etc/nginx/nginx.development.conf /etc/nginx/nginx.conf
+	mv /etc/nginx/nginx.development.conf /etc/nginx/nginx.conf && \
 	rm /etc/nginx/nginx.production.conf
 else
-	mv /etc/nginx/nginx.production.conf /etc/nginx/nginx.conf
+	mv /etc/nginx/nginx.production.conf /etc/nginx/nginx.conf  && \
 	rm /etc/nginx/nginx.development.conf
 fi
 

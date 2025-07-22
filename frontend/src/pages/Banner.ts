@@ -1,5 +1,7 @@
 import { navigate } from '../core/router.js';
-import { state } from "../core/state.js";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 export function renderBaseBanner(banner: HTMLElement): void {
     const wrapper = document.createElement('div');

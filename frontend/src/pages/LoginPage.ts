@@ -11,14 +11,14 @@ export class LoginPage extends BasePage {
     async render(): Promise<void> {
         this.renderBanner();
 
-        const res = await checkLog();
-        if (res.ok) {
-            this.app.innerHTML = `
-                <h1></h1>
-                <h1>Already logged in as ${res.user.username}.</h1>
-            `;
-            return ;
-        }
+        // const res = await checkLog();
+        // if (res.ok) {
+        //     this.app.innerHTML = `
+        //         <h1></h1>
+        //         <h1>Already logged in as ${res.user.username}.</h1>
+        //     `;
+        //     return ;
+        // }
 
         this.app.innerHTML = `
             <h1></h1>

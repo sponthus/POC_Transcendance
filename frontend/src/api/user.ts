@@ -1,4 +1,6 @@
-import { state } from "../core/state.js";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 // User infos possible to give back
 type UserBasic = {

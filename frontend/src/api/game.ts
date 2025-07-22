@@ -1,4 +1,6 @@
-import { state } from "../core/state.js";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 type Result =
     | { ok: true; id: number }
