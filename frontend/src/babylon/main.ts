@@ -1,13 +1,14 @@
 import "@babylonjs/core/Debug/debugLayer";
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
+import { state } from "../ui/state.js";
 import	{DropDownMenu } from "./menu/dropDown";
 import { BasePage } from "../pages/BasePage.js";
 import { renderScene } from "./displaying/renderScene";
 import { renderMap } from "./displaying/renderMap";
 import { renderAnimation } from "./displaying/animationCharacter";	
 import { PlayerInput } from "./displaying/inputController";
-import { Player } from "./displaying/characterController";
+// import { Player } from "./displaying/characterController";
 import { renderAsset } from "./displaying/renderAsset";
 
 
@@ -20,16 +21,18 @@ export class App extends BasePage {
 	private	_renderMap?: renderMap;
 	private _animation?: renderAnimation;
 	private _input?: PlayerInput;
-	private Player?: Player;
+	// private Player?: Player;
+	private _slug: string;
 
 	/***********dropdown menu************/
 	private	_dropDown: DropDownMenu | null = null;
 
-	constructor() {
+	constructor(slug: string) {
 		super();
+		this._slug = slug;
 	}
 	async render(): Promise<void>  {
-		document.body.innerHTML = "";
+		//document.body.innerHTML = "";
 		await this.renderBanner();
 
 		this._renderScene = new renderScene();

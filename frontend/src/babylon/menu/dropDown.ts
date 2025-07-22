@@ -30,11 +30,13 @@ export class DropDownMenu {
 	private _colorBackground: Color;
 	private _colorText: Color;
 
-	public constructor(scene: BABYLON.Scene) {
+	private _slug: string;
 
+	public constructor(scene: BABYLON.Scene, slug: string) {
+		this._slug = slug;
 		this._scene = scene;
-		this._colorBackground = new Color(100 ,25, 74, 255);
-		this._colorText = new Color(0 ,0, 0, 255);
+		this._colorBackground = new Color(100 ,25, 74, 255); // call API
+		this._colorText = new Color(0 ,0, 0, 255); // call API
 		/************************create gui texture****************************/
 		this._guiTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 		
@@ -60,7 +62,7 @@ export class DropDownMenu {
 
 		/************************create menus panel****************************/
 		this._settingMenu = new settingMenu(this._scene, this._guiTexture ,[this._colorBackground, this._colorText]);
-		this._profileMenu = new profileMenu(this._scene, this._guiTexture, [this._colorBackground, this._colorText]);
+		this._profileMenu = new profileMenu(this._scene, this._guiTexture, [this._colorBackground, this._colorText], this._slug);
 		this._messageMenu = new messageMenu(this._scene, this._guiTexture, [this._colorBackground, this._colorText]);
 		this._historyMenu = new historyMenu(this._scene, this._guiTexture, [this._colorBackground, this._colorText]);
 	}

@@ -2,6 +2,8 @@ import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
 import {Color} from "../Color";
 import {windowMenu} from "./windowMenu";
+// import { state } from "../../ui/state.js";
+import { getUserInfo, modifyUserAvatar, modifyUserInfo } from "../../api/user.js";
 
 export class profileMenu {
 
@@ -15,9 +17,11 @@ export class profileMenu {
 	private _lastscore: number;
 	private _nbGame: number;
 
+	private _slug?: string;
 	// private _friendList
 
-	public constructor(scene: BABYLON.Scene, guiTexture: GUI.AdvancedDynamicTexture, colors : Color[]) {
+	public constructor(scene: BABYLON.Scene, guiTexture: GUI.AdvancedDynamicTexture, colors : Color[], slug: string) {
+		this._slug = slug;
 		this._WindowPanel = new windowMenu(scene, guiTexture, colors, "Profile");
 		this._bodyPanel = this._WindowPanel.getWindowBody();
 		this._ProfilePic = new GUI.Image("profileImage", "../asset/pic/carlo.jpg"); // call API for url 
@@ -27,6 +31,9 @@ export class profileMenu {
 		this._nbGame = 0; // call API
 
 		this._designMenu();
+	}
+	private async _getUserInfo() {
+		const req = await getUserInfo(this._slug);
 	}
 	private _designMenu() {
 		/*****************************init profile pic*****************************/

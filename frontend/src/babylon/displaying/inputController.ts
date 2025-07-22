@@ -43,7 +43,7 @@ export class PlayerInput {
 		const speed = 0.1;
 		let move = new BABYLON.Vector3(0, 0, 0);
 		let direction = BABYLON.Vector3.Zero();
-		if (this._inputMap['z'] || this._inputMap["arrowup"]) {
+		if (this._inputMap['w'] || this._inputMap["arrowup"]) {
 			direction.x += 1;
 			direction.z += 1;
 			console.log("touch z :");
@@ -57,7 +57,7 @@ export class PlayerInput {
 			move.z -= speed;
 			move.x += speed;
 		}
-		if (this._inputMap['q'] || this._inputMap["arrowleft"]) {
+		if (this._inputMap['a'] || this._inputMap["arrowleft"]) {
 			direction.z += 1;
 			direction.x -= 1;
 			console.log("touch q:");
