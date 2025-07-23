@@ -11,13 +11,13 @@ export class profileMenu {
 	private _bodyPanel: GUI.Rectangle;
 
 	private _ProfilePic: GUI.Image // pic in API
-	private _userName: string // Name in API
+	private _userName?: string // Name in API
 
 	private _bestScore: number;
 	private _lastscore: number;
 	private _nbGame: number;
 
-	private _slug?: string;
+	private _slug: string;
 	// private _friendList
 
 	public constructor(scene: BABYLON.Scene, guiTexture: GUI.AdvancedDynamicTexture, colors : Color[], slug: string) {
@@ -25,17 +25,29 @@ export class profileMenu {
 		this._WindowPanel = new windowMenu(scene, guiTexture, colors, "Profile");
 		this._bodyPanel = this._WindowPanel.getWindowBody();
 		this._ProfilePic = new GUI.Image("profileImage", "../asset/pic/carlo.jpg"); // call API for url 
-		this._userName = "zonbodiggs"; // call API for username
 		this._bestScore = 0; // call API
 		this._lastscore = 0; // call API
 		this._nbGame = 0; // call API
 
 		this._designMenu();
 	}
-	private async _getUserInfo() {
+
+	private async _getUsername(): Promise<void>{
 		const req = await getUserInfo(this._slug);
+		if (req.ok) {
+            const userData = req.user;
+            console.log("username = ", userData.username);
+			console.log("slug in profile :",this._slug);
+			this._userName = userData.username;
+        }
+		else {
+			console.log("username undifined");
+			this._userName = "foo";
+			new Error('username undifined');
+		}
 	}
-	private _designMenu() {
+
+	private async _designMenu() {
 		/*****************************init profile pic*****************************/
 		const picRectange = new GUI.Rectangle as GUI.Rectangle;
 		picRectange.width = "30%";
@@ -65,7 +77,11 @@ export class profileMenu {
 		userNamePanel.paddingTop = "6%";
 
 		const UserNameText = new GUI.TextBlock as GUI.TextBlock;
-		UserNameText.text = this._userName;
+
+		await this._getUsername();
+		console.log("this username = ", this._userName);
+		if (this._userName)
+			UserNameText.text = this._userName;
 		UserNameText.fontSize = "65%";
 		UserNameText.width = "100%";
 		UserNameText.height = "100%";

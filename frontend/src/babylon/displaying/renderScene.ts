@@ -65,37 +65,39 @@ export class renderScene {
 	}
 
 	private _initIsoCamera() {
-		this._isocamera = new BABYLON.FreeCamera("isocamera", new BABYLON.Vector3(20, 20, -20), this._scene!);
+		this._isocamera = new BABYLON.FreeCamera("isocamera", new BABYLON.Vector3(2, 15, -20), this._scene!);
 		this._isocamera.mode = BABYLON.FreeCamera.ORTHOGRAPHIC_CAMERA;
 		this._isocamera.setTarget(BABYLON.Vector3.Zero());
 		this._isocamera.minZ = 0.1; 
 
-		const zoom: number = 0.015;
+		const zoom: number = 0.000012 * screen.width; // evantually to change with Dell machines
+		console.log('zoom :', zoom);
 		this._isocamera.orthoLeft = (-this._engine!.getRenderWidth() * zoom);
 		this._isocamera.orthoRight = (this._engine!.getRenderWidth() * zoom);
 		this._isocamera.orthoTop = (this._engine!.getRenderHeight() * zoom);
 		this._isocamera.orthoBottom =( -this._engine!.getRenderHeight() * zoom);
-		this._isocamera.detachControl();
+		// this._isocamera.detachControl();
+		this._isocamera.attachControl(this._canvas, true);
 		this._scene!.activeCamera = this._isocamera;
 	}
 
 	private _initLight() {
-		this._light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), this._scene!);
+		this._light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this._scene!);
 	}
 
 	private _initGravity() {
 		this._scene!.collisionsEnabled = true; // activation colision
-		this._scene!.gravity = new BABYLON.Vector3(0, -0.1, 0); // activation gravity
+		this._scene!.gravity = new BABYLON.Vector3(0, -0.5, 0); // activation gravity
 	}
 
 	get scene(): BABYLON.Scene | null {
-		return this._scene;
+		return this!._scene;
 	}
 	get engine(): BABYLON.Engine | null{
-		return this._engine;
+		return this!._engine;
 	}
 	get	canvas(): HTMLCanvasElement | null {
-		return this._canvas;
+		return this!._canvas;
 	}
 
 	private	_renderingloop() {
@@ -114,6 +116,7 @@ export class renderScene {
 			}
 		});
 	}
+
 	private _setdebugLayer() {
 		console.log("Debug layer:", this._scene?.debugLayer);
 		window.addEventListener('keydown', (ev) => {

@@ -29,10 +29,11 @@ export async function renderRoute(path: string) {
                 currentPage = new RegisterPage();
                 break;
             case '/game':
-				const _slug: any =  state.user?.slug;
+				const _slug: string =  state.user!.slug;
 				if (_slug)
 				{
 					console.log("state user :", state.user)
+					console.log("user slug :", state.user?.slug);
 					currentPage = new App(_slug);
 				}
                 break;

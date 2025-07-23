@@ -9,7 +9,6 @@ export class renderAsset {
 
 	private _scene: BABYLON.Scene;
 	private _player?: BABYLON.Mesh;
-	// private	_map?: BABYLON.TransformNode;
 
 	private _loadedMap?: Record<string, BABYLON.AbstractMesh>;
 
@@ -28,7 +27,15 @@ export class renderAsset {
 	constructor (scene: BABYLON.Scene) {
 		this._scene = scene;
 	}
+
 	public async _load(): Promise<void> {
+		
+		await this._loadPlayer();
+		await this._loadMap();
+		await this.__loadStageSet();
+	}
+
+	private async _loadPlayer(){
 		/******************************load player******************************/
 		const result = await ImportMeshAsync("/asset/Characters/Models/GLBformat/character-q.glb", this._scene);
 		if (result)
@@ -38,7 +45,9 @@ export class renderAsset {
 		if (!this._player)
 			console.log("player not initialized:");
 		this._addColision(this._player);
+	}
 
+	private  async _loadMap() {
 		/******************************load maps Asset******************************/
 		this._loadedMap = {};
 		for (const type in this._titleType) {
@@ -56,6 +65,203 @@ export class renderAsset {
 			}
 		}
 	}
+
+	private async __loadStageSet() {
+	
+		/**************************for boat 1**************************/
+		const resBoat = await ImportMeshAsync("/asset/environements/Models/GLBformat/ship-pirate-large.glb", this._scene).then(function(resBoat) {
+			var mesh: BABYLON.AbstractMesh = resBoat.meshes[0];
+			mesh.setEnabled(false);
+			var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+			instance.position = new BABYLON.Vector3(-26 , -1, 0);
+			instance.rotation = new BABYLON.Vector3(0, 0, 0);
+			instance.setEnabled(true);
+			instance.scaling.scaleInPlace(2);
+			instance.getChildMeshes().forEach(child => {
+				child.checkCollisions = true;
+			});
+		});
+
+		/**************************for boat 2**************************/
+		const resBoat2 = await ImportMeshAsync("/asset/environements/Models/GLBformat/ship-ghost.glb", this._scene).then(function(resBoat2) {
+			var mesh: BABYLON.AbstractMesh = resBoat2.meshes[0];
+			mesh.setEnabled(false);
+			var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+			instance.position = new BABYLON.Vector3(20 ,0, 20);
+			instance.rotation = new BABYLON.Vector3(0, -1, 0.1);
+			instance.setEnabled(true);
+			instance.getChildMeshes().forEach(child => {
+				child.checkCollisions = true;
+			});
+		});
+
+		/**************************for boat 3**************************/
+		const resBoat3 = await ImportMeshAsync("/asset/environements/Models/GLBformat/boat-row-small.glb", this._scene).then(function(resBoat3) {
+			var mesh: BABYLON.AbstractMesh = resBoat3.meshes[0];
+			mesh.setEnabled(false);
+			var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+			instance.position = new BABYLON.Vector3(-20 ,0, 25);
+			instance.rotation = new BABYLON.Vector3(0, -1, 0.1);
+			instance.setEnabled(true);
+			instance.scaling.scaleInPlace(2);
+			instance.getChildMeshes().forEach(child => {
+				child.checkCollisions = true;
+			});
+		});
+		
+		
+		/**************************for plateform**************************/
+		const resplateform = await  ImportMeshAsync("/asset/environements/Models/GLBformat/structure-platform.glb", this._scene).then(function (resplateform) {
+			var mesh: BABYLON.AbstractMesh = resplateform.meshes[0];
+			mesh.setEnabled(false);
+			for (let index:number = 0; index < 25; index++) {
+				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+				instance.position = new BABYLON.Vector3(-21, 0, index - 5);
+				instance.setEnabled(true);
+				instance.getChildMeshes().forEach(child => {
+					child.checkCollisions = true;
+				});
+
+			}
+		})
+
+		/**************************for bottle crate**************************/
+		const rescrate = await  ImportMeshAsync("/asset/environements/Models/GLBformat/crate-bottles.glb", this._scene).then(function (rescrate) {
+			var mesh: BABYLON.AbstractMesh = rescrate.meshes[0];
+			mesh.setEnabled(false);
+			for (let index:number = 0; index < 2; index++) {
+				index + 5;
+				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+				instance.position = new BABYLON.Vector3(-19, 0, (index - 2) * 3);
+				instance.setEnabled(true);
+				instance.getChildMeshes().forEach(child => {
+					child.checkCollisions = true;
+				});
+			}
+		})
+
+		/**************************for tree 1**************************/
+		const restree = await  ImportMeshAsync("/asset/environements/Models/GLBformat/palm-straight.glb", this._scene).then(function (restree) {
+			var mesh: BABYLON.AbstractMesh = restree.meshes[0];
+			mesh.setEnabled(false);
+			for (let index:number = 0; index < 2; index++) {
+				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+				instance.position = new BABYLON.Vector3(-19, 0,( index + 1) * 4);
+				instance.setEnabled(true);
+				instance.getChildMeshes().forEach(child => {
+					child.checkCollisions = true;
+				});
+			}
+			for (let index:number = 0; index < 3; index++) {
+				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+				instance.position = new BABYLON.Vector3((index - 1) * 2, 0, 30);
+				instance.setEnabled(true);
+				instance.getChildMeshes().forEach(child => {
+					child.checkCollisions = true;
+				});
+			}
+			for (let index:number = 0; index < 2; index++) {
+				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+				instance.position = new BABYLON.Vector3(30 * index, 0 , (index ) * 20);
+				instance.setEnabled(true);
+				instance.getChildMeshes().forEach(child => {
+					child.checkCollisions = true;
+				});
+			}
+		})
+
+		/**************************for tree 1**************************/
+		const restree2 = await  ImportMeshAsync("/asset/environements/Models/GLBformat/palm-detailed-bend.glb", this._scene).then(function (restree2) {
+			var mesh: BABYLON.AbstractMesh = restree2.meshes[0];
+			mesh.setEnabled(false);
+			for (let index:number = 0; index < 2; index++) {
+				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+				instance.position = new BABYLON.Vector3(index * 30, 0,( index + 3) * 4);
+				instance.setEnabled(true);
+				instance.getChildMeshes().forEach(child => {
+					child.checkCollisions = true;
+				});
+			}
+			for (let index:number = 0; index < 3; index++) {
+				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+				instance.position = new BABYLON.Vector3((index - 1.5) * 3 , 0, 29);
+				instance.setEnabled(true);
+				instance.getChildMeshes().forEach(child => {
+					child.checkCollisions = true;
+				});
+			}
+		})
+
+		/**************************for tower**************************/
+		const resTower = await ImportMeshAsync("/asset/environements/Models/GLBformat/tower-complete-large.glb", this._scene).then(function(resTower) {
+			var mesh: BABYLON.AbstractMesh = resTower.meshes[0];
+			mesh.setEnabled(false);
+			var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+			instance.position = new BABYLON.Vector3(8, 0, 30);
+			instance.rotation = new BABYLON.Vector3(0, 0, 0);
+			instance.scaling.scaleInPlace(2);
+			instance.setEnabled(true);
+			instance.getChildMeshes().forEach(child => {
+				child.checkCollisions = true;
+			});
+		});
+
+		/**************************for chest**************************/
+		const resChest = await ImportMeshAsync("/asset/environements/Models/GLBformat/chest.glb", this._scene).then(function (resChest) {
+			var mesh: BABYLON.AbstractMesh = resChest.meshes[0];
+			mesh.setEnabled(false);
+			var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+			instance.position = new BABYLON.Vector3(35, 0, 15);
+			instance.rotation = new BABYLON.Vector3(0, 0, 0);
+			instance.scaling.scaleInPlace(3);
+			instance.setEnabled(true);
+			instance.getChildMeshes().forEach(child => {
+				child.checkCollisions = true;
+			});
+		})
+
+		/**************************for flag**************************/
+		const resflag = await ImportMeshAsync("/asset/environements/Models/GLBformat/flag-pirate-pennant.glb", this._scene).then(function (resflag) {
+			var mesh: BABYLON.AbstractMesh = resflag.meshes[0];
+			mesh.setEnabled(false);
+			var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+			instance.position = new BABYLON.Vector3(35, 0, 20);
+			instance.rotation = new BABYLON.Vector3(0, 0, 0);
+			instance.scaling.scaleInPlace(3);
+			instance.setEnabled(true);
+			instance.getChildMeshes().forEach(child => {
+				child.checkCollisions = true;
+			});
+		})
+
+		/**************************for barrel**************************/
+		const resbarrel = await ImportMeshAsync("/asset/environements/Models/GLBformat/barrel.glb", this._scene).then(function(resbarrel) {
+			var mesh: BABYLON.AbstractMesh = resbarrel.meshes[0];
+			mesh.setEnabled(false);
+			var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+			instance.position = new BABYLON.Vector3(-20 ,0, 22);
+			instance.rotation = new BABYLON.Vector3(0, -1, 0.1);
+			instance.setEnabled(true);
+			instance.scaling.scaleInPlace(2);
+			instance.getChildMeshes().forEach(child => {
+				child.checkCollisions = true;
+			});
+		});
+
+		/**************************for sand castle**************************/
+		const resSandCastle = await ImportMeshAsync("/assets/chateauSable.glb", this._scene).then(function (resSandCastle) {
+			var mesh: BABYLON.AbstractMesh = resSandCastle.meshes[0];
+			mesh.setEnabled(false);
+			var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
+			instance.position = new BABYLON.Vector3(35, 0, 5);
+			instance.scaling.scaleInPlace(0.2);
+			instance.setEnabled(true);
+			instance.getChildMeshes().forEach(child => {
+				child.checkCollisions = true;
+			});
+		});
+	}
+
 	private _setUpMesh(result: BABYLON.ISceneLoaderAsyncResult, position: BABYLON.Vector3, scaling: number) {
 		result.meshes.forEach(result => {
 			result.position = position;// new BABYLON.Vector3(5, 0, 5);
@@ -64,17 +270,20 @@ export class renderAsset {
 			result.scaling.scaleInPlace(scaling);
 		});
 	}
+
 	private	_addColision(mesh: BABYLON.Mesh) {
 		console.log("mesh name : ", mesh.name);
 		mesh.checkCollisions = true; // activation collision for player
 		mesh.ellipsoid = new BABYLON.Vector3(0.7, 1.5, 0.7); // define collision arround player
 		mesh.ellipsoidOffset = new BABYLON.Vector3(0, 1.5, 0); // center collision not necessary
 	}
+
 	get	playermesh():BABYLON.Mesh {
 		if (!this._player)
 			throw new Error("player asset not initialized");
 		return this._player;
 	}
+
 	get LoadedMap(): Record<string, BABYLON.AbstractMesh> {
 		if (!this._loadedMap)
 			throw new Error("loadedMap asset not initialized");

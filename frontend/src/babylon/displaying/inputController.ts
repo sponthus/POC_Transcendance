@@ -40,35 +40,23 @@ export class PlayerInput {
 	private _updateFromKeyboard() {
 		if (!this._player)
 		    return ;
-		const speed = 0.1;
+		const speed = 0.2;
 		let move = new BABYLON.Vector3(0, 0, 0);
 		let direction = BABYLON.Vector3.Zero();
 		if (this._inputMap['w'] || this._inputMap["arrowup"]) {
 			direction.x += 1;
-			direction.z += 1;
-			console.log("touch z :");
 			move.z += speed;
-			move.x -= speed;
 		}
 		if (this._inputMap['s'] || this._inputMap["arrowdown"]) {
 			direction.x -= 1;
-			direction.z -= 1;
-			console.log("touch s:");
 			move.z -= speed;
-			move.x += speed;
 		}
 		if (this._inputMap['a'] || this._inputMap["arrowleft"]) {
 			direction.z += 1;
-			direction.x -= 1;
-			console.log("touch q:");
 			move.x -= speed;
-			move.z -= speed;
 		}
 		if (this._inputMap['d'] || this._inputMap["arrowright"]) {
-			direction.x += 1;
 			direction.z -= 1;
-			console.log("touch d :");
-			move.z += speed;
 			move.x += speed;
 		}
 		if (direction.equals(BABYLON.Vector3.Zero())) {
@@ -78,7 +66,6 @@ export class PlayerInput {
 		}
 		else {
 			this._animation.startWalk()
-			// this._walkAnimation?.start(true, 1.0, this._walkAnimation.from, this._walkAnimation.to, false);
 			direction = direction.normalize();
 			const gravity = this._scene!.gravity;
 			move = move.add(gravity);

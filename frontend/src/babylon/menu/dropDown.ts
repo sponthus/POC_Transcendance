@@ -34,6 +34,7 @@ export class DropDownMenu {
 
 	public constructor(scene: BABYLON.Scene, slug: string) {
 		this._slug = slug;
+		console.log("slug in dropdown menu :", this._slug);
 		this._scene = scene;
 		this._colorBackground = new Color(100 ,25, 74, 255); // call API
 		this._colorText = new Color(0 ,0, 0, 255); // call API
@@ -66,6 +67,7 @@ export class DropDownMenu {
 		this._messageMenu = new messageMenu(this._scene, this._guiTexture, [this._colorBackground, this._colorText]);
 		this._historyMenu = new historyMenu(this._scene, this._guiTexture, [this._colorBackground, this._colorText]);
 	}
+
 	private _initContainer() {
 		this._container.addColumnDefinition(40, true);
 		this._container.addColumnDefinition(220, true);
@@ -81,6 +83,7 @@ export class DropDownMenu {
 		this._container.leftInPixels = 200;
 		this._guiTexture.addControl(this._container);
 	}
+
 	private _initMainButton() {
 		this._mainButton.width = "220px";
 		this._mainButton.height = "40px";
@@ -92,6 +95,7 @@ export class DropDownMenu {
 		this._mainButton.isVisible = false;
 		this._container.addControl(this._mainButton,0,1); // add button in container grid
 	}
+
 	private _initDropdownButtons() {
 		this._optionButton = ["Profile", "Message", "Setting", "History", "Logout"];
 		let i: number = 0;
@@ -138,6 +142,7 @@ export class DropDownMenu {
 			this._animateoptionPanel(shouldShow);
 		})
 	}
+
 	private _initHamburgerbutton() {
 		this._hamburButton.width = "40px";
 		this._hamburButton.height = "40px";
@@ -157,6 +162,7 @@ export class DropDownMenu {
 			this._mainButton.isVisible = !this._mainButton.isVisible;
 		})
 	}
+
 	private _designHamburger(button: GUI.Button, width: string, height: string) {
 		for (let i:number = 0; i < 3; i++) {
 			const bar = new GUI.Rectangle();
@@ -171,6 +177,7 @@ export class DropDownMenu {
 			button.addControl(bar);
 		}
 	}
+
 	private _setVisibleoptionstofalse() {
 		if (this._settingMenu.getWindow()._isVisible() == true)
 			this._settingMenu.getWindow()._setVisible(false);
@@ -181,6 +188,7 @@ export class DropDownMenu {
 		if (this._historyMenu.getWindow()._isVisible() == true)
 			this._historyMenu.getWindow()._setVisible(false);
 	}
+
 	private	_animateoptionPanel(visible: boolean) {
 		let fromHeight: number = visible ? 0: this._optionPanel.heightInPixels;
 		let toHeight: number = visible ? 240: 0;
@@ -219,6 +227,7 @@ export class DropDownMenu {
 					this._optionPanel.topInPixels = 0;
 		});
 	}
+
 	private _gridAnimation(visible: boolean) {
 		const fromLeft: number = this._container.leftInPixels;
 		const toLeft: number = visible ? -10: 200;
