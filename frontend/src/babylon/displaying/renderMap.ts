@@ -47,7 +47,7 @@ export class renderMap {
 					if (!template) {
 						console.log("template cannot charge");
 						continue ; }
-					const instance = template.instantiateHierarchy() as   BABYLON.TransformNode;
+					const instance = template.instantiateHierarchy() as  BABYLON.TransformNode;
 					instance.parent = this._map;
 					instance.position.set(x * titleSize , 0, z * titleSize );
 					instance.setEnabled(true);

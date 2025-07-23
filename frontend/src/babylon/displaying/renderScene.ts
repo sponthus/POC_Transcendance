@@ -66,6 +66,7 @@ export class renderScene {
 
 	private _initIsoCamera() {
 		this._isocamera = new BABYLON.FreeCamera("isocamera", new BABYLON.Vector3(2, 15, -20), this._scene!);
+		this._isocamera.position = new BABYLON.Vector3(2, 15, -20);
 		this._isocamera.mode = BABYLON.FreeCamera.ORTHOGRAPHIC_CAMERA;
 		this._isocamera.setTarget(BABYLON.Vector3.Zero());
 		this._isocamera.minZ = 0.1; 

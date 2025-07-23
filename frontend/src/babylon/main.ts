@@ -1,7 +1,7 @@
 import "@babylonjs/core/Debug/debugLayer";
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
-import { state } from "../ui/state.js";
+// import { state } from "../ui/state.js";
 import	{DropDownMenu } from "./menu/dropDown";
 import { BasePage } from "../pages/BasePage.js";
 import { renderScene } from "./displaying/renderScene";
@@ -48,7 +48,7 @@ export class App extends BasePage {
 		this._renderMap = new renderMap(this._renderScene.scene!,  this._renderAsset.LoadedMap!);
 		this._renderGround = new renderGround(this._renderScene.scene!);
 
-		this._input = new PlayerInput(this._renderScene.scene!, this._renderAsset.playermesh, this._animation);
+		this._input = new PlayerInput(this._renderScene.scene!, this._renderAsset, this._animation);
 		this._dropDown = new DropDownMenu(this._renderScene.scene!, this._slug);
 
 	}

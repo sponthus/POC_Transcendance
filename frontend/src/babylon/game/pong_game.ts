@@ -1,6 +1,6 @@
-import { BabylonSceneBuilder } from "./babylon/scene_maker";
-import { DisplayAssets } from "./babylon/display_Assets";
-import { GamePhysics } from "./babylon/game_Physics";
+import { BabylonSceneBuilder } from "./displayGame/scene_maker";
+import { DisplayAssets } from "./displayGame/display_Assets";
+import { GamePhysics } from "./displayGame/game_Physics";
 
 export class PongGame {
 	private _sceneBuilder?: BabylonSceneBuilder;
