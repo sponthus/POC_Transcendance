@@ -219,9 +219,9 @@ export class GamePhysics {
 
 	private resetBall()
 	{
-		if (Math.abs(this._ball.position.z) > 6)
+		if (Math.abs(this._ball.position.z) > 9)
 		{
-			if (this._ball.position.z > 6)
+			if (this._ball.position.z > 9)
 				this._scoreValue2++;
 			else
 				this._scoreValue1++;
