@@ -7,6 +7,7 @@ type Result =
 
 // GET /me request using the token found in memory, and updates the local infos for user
 // -> Returns ok: true | false, and if ok, user: { username: string; slug: string }
+// TODO = Not functional !
 export async function checkLog(): Promise<Result> {
     console.log("Checking log...");
     const userInfo = localStorage.getItem("user-info");

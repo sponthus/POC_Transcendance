@@ -1,3 +1,5 @@
+import GameMaster from './GameMaster.js';
+
 class State {
     static instance = null;
 
@@ -7,6 +9,7 @@ class State {
         }
         State.instance = this;
         this.clients = new Map();
+        this.GameMaster = GameMaster.getInstance();
     }
 
     static getInstance() {
@@ -30,6 +33,21 @@ class State {
             console.log(`User ${userId} removed. Remaining clients: ${this.clients.size}`);
         }
         return deleted;
+    }
+
+    // TODO check me
+    disconnectUser(userId) {
+        const ws = this.getWsByUserId(userId);
+        if (!ws) {
+            console.log(`User ${userId} not found`);
+            return;
+        }
+        if (!isUserConnected(ws)) {
+            console.log(`User ${userId} not connected when trying to disconnect`);
+            return;
+        }
+        const client = this.clients.get(userId);
+        client.status = 'disconnected';
     }
 
     getClientByUserId(userId) {
@@ -56,7 +74,11 @@ class State {
 
     isUserConnected(userId) {
         const client = this.clients.get(userId);
-        return client && client.ws.readyState === 1; // WebSocket.OPEN
+        return client && client.status === 'online';
+    }
+
+    getGameMaster() {
+        return this.GameMaster;
     }
 }
 

@@ -2,9 +2,10 @@ import Fastify from "fastify";
 import { createServer } from "http";
 import { fileURLToPath } from "url";
 import path from "path";
-import env from "../config/env.js";
-import logger from "../config/logger.js";
 import { WebSocketServer } from "ws";
+import logger from "../config/logger.js";
+import dbConnector from "./db.js";
+import routes from "./routes.js";
 import WebSocketManager from "./WebSocketManager.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,10 +16,14 @@ const app = Fastify({
     logger: logger,
 });
 
-// Route HTTP classique pour tester le service
-app.get("/", async (req, reply) => {
-    return { message: "Game service received your request!" };
-});
+// // To test service
+// app.get("/", async (req, reply) => {
+//     return { message: "Game service received your request!" };
+// });
+
+app.register(dbConnector);
+
+await app.register(routes);
 
 // Default handler for undefined routes
 app.setNotFoundHandler((req, reply) => {

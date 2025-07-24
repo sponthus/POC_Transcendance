@@ -5,6 +5,8 @@ services:
   api-gateway:
     container_name: api-gateway
     build: ./api-gateway
+    env_file:
+      - ".env"
     depends_on:
       - user-service
       - game-service
@@ -18,6 +20,8 @@ services:
   user-service:
     container_name: user-service
     build: ./user-service
+    env_file:
+      - ".env"
     volumes:
       - ./user-service:/app # Dev only,prod = pas de volume, seulement copie des fichiers.
       - ./config:/app/config
@@ -28,6 +32,8 @@ services:
   game-service:
     container_name: game-service
     build: ./game-service
+    env_file:
+      - ".env"
     volumes:
       - ./game-service:/app # Dev only,prod = pas de volume, seulement copie des fichiers.
       - ./config:/app/config
@@ -73,6 +79,8 @@ services:
 
   upload-service:
     build: ./upload-service
+    env_file:
+      - ".env"
     container_name: upload-service
     volumes:
       - ./upload-service:/app # Dev only,prod = pas de volume, seulement copie des fichiers.

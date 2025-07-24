@@ -45,9 +45,9 @@ export default class WebSocketManager {
             // case 'join_game':
             //     this.handleJoinGame(ws, message.gameId);
             //     break;
-            case 'input':
-                this.handlePlayerInput(ws, message);
-                break;
+            // case 'input':
+            //     this.handlePlayerInput(ws, message);
+            //     break;
         }
     }
 
@@ -93,8 +93,7 @@ export default class WebSocketManager {
     handleDisconnection(ws) {
         const userId = state.getUserIdByWs(ws);
         if (userId) {
-            state.deleteUser(userId);
-            console.log("Client disconnected : " + userId);
+            state.disconnectUser(userId);
         }
     }
 

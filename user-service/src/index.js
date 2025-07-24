@@ -26,12 +26,11 @@ fastify.decorate("authenticate", async function (request, reply) {
 });
 
 fastify.register(fastifyJwt, {
-    secret: env.secret,
+    secret: env.hashKey,
 });
 
 fastify.register(dbConnector);
 
-// TODO implement routes
 await fastify.register(routes);
 
 // fastify.get('/', async (req, reply) => {

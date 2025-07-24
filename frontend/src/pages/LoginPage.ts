@@ -9,8 +9,8 @@ export class LoginPage extends BasePage {
     }
 
     async render(): Promise<void> {
-        this.renderBanner();
-
+        await this.renderBanner();
+        // TODO = Check log
         // const res = await checkLog();
         // if (res.ok) {
         //     this.app.innerHTML = `

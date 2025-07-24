@@ -5,7 +5,7 @@ type GameState = "idle" | "playing" | "paused";
 export class State {
     static instance: null | State;
     user: null | { username: string, slug: string, id: number } = null;
-    game: { state: GameState,id: number } = { state: "idle", id: 0 };
+    game: { state: GameState, id: number } = { state: "idle", id: 0 };
     canvas: { width: number; height: number } = { width: window.innerWidth * 0.6, height: window.innerHeight * 0.6 };
     ws: Socket | null = null;
 
@@ -86,17 +86,30 @@ export class State {
     }
 
     isLoggedIn() {
+        // TODO = Real check of log ? Then usable everywhere ?
         if (this.user) {
             console.log("user logged in", this.user);
             return true;
         }
         else
             return false;
-        // return this.user !== null;
     }
 
-    play(id: number) {
+    launchGame(gameId: number) {
+        this.game.state = "paused";
+        this.game.id = gameId;
+    }
+
+    play() {
         this.game.state = "playing";
-        this.game.id = id;
+    }
+
+    pause() {
+        this.game.state = "paused";
+    }
+
+    stop() {
+        this.game.id = 0;
+        this.game.state = "idle";
     }
 };

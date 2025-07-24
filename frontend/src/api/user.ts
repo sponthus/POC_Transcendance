@@ -29,6 +29,8 @@ export type UserModificationResult = UserModificationSuccess | Failure;
 
 // POST /api/login request to log in with username + login, updates local infos about user
 export async function loginUser(username: string, password: string): Promise<LoginResult> {
+    // TODO = Add lock check : no new login if already logged
+
     const res = await fetch('/api/user/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -52,6 +54,7 @@ export async function loginUser(username: string, password: string): Promise<Log
 
 // POST /api/user request to register a new user with username + login, updates local infos about user
 export async function registerUser(username: string, password: string): Promise<RegisterResult> {
+    // TODO = Log check, no register if already registered
     const res = await fetch('/api/user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -73,6 +76,7 @@ export async function registerUser(username: string, password: string): Promise<
 
 // GET /api/user/:slug request to get user infos
 export async function getUserInfo(slug: string): Promise<GetUserResult> {
+    // TODO : Log check not functional
     const token = localStorage.getItem("token");
     if (!token) {
         return { ok: false, error: "No token found" };
@@ -103,9 +107,10 @@ export async function getUserInfo(slug: string): Promise<GetUserResult> {
     }
 }
 
-// NOT TESTED
+// TODO : NOT TESTED
 // PUT /api/user/:slug request to change username
 export async function modifyUserInfo(slug: string, username: string): Promise<UserModificationResult> {
+    // TODO = Log check not functional
     const token = localStorage.getItem("token");
     if (!token) {
         return { ok: false, error: "No token found" };
@@ -136,6 +141,7 @@ export async function modifyUserInfo(slug: string, username: string): Promise<Us
 
 // PUT /api/user/:slug/avatar request to change avatar path
 export async function modifyUserAvatar(slug: string, avatar: string): Promise<AvatarUploadResult> {
+    // TODO = Log check not functional
     const token = localStorage.getItem("token");
     if (!token) {
         return { ok: false, error: "No token found" };

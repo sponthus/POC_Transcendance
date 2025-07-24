@@ -12,8 +12,8 @@ export class HomePage extends BasePage {
     async render(): Promise<void> {
         await this.renderBanner();
 
-        // if (state.isLoggedIn()) {
-        if(state.user) {
+        // TODO = Add real check of log
+        if (state.user) {
             this.app.innerHTML = `
             <h1>Welcome to Pong !</h1>
             <p>Ready to play?</p>
@@ -28,7 +28,7 @@ export class HomePage extends BasePage {
 
         document.getElementById('play-btn')?.addEventListener('click', async (e) => {
             e.preventDefault();
-            navigate('/game');
+            await navigate('/game');
         });
 
     }

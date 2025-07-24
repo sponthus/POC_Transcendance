@@ -15,11 +15,11 @@ export class UserPage extends BasePage {
 
     async render(): Promise<void> {
         await this.renderBanner();
-        console.log('getUserPage', this.slug);
 
         this.app.innerHTML = `<h1>Loading user page...</h1>`;
         console.log("Loading user page with username = " + this.slug);
 
+        // TODO = Check log + get infos
         // const res = await checkLog();
         // if (!res.ok) {
         //     this.app.innerHTML = `
@@ -29,6 +29,7 @@ export class UserPage extends BasePage {
         //     return;
         // }
         // const connectedUser = res.user.slug;
+        // TODO = Make me functional : connectedUser is logged in user, not just the provided URL
         const connectedUser = this.slug;
         const req = await getUserInfo(this.slug);
         if (req.ok) {

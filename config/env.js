@@ -6,7 +6,7 @@ import envSchema from "env-schema"; // Allows change and validation of variables
 // properties defines expected types and default values if absent
 const schema = {
     type: "object",
-    required: ["PORT", "LOG_LEVEL", "NODE_ENV", "DB_FILE", "SECRET"],
+    required: ["PORT", "LOG_LEVEL", "NODE_ENV", "USERS_DB_FILE", "GAMES_DB_FILE", "HASH_KEY"],
     properties: {
         PORT: {
             type: "number",
@@ -21,13 +21,16 @@ const schema = {
             default: "development",
             enum: ["development", "testing", "production"],
         },
-        DB_FILE: {
+        USERS_DB_FILE: {
             type: "string",
             default: "./users.db",
         },
-        SECRET: {
+        GAMES_DB_FILE: {
             type: "string",
-            default: "secret_key",
+            default: "./games.db",
+        },
+        HASH_KEY: {
+            type: "string",
         }
     },
 };
@@ -48,8 +51,9 @@ const envConfig = {
     port: config.PORT,
     logLevel: config.LOG_LEVEL,
     nodeEnv: config.NODE_ENV,
-    dbFile: config.DB_FILE,
-    secret: config.SECRET,
+    usersDbFile: config.USERS_DB_FILE,
+    gamesDbFile: config.GAMES_DB_FILE,
+    hashKey: config.HASH_KEY,
 };
 
 // envConfig becomes default export from env.js file

@@ -16,7 +16,7 @@ export default async function routes(fastify, options) {
             postRoutes.post("/login",
                 loginUser);
         }
-        // { prefix: "/api" }
+        // { prefix: "/api/user/" }
     );
 
     // Register get routes

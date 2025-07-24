@@ -11,6 +11,6 @@ if (app) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    // await checkLog();
     await setupRouter();
+    // TODO = Check log ? Restore a session according to cookies ?
 });

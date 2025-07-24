@@ -12,8 +12,7 @@ export class LocalGamePage extends BasePage {
     // Possibility : If several game modes are available = inherits from a game page with several players
     async render(): Promise<void> {
         await this.renderBanner();
-
-        // Check user connexion
+        // TODO = Check user connexion
         // const res = await checkLog();
         // if (!res.ok) {
         //     await navigate('/login');
