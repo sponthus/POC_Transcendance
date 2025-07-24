@@ -12,9 +12,10 @@ export class dialogueBox {
 	private _texture: GUI.AdvancedDynamicTexture;
 	private _dialoguetext: GUI.TextBlock;
 
-	constructor(msg: string) {
-		this._texture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
+	constructor(msg: string, scene: BABYLON.Scene) {
+		console.log("dialogue box constructor called");
+		this._texture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
+	
 		this._dialoguetext = new GUI.TextBlock;
 
 		this._dialogue = new GUI.Rectangle;

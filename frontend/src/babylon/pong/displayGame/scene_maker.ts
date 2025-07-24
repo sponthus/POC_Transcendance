@@ -1,4 +1,5 @@
 import * as Babylon from "@babylonjs/core"
+import { renderScene } from "../../displaying/renderScene";
 
 interface BallMesh extends Babylon.Mesh {
   direction: Babylon.Vector3;
@@ -11,43 +12,30 @@ export class BabylonSceneBuilder
 
 	private _engine!: Babylon.Engine;
 	private _scene!: Babylon.Scene;
+	// private _renderScene: renderScene;
 	private _camera!: Babylon.ArcRotateCamera;
 	private _light!: Babylon.HemisphericLight;
 	private _ground!: Babylon.Mesh;
-	private _wallLeft: Babylon.Mesh;
-	private _wallRight: Babylon.Mesh;
-	private _ball: BallMesh;
-	private _paddle1: Babylon.Mesh;
-	private _paddle2: Babylon.Mesh;
+	private _wallLeft: Babylon.Mesh | null = null;
+	private _wallRight: Babylon.Mesh | null = null;
+	private _ball: BallMesh | null = null;
+	private _paddle1: Babylon.Mesh | null = null;
+	private _paddle2: Babylon.Mesh | null = null;
 
-	constructor(canvas: HTMLCanvasElement)
+	constructor(scene: Babylon.Scene, canvas: HTMLCanvasElement, engine: Babylon.Engine)
 	{
 		this._canvas = canvas;
+		this._scene = scene;
+		this._engine = engine;
 
-		this.initializeEngine();
-		this.initializeScene();
 		this.initializeCamera();
 		this.initializeLight();
 		this.initializePlayground();
 		this.initializeBall();
 		this.initializePaddle();
 
-		this.startRendering();
 	}
 
-	private initializeEngine()
-	{
-		this._engine = new Babylon.Engine(this._canvas);
-	}
-
-	private initializeScene()
-	{
-		this._scene = new Babylon.Scene(this._engine);
-		this._scene.autoClear = true;
-		this._scene.autoClearDepthAndStencil = true;
-		this._scene.blockMaterialDirtyMechanism = true;
-
-	}
 
 	private initializeCamera()
 	{
@@ -100,27 +88,27 @@ export class BabylonSceneBuilder
 
 	get wallLeft(): Babylon.Mesh
 	{
-		return this._wallLeft;
+		return this._wallLeft!;
 	}
 
 	get wallRight(): Babylon.Mesh
 	{
-		return this._wallRight;
+		return this._wallRight!;
 	}
 
 	get ball(): BallMesh
 	{
-		return this._ball;
+		return this._ball!;
 	}
 
 	get paddle1(): Babylon.Mesh
 	{
-		return this._paddle1;
+		return this._paddle1!;
 	}
 
 	get paddle2(): Babylon.Mesh
 	{
-		return this._paddle2;
+		return this._paddle2!;
 	}
 
 	get scene(): Babylon.Scene
@@ -131,25 +119,5 @@ export class BabylonSceneBuilder
 	get engine(): Babylon.Engine
 	{
 		return this._engine;
-	}
-
-	private startRendering()
-	{
-		let lastTime = 0;
-		const targetFPS = 60;
-		const frameDuration = 1000 / targetFPS;
-		let now;
-		let delta;
-
-		this._engine.runRenderLoop(() => {
-			now = performance.now();
-			delta = now - lastTime;
-
-			if (delta >= frameDuration)
-			{
-				lastTime = now;
-				this._scene.render();
-			}
-		});
 	}
 }

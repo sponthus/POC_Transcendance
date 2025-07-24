@@ -4,14 +4,22 @@ import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
+import { PongGame } from "../pong/pong_game";
+
+enum state {HOME = 0, PONG = 1};
 
 export class renderScene {
 
 	private _canvas: HTMLCanvasElement | null = null;
 	private _engine: BABYLON.Engine | null = null;
-	private _scene: BABYLON.Scene | null = null;
+
+	private _homeScene: BABYLON.Scene | null = null;
+	private _pongScene: BABYLON.Scene | null = null;
+
 	private _isocamera?: BABYLON.FreeCamera;
 	private _light?: BABYLON.HemisphericLight;
+
+	private _state: number;
 
 
 	constructor() {
@@ -19,7 +27,9 @@ export class renderScene {
 		this._canvas = this._initCanvas();
 
 		this._initEngine();
-		this._initScene();
+		this._homeScene = this._initScene();
+		this._pongScene = this._initScene();
+		this._initPongGame();
 		this._initGravity();
 		this._initIsoCamera();
 		this._initLight();
@@ -27,6 +37,7 @@ export class renderScene {
 		this._setdebugLayer();
 
 		this._renderingloop();
+		this._state = 0;
 	}
 
 	private _initCanvas(): HTMLCanvasElement {
@@ -53,11 +64,17 @@ export class renderScene {
 		return this._canvas;
 	}
 
-	private _initScene() {
-		this._scene = new BABYLON.Scene(this._engine!);
-		this._scene.autoClear = true;
-		this._scene.autoClearDepthAndStencil = true;
-		this._scene.blockMaterialDirtyMechanism = true;
+	private async _initPongGame(): Promise<void> {
+		const pong = new PongGame();
+		await pong.start(this.pongScene!, this.canvas!, this.engine!)
+	}
+
+	private _initScene(): BABYLON.Scene {
+		const scene: BABYLON.Scene = new BABYLON.Scene(this._engine!);
+		scene.autoClear = true;
+		scene.autoClearDepthAndStencil = true;
+		scene.blockMaterialDirtyMechanism = true;
+		return scene;
 	}
 
 	private _initEngine() {
@@ -65,7 +82,7 @@ export class renderScene {
 	}
 
 	private _initIsoCamera() {
-		this._isocamera = new BABYLON.FreeCamera("isocamera", new BABYLON.Vector3(2, 15, -20), this._scene!);
+		this._isocamera = new BABYLON.FreeCamera("isocamera", new BABYLON.Vector3(2, 15, -20), this._homeScene!);
 		this._isocamera.position = new BABYLON.Vector3(2, 15, -20);
 		this._isocamera.mode = BABYLON.FreeCamera.ORTHOGRAPHIC_CAMERA;
 		this._isocamera.setTarget(BABYLON.Vector3.Zero());
@@ -79,26 +96,36 @@ export class renderScene {
 		this._isocamera.orthoBottom =( -this._engine!.getRenderHeight() * zoom);
 		// this._isocamera.detachControl();
 		this._isocamera.attachControl(this._canvas, true);
-		this._scene!.activeCamera = this._isocamera;
+		this._homeScene!.activeCamera = this._isocamera;
 	}
 
 	private _initLight() {
-		this._light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this._scene!);
+		this._light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this._homeScene!);
 	}
 
 	private _initGravity() {
-		this._scene!.collisionsEnabled = true; // activation colision
-		this._scene!.gravity = new BABYLON.Vector3(0, -0.5, 0); // activation gravity
+		this._homeScene!.collisionsEnabled = true; // activation colision
+		this._homeScene!.gravity = new BABYLON.Vector3(0, -0.5, 0); // activation gravity
 	}
 
-	get scene(): BABYLON.Scene | null {
-		return this!._scene;
+	get homeScene(): BABYLON.Scene | null {
+		return this!._homeScene;
 	}
+
+	get pongScene(): BABYLON.Scene | null {
+		return this!._pongScene;
+	}
+
 	get engine(): BABYLON.Engine | null{
 		return this!._engine;
 	}
+
 	get	canvas(): HTMLCanvasElement | null {
 		return this!._canvas;
+	}
+
+	set setState(state: number) {
+		this._state = state;
 	}
 
 	private	_renderingloop() {
@@ -113,19 +140,26 @@ export class renderScene {
 			delta = now - lastTime;
 			if (delta >= frameDuration) {
 				lastTime = now;
-				this._scene!.render();
+				switch (this._state) {
+					case state.HOME:
+						this._homeScene!.render();
+						break;
+					case state.PONG:
+						this._pongScene!.render();
+						break;
+				}
 			}
 		});
 	}
 
 	private _setdebugLayer() {
-		console.log("Debug layer:", this._scene?.debugLayer);
+		console.log("Debug layer:", this._homeScene?.debugLayer);
 		window.addEventListener('keydown', (ev) => {
 			if (ev.shiftKey && ev.ctrlKey && ev.altKey &&(ev.key == "i" || ev.key == "I")) {
-				if (this._scene!.debugLayer.isVisible())
-					this._scene!.debugLayer.hide();
+				if (this._homeScene!.debugLayer.isVisible())
+					this._homeScene!.debugLayer.hide();
 				else
-					this._scene!.debugLayer.show(); }
+					this._homeScene!.debugLayer.show(); }
 		});
 	}
 }

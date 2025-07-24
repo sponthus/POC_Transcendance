@@ -76,7 +76,7 @@ export class renderAsset {
 			var mesh: BABYLON.AbstractMesh = resBoat.meshes[0];
 			mesh.setEnabled(false);
 			var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
-			instance.position = new BABYLON.Vector3(-26 , -1, 0);
+			instance.position = new BABYLON.Vector3(-25 , -1, 0);
 			instance.rotation = new BABYLON.Vector3(0, 0, 0);
 			instance.setEnabled(true);
 			instance.scaling.scaleInPlace(2);
@@ -119,7 +119,7 @@ export class renderAsset {
 			mesh.setEnabled(false);
 			for (let index:number = 0; index < 25; index++) {
 				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
-				instance.position = new BABYLON.Vector3(-21, 0, index - 5);
+				instance.position = new BABYLON.Vector3(-20, 0, index - 5);
 				instance.setEnabled(true);
 				instance.getChildMeshes().forEach(child => {
 					child.checkCollisions = true;
@@ -135,7 +135,7 @@ export class renderAsset {
 			for (let index:number = 0; index < 2; index++) {
 				index + 5;
 				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
-				instance.position = new BABYLON.Vector3(-19, 0, (index - 2) * 3);
+				instance.position = new BABYLON.Vector3(-18, 0, (index - 2) * 3);
 				instance.setEnabled(true);
 				instance.getChildMeshes().forEach(child => {
 					child.checkCollisions = true;
@@ -149,7 +149,7 @@ export class renderAsset {
 			mesh.setEnabled(false);
 			for (let index:number = 0; index < 2; index++) {
 				var instance = mesh.instantiateHierarchy() as BABYLON.TransformNode;
-				instance.position = new BABYLON.Vector3(-19, 0,( index + 1) * 4);
+				instance.position = new BABYLON.Vector3(-18, 0,( index + 1) * 4);
 				instance.setEnabled(true);
 				instance.getChildMeshes().forEach(child => {
 					child.checkCollisions = true;

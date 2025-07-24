@@ -13,15 +13,15 @@ import { renderGround } from "./displaying/renderGround.js";
 import { renderAsset } from "./displaying/renderAsset";
 
 
-enum State {START = 0, GAME = 1, LOSE = 2, CUTSCENE = 3}
-
 export class App extends BasePage {
 
 	private	_renderScene?: renderScene;
+
 	private	_renderAsset?: renderAsset;
 	private	_renderMap?: renderMap;
 	private	_renderGround?: renderGround;
 	private _animation?: renderAnimation;
+
 	private _input?: PlayerInput;
 	private _slug: string;
 
@@ -33,24 +33,24 @@ export class App extends BasePage {
 		this._slug = slug;
 		console.log('user slug in App :' , this._slug);
 	}
+
 	async render(): Promise<void>  {
 		//document.body.innerHTML = "";
 		await this.renderBanner();
 
 		this._renderScene = new renderScene();
-		this._renderAsset = new renderAsset(this._renderScene.scene!);
+		this._renderAsset = new renderAsset(this._renderScene.homeScene!);
 		
 		
 		await this._renderAsset._load();
 		
-		this._animation = new renderAnimation(this._renderScene.scene!);
+		this._animation = new renderAnimation(this._renderScene.homeScene!);
 		this._animation.startidle();
-		this._renderMap = new renderMap(this._renderScene.scene!,  this._renderAsset.LoadedMap!);
-		this._renderGround = new renderGround(this._renderScene.scene!);
+		this._renderMap = new renderMap(this._renderScene.homeScene!,  this._renderAsset.LoadedMap!);
+		this._renderGround = new renderGround(this._renderScene.homeScene!);
 
-		this._input = new PlayerInput(this._renderScene.scene!, this._renderAsset, this._animation);
-		this._dropDown = new DropDownMenu(this._renderScene.scene!, this._slug);
-
+		this._input = new PlayerInput(this._renderScene.homeScene!, this._renderAsset, this._animation, this._renderScene);
+		// this._dropDown = new DropDownMenu(this._renderScene.scene!, this._slug);
 	}
 }
 

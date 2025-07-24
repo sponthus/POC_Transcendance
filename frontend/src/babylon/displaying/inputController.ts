@@ -6,7 +6,7 @@ import "@babylonjs/loaders/glTF";
 import { renderAnimation } from "./animationCharacter";
 import { renderAsset } from "../displaying/renderAsset";
 import { dialogueBox } from "./dialogueBox";
-import { PongGame } from "../game/pong_game";
+import { renderScene } from "./renderScene";
 
 export class PlayerInput {
 
@@ -20,14 +20,17 @@ export class PlayerInput {
 	private _dialogue?: dialogueBox;
 	private _inputMap: {[key: string]: boolean} = {}; //input keyboard map
 
-	constructor (scene: BABYLON.Scene, assets: renderAsset, animation: renderAnimation) {
+	private _renderscene: renderScene;
+
+	constructor (scene: BABYLON.Scene, assets: renderAsset, animation: renderAnimation, renderScene: renderScene) {
 		this._scene = scene;
 		this._player = assets.playermesh;
 		this._sandCastle = assets.sandcastle;
 		this._animation = animation;
 
+		this._renderscene = renderScene;
 		this._inGame = false;
-		this._dialogue = new dialogueBox("press 'E' to play") as dialogueBox;
+		this._dialogue = new dialogueBox("press 'E' to play", scene) as dialogueBox;
 
 		this._setInput();
 	}
@@ -93,16 +96,15 @@ export class PlayerInput {
 
 	private _interactsandCastle() {
 
-
 		const proximityThreshold = 5;
 		if (this._player && this._sandCastle)
 		{
 			const distance = BABYLON.Vector3.Distance(this._sandCastle.getAbsolutePosition(), this._player.position);
-			console.log("interation sand castle", distance);
-			console.log("pos sandcastle", this._sandCastle.getAbsolutePosition());
-			if (distance < proximityThreshold && !this._dialogue?._isvisible() && this._inGame == false) {
+			// console.log("interation sand castle", distance);
+			// console.log("pos sandcastle", this._sandCastle.getAbsolutePosition());
+			if (distance < proximityThreshold && !this._dialogue?._isvisible() && !this._inGame) {
 				this._dialogue!.showDialogue();
-				
+				console.log("showing dialogue", this._dialogue?._isvisible());
 			}
 			else if (distance > proximityThreshold && this._dialogue?._isvisible()) {
 				this._dialogue!.hideDialogue();
@@ -110,12 +112,15 @@ export class PlayerInput {
 			if (this._dialogue?._isvisible()) {
 				if (this._inputMap['e'] ||  this._inputMap['E']){
 					console.log("launch Game");
-					if (this._scene && this._scene.activeCamera)
-						this._scene.activeCamera.position = this._sandCastle.getAbsolutePosition();
+					if (this._scene && this._scene.activeCamera) {
+						console.log("pos active camera", this._scene.activeCamera.position);
+						// do animation cameras or loading scene for transition
+					}
 					this._dialogue!.hideDialogue();
 					this._inputMap['e'] = false;
 					this._inputMap['E'] = false;
 					this._inGame = true;
+					this._renderscene.setState = 1;
 				}
 			}
 		}
