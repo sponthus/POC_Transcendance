@@ -111,13 +111,13 @@ export class GamePhysics {
         		this._specialCooldown -= this._dt;
     		}
 			else
-				spellAvailableFX(this._scene,  new Babylon.Vector3(-6.15,0,-6.08));
+				spellAvailableFX(this._scene,  new Babylon.Vector3(-6, 1, -10));
 			if (this._specialCooldown2 > 0)
 			{
 				this._specialCooldown2 -= this._dt;
     		}
 			else
-				spellAvailableFX(this._scene,  new Babylon.Vector3(6.15,0,6.08));
+				spellAvailableFX(this._scene,  new Babylon.Vector3(6, 1, 10));
 
 		// fonction bobSpeak
 			this._timeBobSpeak -= this._dt;
