@@ -23,7 +23,7 @@ type AvailableGamesList = { ok: true; games: PendingGameInfos[] }
 export type AvailableGamesResult = AvailableGamesList | Failure;
 
 // POST /games/game request creates a new game for the user, taking names for players
-export async function createLocalGame(userId, player_a, player_b): Promise<Result> {
+export async function createLocalGame(userId: number, player_a: string, player_b: string): Promise<Result> {
     // TODO = Log check not functional
     const token = localStorage.getItem("token");
     if (!token)
@@ -45,6 +45,7 @@ export async function createLocalGame(userId, player_a, player_b): Promise<Resul
     const data = await res.json(); // Possibility to update state with data
 
     if (res.ok) {
+        window.alert("Frontend recieved data : " + data);
         return {
             ok: true,
             gameId: data.game_id,
@@ -75,7 +76,7 @@ export async function startGame(gameId: number): Promise<Result> {
         const request = await fetch(`api/games/${gameId}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/json',
                 // Auth header
             }
         });
@@ -83,7 +84,7 @@ export async function startGame(gameId: number): Promise<Result> {
             throw new Error('Unable to start game ' + request.status);
         }
         const data = await request.json();
-        return { ok: true, gameId: data.game_id, status: data.status, player_a: data.players[0], player_b: data.players[1] };
+        return { ok: true, gameId: data.game_id, status: data.status, player_a: data.player_a, player_b: data.player_b };
     }
     catch (error) {
         return { ok: false, error: error };
@@ -91,7 +92,7 @@ export async function startGame(gameId: number): Promise<Result> {
 }
 
 // GET /:userId/games = all available pending games for a user
-export async function getAvailableGames(userId): Promise<AvailableGamesResult> {
+export async function getAvailableGames(userId: number): Promise<AvailableGamesResult> {
     // TODO = Add log check
 
     if (!userId) {
@@ -101,7 +102,7 @@ export async function getAvailableGames(userId): Promise<AvailableGamesResult> {
         const response = await fetch(`/api/games/${userId}/games`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/json',
                 // Auth header
             }
         });

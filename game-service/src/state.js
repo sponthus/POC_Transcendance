@@ -42,7 +42,7 @@ class State {
             console.log(`User ${userId} not found`);
             return;
         }
-        if (!isUserConnected(ws)) {
+        if (!this.isUserConnected(userId)) {
             console.log(`User ${userId} not connected when trying to disconnect`);
             return;
         }

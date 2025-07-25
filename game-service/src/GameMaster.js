@@ -27,7 +27,7 @@ export default class GameMaster {
             console.log(`user ws not found`);
             throw new Error('ws not found for userId ' + userId);
         }
-        if (!this.state.isUserConnected(ws)) {
+        if (!this.state.isUserConnected(userId)) {
             console.log(`user not connected`);
             throw new Error('not connected: userId ' + userId);
         }

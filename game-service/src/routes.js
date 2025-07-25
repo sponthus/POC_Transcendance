@@ -7,7 +7,7 @@ export default async function routes (fastify, options) {
         async function (postRoutes) {
             postRoutes.post("/game",
                 createGame);
-            postRoutes.post("/:id",
+            postRoutes.post("/:gameId",
                 startGame);
         }
     );

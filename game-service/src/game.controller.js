@@ -88,7 +88,7 @@ export async function startGame(request, reply) {
             WHERE id = ?
         `);
         const games = statement.all(gameId);
-        if (!games || games.length !== 1 || games.status !== 'pending') {
+        if (!games || games.length !== 1 || games[0].status !== 'pending') {
             return reply.status(404).send({ error : 'No available game found' });
         }
         userId = games[0].id;
@@ -103,7 +103,8 @@ export async function startGame(request, reply) {
 
     try {
         console.log("Trying to create game server with gameId " + gameId);
-        State.getGameMaster().createServer(gameId, userId);
+        State.getInstance().getGameMaster().createServer(gameId, userId);
+        console.log("sending data : " + gameId + status + player_a + player_b);
         return reply.status(200).send({ gameId: gameId, status: status, player_a: player_a, player_b: player_b });
     }
     catch (error) {
