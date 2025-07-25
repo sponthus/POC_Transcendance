@@ -35,6 +35,7 @@ export async function renderRoute(path: string) {
 					console.log("state user :", state.user)
 					console.log("user slug :", state.user?.slug);
 					currentPage = new App(_slug);
+					
 				}
                 break;
         }

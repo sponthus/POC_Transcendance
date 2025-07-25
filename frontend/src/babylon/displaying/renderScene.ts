@@ -5,8 +5,13 @@ import "@babylonjs/loaders/glTF";
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import { PongGame } from "../pong/pong_game";
+import { LoadingScreen } from "./loadingScreen";
 
-enum state {HOME = 0, PONG = 1};
+enum state {HOME = 0, PONG = 1, LOAD = 2};
+
+// function sleep(ms: number) {
+// 	return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
 export class renderScene {
 
@@ -27,8 +32,10 @@ export class renderScene {
 		this._canvas = this._initCanvas();
 
 		this._initEngine();
+	
 		this._homeScene = this._initScene();
 		this._pongScene = this._initScene();
+	
 		this._initPongGame();
 		this._initGravity();
 		this._initIsoCamera();
@@ -55,6 +62,8 @@ export class renderScene {
 		document.body.style.padding = "0";
 		//create the canvas html element and attach it to the webpage
 		this._canvas = document.createElement("canvas");
+		if (!this._canvas)
+			throw new Error("Canvas failed to load");
 		this._canvas.style.width = "100%";
 		this._canvas.style.height = "100%";
 		this._canvas.id = "gameCanvas";
@@ -66,11 +75,15 @@ export class renderScene {
 
 	private async _initPongGame(): Promise<void> {
 		const pong = new PongGame();
+		if (!pong)
+			throw new Error("pongGame failed to load");
 		await pong.start(this.pongScene!, this.canvas!, this.engine!)
 	}
 
 	private _initScene(): BABYLON.Scene {
 		const scene: BABYLON.Scene = new BABYLON.Scene(this._engine!);
+		if (!scene)
+			throw new Error("scene failed to Load");
 		scene.autoClear = true;
 		scene.autoClearDepthAndStencil = true;
 		scene.blockMaterialDirtyMechanism = true;
@@ -79,10 +92,17 @@ export class renderScene {
 
 	private _initEngine() {
 		this._engine = new BABYLON.Engine(this._canvas, true);
+		if (!this._engine)
+			throw new Error("Engine Failed to load");
+		// var loadingScreen = new LoadingScreen(this.canvas!);
+		// if (this.engine)
+		// 	this.engine.loadingScreen = loadingScreen;
 	}
 
 	private _initIsoCamera() {
 		this._isocamera = new BABYLON.FreeCamera("isocamera", new BABYLON.Vector3(2, 15, -20), this._homeScene!);
+		if (!this._isocamera)
+			throw new Error("isoCamera failed to load");
 		this._isocamera.position = new BABYLON.Vector3(2, 15, -20);
 		this._isocamera.mode = BABYLON.FreeCamera.ORTHOGRAPHIC_CAMERA;
 		this._isocamera.setTarget(BABYLON.Vector3.Zero());
@@ -95,63 +115,85 @@ export class renderScene {
 		this._isocamera.orthoTop = (this._engine!.getRenderHeight() * zoom);
 		this._isocamera.orthoBottom =( -this._engine!.getRenderHeight() * zoom);
 		// this._isocamera.detachControl();
+		/***************************for debug to delete at end of project***************************/
 		this._isocamera.attachControl(this._canvas, true);
-		this._homeScene!.activeCamera = this._isocamera;
+		if (this._homeScene)
+			this._homeScene.activeCamera = this._isocamera;
 	}
 
 	private _initLight() {
 		this._light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this._homeScene!);
+		if (!this._light)
+			throw new Error("light failed to load");
 	}
 
 	private _initGravity() {
-		this._homeScene!.collisionsEnabled = true; // activation colision
-		this._homeScene!.gravity = new BABYLON.Vector3(0, -0.5, 0); // activation gravity
+		if (this._homeScene) {
+			this._homeScene.collisionsEnabled = true; // activation colision
+			this._homeScene.gravity = new BABYLON.Vector3(0, -0.5, 0); // activation gravity
+		}
 	}
 
 	get homeScene(): BABYLON.Scene | null {
-		return this!._homeScene;
+		if (this._homeScene)
+			return this._homeScene;
+		return null;
 	}
 
 	get pongScene(): BABYLON.Scene | null {
-		return this!._pongScene;
+		if (this._pongScene)
+			return this._pongScene;
+		return null;
 	}
 
-	get engine(): BABYLON.Engine | null{
-		return this!._engine;
+	get engine(): BABYLON.Engine | null {
+		if (this._engine)
+			return this._engine;
+		return null;
 	}
 
 	get	canvas(): HTMLCanvasElement | null {
-		return this!._canvas;
+		if (this._canvas)
+			return this._canvas;
+		return null;
 	}
 
 	set setState(state: number) {
 		this._state = state;
 	}
 
-	private	_renderingloop() {
+	private _renderingloop() {
 		let lastTime = 0;
 		const targetFPS = 60;
 		const frameDuration = 1000 / targetFPS;
 		let now;
 		let delta;
 
-		this._engine!.runRenderLoop(() => {
+		this._engine!.runRenderLoop(() =>  {
 			now = performance.now();
 			delta = now - lastTime;
 			if (delta >= frameDuration) {
 				lastTime = now;
 				switch (this._state) {
 					case state.HOME:
-						this._homeScene!.render();
+						if (this._homeScene)
+							this._homeScene.render();
 						break;
 					case state.PONG:
-						this._pongScene!.render();
+						if (this._pongScene)
+							this._pongScene.render();
 						break;
+					default:break;
 				}
 			}
 		});
+	
+		window.addEventListener('resize', () => {
+		    this._engine!.resize();
+		});
 	}
 
+	/***************************for debug to delete at end of project***************************/
 	private _setdebugLayer() {
 		console.log("Debug layer:", this._homeScene?.debugLayer);
 		window.addEventListener('keydown', (ev) => {

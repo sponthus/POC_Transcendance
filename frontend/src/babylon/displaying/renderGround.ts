@@ -4,7 +4,6 @@ import "@babylonjs/core/Debug/debugLayer";
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as BABYLON_MATERIALS from "@babylonjs/materials";
-// import { ImportMeshAsync } from "@babylonjs/core/Loading/sceneLoader";
 
 export class renderGround {
 
@@ -16,22 +15,30 @@ export class renderGround {
 
 	constructor(scene: BABYLON.Scene) {
 		this._scene = scene;
-		this._initGround();
-		
+	}
+
+	async _loadground() {
+		await this._initGround();
+		await this._makingSkybox();
+		await this._renderWater();	
 	}
 
 	private async _makingSkybox() : Promise<void> {
 		/***************create and set up skybox************************/
 		this._skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 150.0}, this._scene);
+		if (!this._skybox)
+			throw new Error("skybox failed to load");
 		this._skyboxMaterial = new BABYLON.StandardMaterial("skybox_material", this._scene);
+		if (!this._skyboxMaterial)
+			throw new Error("skybox materials failed to load")
 		this._skyboxMaterial.backFaceCulling = false;
 		this._skyboxMaterial.disableLighting = true;
 		this._skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
 		this._skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
 		this._skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("/asset/skybox/skybox", this._scene, ["_px.png","_nx.png", "_py.png", "_ny.png", "_pz.png", "_nz.png"]);
 		(this._skyboxMaterial.reflectionTexture as BABYLON.CubeTexture).onLoadObservable.add(() => {
-   		    console.log("Skybox texture loaded successfully");
-   		});
+			console.log("Skybox texture loaded successfully");
+		});
 		this._skybox.material = this._skyboxMaterial;
 		this._skybox.infiniteDistance = true;
 	}
@@ -40,16 +47,13 @@ export class renderGround {
 		/*********create ground*************/
 		this._ground = BABYLON.MeshBuilder.CreateGround("ground", {width: screen.width, height: screen.height, subdivisions: 64},this._scene);
 		this._ground.position = new BABYLON.Vector3(5, -3, 5);
-		await this._makingSkybox();
-		await this._renderWater();
-		if (this._waterMaterial)
-			this._ground.material = this._waterMaterial;
 	}
 
 	private async _renderWater(): Promise<void> {
 		/***************create and set up water materials************************/
 		this._waterMaterial = new BABYLON_MATERIALS.WaterMaterial("water_material", this._scene, new BABYLON.Vector2(100, 100));
-
+		if (!this._waterMaterial)
+			throw new Error("WaterMaterial failed to load");
 		this._waterMaterial.bumpTexture = new BABYLON.Texture("/asset/pic/26672.jpg", this._scene);
 		(this._waterMaterial.bumpTexture as BABYLON.Texture).onLoadObservable.add(() => {
 			console.log("succesfully load Bump texture");
@@ -67,5 +71,7 @@ export class renderGround {
 		this._waterMaterial.colorBlendFactor = 0.1;
 		this._waterMaterial.alpha = 1.6; 
 		this._waterMaterial.addToRenderList(this._skybox);
+		if (this._ground && this._waterMaterial)
+			this._ground.material = this._waterMaterial;
 	}
 }
