@@ -32,7 +32,15 @@ fastify.register(fastifyJwt, {
 fastify.register(dbConnector);
 
 // TODO implement routes
-await fastify.register(routes);
+
+//c'est ici qu'est appeler route.js
+// appelle la fonction : export default async function routes(fastify, options)
+// register sert a déclarer les routes dans un fichier séparé
+
+console.log("Test de nouvelles routes");
+await fastify.register(newRoutes.js);
+
+//await fastify.register(routes);
 
 // fastify.get('/', async (req, reply) => {
 //     return { message: 'User service received your request!' };
