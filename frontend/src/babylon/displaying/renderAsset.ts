@@ -43,11 +43,12 @@ export class renderAsset {
 
 	private async _loadPlayer() {
 		/******************************load player******************************/
-		const result = await ImportMeshAsync("/asset/Characters/Models/GLBformat/character-q.glb", this._scene);
+		const result = await ImportMeshAsync("/asset/Characters/Models/GLBformat/character-b.glb", this._scene);
 		if (result)
 			console.log("Meshes Player import succesfully", result.meshes);
 		this._setUpMesh(result, new BABYLON.Vector3(5, 0, 5), 1.5);
 		this._player = result.meshes[0] as BABYLON.Mesh;
+		// this._player.setEnabled(false);
 		if (!this._player)
 			console.log("player not initialized:");
 		this._addColisionPlayer(this._player);

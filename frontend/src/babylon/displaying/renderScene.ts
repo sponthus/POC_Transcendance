@@ -190,6 +190,7 @@ export class renderScene {
 	
 		window.addEventListener('resize', () => {
 		    this._engine!.resize();
+			location.reload();
 		});
 	}
 

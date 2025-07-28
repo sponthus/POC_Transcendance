@@ -13,6 +13,7 @@ import { renderGround } from "./displaying/renderGround.js";
 import { renderAsset } from "./displaying/renderAsset";
 import { sleep } from "./displaying/dialogueBox";
 
+
 export class App extends BasePage {
 
 	private	_renderScene?: renderScene;
@@ -49,6 +50,7 @@ export class App extends BasePage {
 				this._animation.startidle();
 				this._animation.startidlenpc();
 				this._renderMap = new renderMap(this._renderScene.homeScene,  this._renderAsset.LoadedMap);
+		
 				this._renderGround = new renderGround(this._renderScene.homeScene);
 				await this._renderGround._loadground();
 		

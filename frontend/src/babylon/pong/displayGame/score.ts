@@ -1,4 +1,5 @@
 import * as Babylon from "@babylonjs/core";
+import { dialogueBox } from "../../displaying/dialogueBox";
 
 export class Score {
 	private _scene: Babylon.Scene;
