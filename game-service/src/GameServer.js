@@ -1,3 +1,4 @@
+import { gameEventEmitter } from "./GameEventEmitter.js";
 
 // Handles game logic for 1 game actually running
 export default class GameServer {
@@ -13,6 +14,9 @@ export default class GameServer {
 
         this.setHandlers();
         setInterval(() => {
+            if (this.state === 'paused') {
+                return;
+            }
             // Calc ball position here with dx dy then send to ws the position
             // console.log("Calculating positions");
         }, 50);
@@ -20,9 +24,16 @@ export default class GameServer {
 
     setHandlers() {
         ws.on('close', () => {
+
             this.destroy();
             // TODO Modifier state de la partie
         });
         // Add handler for incoming message with paddle-move
+    }
+
+    startGame() {
+        this.state = 'playing';
+
+        gameEventEmitter.emitGameEvent('game:started', this.gameId);
     }
 }

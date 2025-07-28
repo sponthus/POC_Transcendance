@@ -1,7 +1,9 @@
 import fp from "fastify-plugin";
 import Database from "better-sqlite3";
 import env from "../config/env.js";
+import DatabaseEventHandler from "./DatabaseEventHandler.js";
 
+// TODO make me a class ? with methods to modify me ?
 async function dbConnector(fastify, options) {
     const dbFile = env.gamesDbFile || "./games.db";
     const db = new Database(dbFile, { verbose: console.log });
@@ -46,6 +48,9 @@ async function dbConnector(fastify, options) {
         );
     `);
 
+    // TODO Will become this instead of db
+    this.dbEventHandler = new DatabaseEventHandler(db);
+
     fastify.decorate('db', db);
 
     fastify.addHook('onClose', (fastify, done) => {
@@ -54,6 +59,8 @@ async function dbConnector(fastify, options) {
     });
 
     console.log("Database and games / tournaments tables created successfully");
+
+    // All this = constructor, then methods = updateGameStatus, updatePlayerScore, recordFinalScores
 }
 
 export default fp(dbConnector);
