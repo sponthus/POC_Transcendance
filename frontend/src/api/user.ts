@@ -49,7 +49,7 @@ export async function loginUser(username: string, password: string): Promise<Log
 
 // POST /api/user request to register a new user with username + login, updates local infos about user
 export async function registerUser(username: string, password: string): Promise<RegisterResult> {
-    const res = await fetch('/api/user', {
+    const res = await fetch('/api/user/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

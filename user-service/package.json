@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon --watch src --watch controllers --watch config src/index.js"
+    "dev": "nodemon --watch Dockerfile src --watch controllers --watch config src/index.js --watch config entrypoint.sh"
   },
   "author": "sponthus",
   "dependencies": {

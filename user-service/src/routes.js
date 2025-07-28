@@ -11,7 +11,7 @@ export default async function routes(fastify, options) {
             //     console.log('preHandler called for:', request.url);
             // });
 
-            postRoutes.post("/",
+            postRoutes.post("/register",
                 createUser);
             postRoutes.post("/login",
                 loginUser);

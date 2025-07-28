@@ -51,6 +51,13 @@ function generateUniqueSlug(baseSlug, db) {
 
 export async function createUser(request, reply) {
     const { username, password } = request.body;
+
+        console.log("\nORIGINEL :\n");
+        console.log("\nREQUEST :\n");
+        console.log("URL : " + request.url + "\n");
+        console.log("username : " + request.body.username + "\n");
+        console.log("password : " + request.body.password + "\n");
+
     console.log("Creating user " + username + ' ' + password);
 
     const valid = validatePost({ username, password });
