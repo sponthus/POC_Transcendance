@@ -9,17 +9,24 @@ async function dbConnector(fastify, options) {
     const dbFile = env.dbFile || "./users.db";
     const db = new Database(dbFile, { verbose: console.log });
 
-    db.exec(`
+    //enlever temporairement
+    //slug TEXT UNIQUE NOT NULL,
+    //avatar TEXT NOT NULL,
+
+    try {
+        db.exec(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
-            slug TEXT UNIQUE NOT NULL,
             pw_hash TEXT NOT NULL,
-            avatar TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     `);
-
+    }
+    catch (err)
+    {
+        console.log("Error : database init failed " + err.message);
+    }
     fastify.decorate("db", db); // Makes db connection accessible throughout application as fastify.db
 
     fastify.addHook("onClose", (fastify, done) => {
