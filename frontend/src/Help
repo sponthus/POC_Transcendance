@@ -22,9 +22,9 @@ on tsconfig.json add '"scripts" : {
 for user backend:
 stateGame : number ==> knowing if we are on pong game or on homegame (0 or 1)
 stateUser: string ==> state user
-position Player: vector3 ==> position of player in the Home map (vector of 3 int x y z)
+Home position Player: vector3 ==> position of player in the Home map (vector of 3 int x y z)
 frienlist: friendlist of user
-name: string ==> name of user
+username: string ==> name of user
 nickname: string ==> nickname of user
 charactere asset: number ==> knowing the characters asset of player 
 color: vector3 ==> color of the background (r g b) (optionnal)

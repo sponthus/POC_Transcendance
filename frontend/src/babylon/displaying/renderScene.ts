@@ -7,7 +7,7 @@ import "@babylonjs/inspector";
 import { PongGame } from "../pong/pong_game";
 import { LoadingScreen } from "./loadingScreen";
 
-enum state {HOME = 0, PONG = 1, LOAD = 2};
+enum state {HOME = 0, PONG = 1};
 
 // function sleep(ms: number) {
 // 	return new Promise(resolve => setTimeout(resolve, ms));
