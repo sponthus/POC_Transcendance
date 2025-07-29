@@ -92,6 +92,7 @@ export async function createUser(request, reply) {
             "INSERT INTO users (username, slug, avatar, pw_hash) VALUES (?, ?, ?, ?)"
         );
         const result = insertStatement.run(username, slug, avatar, pw_hash);
+        //recupere l'id de la cle primaire autoincrement
         const id = result.lastInsertRowid;
         const token = await generateToken(reply, username, slug);
         return reply.status(200).send({ token, username: username, slug: slug });

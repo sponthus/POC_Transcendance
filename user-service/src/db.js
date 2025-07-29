@@ -10,14 +10,14 @@ async function dbConnector(fastify, options) {
     const db = new Database(dbFile, { verbose: console.log });
 
     //enlever temporairement
-    //slug TEXT UNIQUE NOT NULL,
-    //avatar TEXT NOT NULL,
 
     try {
         db.exec(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
+            slug TEXT UNIQUE NOT NULL,
+            avatar TEXT NOT NULL,
             pw_hash TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
