@@ -49,6 +49,10 @@ export class BabylonSceneBuilder
 	{
 		this._camera = new Babylon.ArcRotateCamera("camera", 3.14, 0, 25, Babylon.Vector3.Zero(), this._scene);
 		this._camera.attachControl(this._canvas, true);
+
+		this._camera.upperBetaLimit = 1.3;
+		this._camera.lowerRadiusLimit = 10;
+		this._camera.upperRadiusLimit = 30;
 	}
 
 	private initializeLight()
