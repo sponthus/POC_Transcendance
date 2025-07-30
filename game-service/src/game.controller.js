@@ -14,17 +14,12 @@ export async function createGame(request, reply) {
         return reply.status(400).send({error: 'No database connection found.'});
     }
 
-    const status = `pending`;
     try {
-        const insertStatement = db.prepare(
-          "INSERT INTO games (status, id_user, player_a, player_b) VALUES (?, ?, ?, ?)"
-        );
-        const result = insertStatement.run(status, userId, player_a, player_b);
-        const id = result.id;
-        return reply.status(200).send({game_id: id, status: status, player_a: player_a, player_b: player_b});
+        const result = await db.createGame(userId, player_a, player_b);
+        return reply.status(201).send(result);
     }
     catch (error) {
-        return reply.status(400).send({ error: "Game creation failed " + error });
+        return reply.status(400).send({ error: "Game creation failed " + error.message });
     }
 }
 
@@ -42,18 +37,12 @@ export async function getGamesForUserId(request, reply) {
 
     try {
         console.log("Trying to find games with userId " + userId);
-        const statement = await db.prepare(
-            `SELECT id, status, player_a, player_b, score_a, score_b, created_at
-             FROM games
-             WHERE id_user = ? AND status = 'pending'
-             ORDER BY created_at DESC`
-        );
-        const games = statement.all(userId);
+        const games = await db.getGamesForUserId(userId);
         if (!games || games.length === 0) {
             return reply.status(200).send([]);
         }
         console.log(`Found ${games.length} games for user ${userId}`);
-        return reply.send(games);
+        return reply.status(200).send(games);
     }
     catch (error) {
         console.error('Error fetching games:', error);
@@ -82,16 +71,12 @@ export async function startGame(request, reply) {
     // Check if the game exists and is available to play
     try {
         console.log("Trying to find games with gameId " + gameId);
-        const statement = await db.prepare(`
-            SELECT id, status, id_user, player_a, player_b
-            FROM games
-            WHERE id = ?
-        `);
-        const games = statement.all(gameId);
+        const games = await db.getGame(gameId);
         if (!games || games.length !== 1 || games[0].status !== 'pending') {
             return reply.status(404).send({ error : 'No available game found' });
         }
-        userId = games[0].id;
+        // TODO = Add authentication
+        userId = games[0].id_user;
         player_a = games[0].player_a;
         player_b = games[0].player_b;
         status = games[0].status;
@@ -102,13 +87,17 @@ export async function startGame(request, reply) {
     }
 
     try {
-        console.log("Trying to create game server with gameId " + gameId);
+        console.log("Trying to create game server with gameId " + gameId + " and userId " + userId);
         State.getInstance().getGameMaster().createServer(gameId, userId);
         console.log("sending data : " + gameId + status + player_a + player_b);
-        return reply.status(200).send({ gameId: gameId, status: status, player_a: player_a, player_b: player_b });
+        return reply.status(200).send({ 
+            gameId: gameId, 
+            status: status, 
+            player_a: player_a, 
+            player_b: player_b 
+        });
     }
     catch (error) {
         console.error('Error creating game server:', error);
-        // TODO = Cancel game status
     }
 }

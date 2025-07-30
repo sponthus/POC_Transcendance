@@ -10,10 +10,11 @@ export default class GameServer {
         this.state = 'paused';
         console.log("Game server up");
 
-        this.ball = {x: 50, y: 50, dx: 0, dy: 0};
+        this.scoreA = 0;
+        this.scoreB = 0;
 
         this.setHandlers();
-        setInterval(() => {
+        this.intervalId = setInterval(() => {
             if (this.state === 'paused') {
                 return;
             }
@@ -23,17 +24,25 @@ export default class GameServer {
     }
 
     setHandlers() {
-        ws.on('close', () => {
-
+        this.ws.on('close', () => {
+            gameEventEmitter.emitGameEvent('player:disconnected', this.gameId);
             this.destroy();
-            // TODO Modifier state de la partie
         });
         // Add handler for incoming message with paddle-move
     }
 
     startGame() {
         this.state = 'playing';
-
         gameEventEmitter.emitGameEvent('game:started', this.gameId);
+    }
+
+    endGame() {
+        this.state = 'finished';
+        gameEventEmitter.emitGameEvent('game:ended', this.gameId, this.scoreA, this.scoreB);
+    }
+
+    destroy() {
+        console.log("🔴 GameServer stopped");
+        clearInterval(this.intervalId);
     }
 }

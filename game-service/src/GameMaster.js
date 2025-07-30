@@ -21,6 +21,7 @@ export default class GameMaster {
         return GameMaster.instance;
     }
 
+    // gameId has been checked when server creation is called
     createServer(gameId, userId) {
         const ws = this.state.getWsByUserId(userId);
         if (!ws) {
@@ -33,4 +34,6 @@ export default class GameMaster {
         }
         this.games.set(gameId, new GameServer(gameId, userId, ws));
     }
+
+    // TODO = Destroy the GameServer class if game is finished
 }

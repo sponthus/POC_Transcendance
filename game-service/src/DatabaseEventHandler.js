@@ -1,56 +1,56 @@
-import { GameEventEmitter } from './GameEventEmitter.js';
+import { gameEventEmitter } from './GameEventEmitter.js';
 
 // Recieves events
 class DatabaseEventHandler {
-    constructor(database) {
-        this.db = database;
+    constructor(DatabaseHandler) {
+        this.DatabaseHandler = DatabaseHandler;
         this.setupEventListeners();
     }
 
     setupEventListeners() {
         // Watches for certain messages
-
-        GameEventEmitter.on('game:started', this.handleGameStarted.bind(this));
-        GameEventEmitter.on('player:disconnected', this.handlePlayerDisconnected.bind(this));
-        GameEventEmitter.on('player:scored', this.handlePlayerScored.bind(this));
-        GameEventEmitter.on('game:ended', this.handleGameEnded.bind(this));
+        gameEventEmitter.on('game:started', this.handleGameStarted.bind(this));
+        gameEventEmitter.on('player:disconnected', this.handlePlayerDisconnected.bind(this));
+        gameEventEmitter.on('player:scored', this.handlePlayerScored.bind(this));
+        gameEventEmitter.on('game:ended', this.handleGameEnded.bind(this));
 
         console.log('📊 Database event service listening');
     }
 
-    async handleGameStarted(eventData) {
+    async   handleGameStarted(eventData) {
         console.log('💾 Updating DB: Game ended', eventData.gameId);
 
         try {
-            await this.db.updateGameStatus(eventData.gameId, 'ongoing');
-            // await this.db.recordGameEvent(eventData.gameId, 'game_started', eventData);
+            await this.DatabaseHandler.updateGameStatus(eventData.gameId, 'ongoing');
+            // await this.DatabaseHandler.recordGameEvent(eventData.gameId, 'game_started', eventData);
         } catch (error) {
-            console.error('Error updating DB:', error);
+            console.error('Error updating DatabaseHandler:', error);
             // Emit error event ?
             // EventEmitter.emitGameEvent('database:error', eventData.gameId, { error: error.message });
         }
     }
 
-    async handlePlayerDisconnected(eventData) {
-        console.log('💾 Update DB: Disconnected player', eventData);
+    async   handlePlayerDisconnected(eventData) {
+        console.log('💾 Update DatabaseHandler: Disconnected player', eventData);
 
-        await this.db.updateGameStatus(eventData.gameId, 'paused');
-        // await this.db.recordPlayerEvent(eventData.gameId, eventData.playerId, 'disconnected');
+        await this.DatabaseHandler.updateGameStatus(eventData.gameId, 'canceled');
+        // await this.DatabaseHandler.recordPlayerEvent(eventData.gameId, eventData.playerId, 'disconnected');
     }
 
-    async handlePlayerScored(eventData) {
+    async   handlePlayerScored(eventData) {
         console.log('💾 Loading score:', eventData);
 
-        await this.db.updatePlayerScore(eventData.gameId, eventData.playerId, eventData.newScore);
-        // await this.db.recordGameEvent(eventData.gameId, 'player_scored', eventData);
+        await this.DatabaseHandler.updateScore(eventData.gameId, eventData.newScoreA, eventData.newScoreB);
+        // await this.DatabaseHandler.recordGameEvent(eventData.gameId, 'player_scored', eventData);
     }
 
-    async handleGameEnded(eventData) {
-        console.log('💾 Ending game in DB:', eventData.gameId);
+    async   handleGameEnded(eventData) {
+        console.log('💾 Ending game in DatabaseHandler:', eventData.gameId);
 
-        await this.db.updateGameStatus(eventData.gameId, 'finished');
-        await this.db.recordFinalScores(eventData.gameId, eventData.finalScores);
-        // await this.db.updateGameDuration(eventData.gameId, eventData.duration);
+        await this.DatabaseHandler.updateGameStatus(eventData.gameId, 'finished');
+        await this.DatabaseHandler.updateScore(eventData.gameId, eventData.scoreA, eventData.scoreB);
+        await this.DatabaseHandler.recordWinner(eventData.gameId);
+        // await this.DatabaseHandler.updateGameDuration(eventData.gameId, eventData.duration);
     }
 }
 

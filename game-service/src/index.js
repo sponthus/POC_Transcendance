@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { WebSocketServer } from "ws";
 import logger from "../config/logger.js";
-import dbConnector from "./db.js";
+import DatabaseConnector from "./DatabaseConnector.js";
 import routes from "./routes.js";
 import WebSocketManager from "./WebSocketManager.js";
 
@@ -16,12 +16,7 @@ const app = Fastify({
     logger: logger,
 });
 
-// // To test service
-// app.get("/", async (req, reply) => {
-//     return { message: "Game service received your request!" };
-// });
-
-app.register(dbConnector);
+app.register(DatabaseConnector);
 
 await app.register(routes);
 

@@ -1,5 +1,4 @@
 import GameMaster from './GameMaster.js';
-import DatabaseEventHandler from "./dbEventHandler.js";
 
 class State {
     static instance = null;
