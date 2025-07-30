@@ -1,6 +1,6 @@
 import { gameEventEmitter } from "./GameEventEmitter.js";
 
-// Handles game logic for 1 game actually running
+// Handles game logic for one game actually running
 export default class GameServer {
     
     constructor(gameId, userId, ws) {
