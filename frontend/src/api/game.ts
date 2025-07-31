@@ -2,9 +2,14 @@ import { State } from "../core/state.js";
 
 const state = State.getInstance();
 
-type Result =
+type Failure = { ok: false; error: string };
+type Success = { ok: true; message: string };
+
+type SimpleResult = Success | Failure;
+
+type GameInfoResult =
     | { ok: true; gameId: number, status: string, player_a: string, player_b: string }
-    | { ok: false; error: string }
+    | Failure
 
 type PendingGameInfos = {
     id: number;
@@ -16,14 +21,12 @@ type PendingGameInfos = {
     created_at: string;
 }
 
-type Failure = { ok: false; error: string };
-
 type AvailableGamesList = { ok: true; games: PendingGameInfos[] }
 
 export type AvailableGamesResult = AvailableGamesList | Failure;
 
 // POST /games/game request creates a new game for the user, taking names for players
-export async function createLocalGame(userId: number, player_a: string, player_b: string): Promise<Result> {
+export async function createLocalGame(userId: number, player_a: string, player_b: string): Promise<GameInfoResult> {
     // TODO = Log check not functional
     const token = localStorage.getItem("token");
     if (!token)
@@ -45,7 +48,6 @@ export async function createLocalGame(userId: number, player_a: string, player_b
     const data = await res.json(); // Possibility to update state with data
 
     if (res.ok) {
-        window.alert("Frontend recieved data : " + data);
         return {
             ok: true,
             gameId: data.game_id,
@@ -55,7 +57,7 @@ export async function createLocalGame(userId: number, player_a: string, player_b
         };
     } else {
         // Invalid or expired token = Disconnect
-        alert("Error starting game : " + data?.error || "Game start impossible");
+        alert("API Error starting game : " + data?.error || "Game start impossible");
         return { ok: false, error: data?.error || "Game start impossible" };
     }
 }
@@ -66,7 +68,7 @@ export async function createLocalGame(userId: number, player_a: string, player_b
 //   status: "ongoing",
 //   players: [string, string]
 // }
-export async function startGame(gameId: number): Promise<Result> {
+export async function startGame(gameId: number): Promise<GameInfoResult> {
     // TODO = Add log check
 
     if (!gameId) {
@@ -117,6 +119,26 @@ export async function getAvailableGames(userId: number): Promise<AvailableGamesR
 
     } catch (error) {
         console.error('Error fetching available games:', error);
+        return { ok: false, error: error };
+    }
+}
+
+export async function deleteGame(gameId: number): Promise<SimpleResult> {
+    // TODO = Add log check
+    if (!gameId)
+        return {ok: false, error: 'gameId required'};
+    try {
+        const response = await fetch(`/api/games/${gameId}`, {
+            method: 'DELETE',
+            headers:  {
+                // Auth header
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Unable to delete game because ` + response.status);
+        }
+        return { ok: true, message: gameId + ' game has been deleted' };
+    } catch(error) {
         return { ok: false, error: error };
     }
 }

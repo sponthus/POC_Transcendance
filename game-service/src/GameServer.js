@@ -39,6 +39,7 @@ export default class GameServer {
     endGame() {
         this.state = 'finished';
         gameEventEmitter.emitGameEvent('game:ended', this.gameId, this.scoreA, this.scoreB);
+        this.destroy();
     }
 
     destroy() {

@@ -55,7 +55,7 @@ export default class DatabaseHandler {
     }
 
     // Test ok
-    async createGame(userId, playerA, playerB) {
+    async   createGame(userId, playerA, playerB) {
         return new Promise((resolve, reject) => {
             try {
                 const stmt = this.db.prepare(`
@@ -95,7 +95,6 @@ export default class DatabaseHandler {
 
     // Test ok
     async   getGame(gameId) {
-        console.log("Test me !");
         return new Promise((resolve, reject) => {
             try {
                 const stmt = this.db.prepare(`
@@ -112,6 +111,26 @@ export default class DatabaseHandler {
         });
     }
 
+    // Test me please
+    async   deleteGame(gameId) {
+        console.log('test me plz');
+        return new Promise((resolve, reject) => {
+            try {
+                const stmt = this.db.prepare(`
+                    DELETE FROM games
+                    WHERE id = ?
+                `);
+                const res = stmt.run(gameId);
+                if (res.changes === 0) {
+                    throw new Error("No game deleted with the given gameId");
+                }
+                resolve(res);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
     // todo update diff dates when begin / cancel / end
     async   updateGameStatus(gameId, status) {
         return new Promise((resolve, reject) => {
@@ -123,7 +142,7 @@ export default class DatabaseHandler {
                 `);
                 const res = stmt.run(status, gameId);
                 if (res.changes === 0) {
-                    return reject(new Error("No game found with the given gameId"));
+                    throw new Error("No game found with the given gameId");
                 }
                 resolve(res);
             } catch (err) {
@@ -153,7 +172,7 @@ export default class DatabaseHandler {
     }
 
     async recordWinner(gameId) {
-        console.log("Implement me !");
+        console.log("test me !");
         return new Promise((resolve, reject) => {
             try {
                 const stmt = this.db.prepare(`

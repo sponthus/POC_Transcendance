@@ -2,7 +2,7 @@ import { navigate } from '../core/router.js';
 import { checkLog } from "../api/check-log.js";
 import { BasePage } from "./BasePage.js";
 import { State } from "../core/state.js";
-import { createLocalGame, getAvailableGames, startGame } from "../api/game.ts"
+import { createLocalGame, getAvailableGames, startGame, deleteGame } from "../api/game.js"
 
 const state = State.getInstance();
 
@@ -32,16 +32,28 @@ export class GamePage extends BasePage {
             state.launchGame(gameId);
             await navigate(`/local`);
 
-        }
-        catch (error) {
-            alert(error.message);
+        } catch (error) {
+            alert(error);
             await navigate('/game');
         }
     }
 
+    async deleteGame(gameId: number) {
+        try {
+            const request = await deleteGame(gameId);
+            if (!request.ok) {
+                throw new Error('Unable to delete game : ' + request.error);
+            }
+            alert("Game deleted");
+        } catch (error) {
+            alert(error);
+        }
+        await this.refreshAvailableGames();
+    }
+
     async refreshAvailableGames() {
         const availableGamesDiv = document.getElementById('available-games');
-        if (!availableGamesDiv) {
+        if (!availableGamesDiv || !state.user?.id) {
             console.log('availableGames debug');
             this.app.innerHTML = `Error`;
             return;
@@ -53,7 +65,6 @@ export class GamePage extends BasePage {
                 availableGamesDiv.innerHTML = 'Error loading games.';
                 return;
             }
-
             const games = result.games;
 
             // Render list of available games, possibility to show more info about each game if needed
@@ -69,17 +80,27 @@ export class GamePage extends BasePage {
                     <button class="play-btn" data-game-id="${game.id}" style="background: #4CAF50; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
                         ▶️ Play
                     </button>
+                    <button class="delete-btn" data-game-id="${game.id}" style="background: #4CAF50; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
+                        ❌ Delete
+                    </button>
                 </div>
                 `).join('');
-
-                // TODO : Add a cancel button to suppress a game, will call API with cancelGame(gameId)
 
                 // Add functionality for "Play button"
                 document.querySelectorAll('.play-btn').forEach(button => {
                     button.addEventListener('click', async (e) => {
                         const gameId = (e.target as HTMLElement).getAttribute('data-game-id') as number;
-                        console.log('Button clicked for gameId ' + gameId);
+                        console.log('Play button clicked for gameId ' + gameId);
                         await this.launchGame(gameId);
+                    });
+                });
+
+                // Add functionality for "Delete button"
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const gameId = (e.target as HTMLElement).getAttribute('data-game-id') as number;
+                        console.log('Delete button clicked for gameId ' + gameId);
+                        await this.deleteGame(gameId);
                     });
                 });
             }
@@ -90,7 +111,45 @@ export class GamePage extends BasePage {
         }
     }
 
+    // Add functionality : only 1 checkbox is available
+    meCheckBox1ChoiceOnly(playerAMeCheckbox: HTMLInputElement, 
+            playerBMeCheckbox: HTMLInputElement, 
+            playerAInput: HTMLInputElement, 
+            playerBInput: HTMLInputElement) {
+        playerAMeCheckbox?.addEventListener('change', () => {
+            if (playerAMeCheckbox.checked) {
+                if (playerBMeCheckbox.checked) {
+                    playerBMeCheckbox.checked = false;
+                    playerBInput.value = '';
+                    playerBInput.readOnly = false;
+                }
+                playerAInput.value = state.user?.username || '';
+                playerAInput.readOnly = true;
+            } else {
+                playerAInput.readOnly = false;
+                playerAInput.value = '';
+            }
+        });
+        playerBMeCheckbox?.addEventListener('change', () => {
+            if (playerBMeCheckbox.checked) {
+                if (playerAMeCheckbox.checked) {
+                    playerAMeCheckbox.checked = false;
+                    playerAInput.value = '';
+                    playerAInput.readOnly = false;
+                }
+                playerBInput.value = state.user?.username || '';
+                playerBInput.readOnly = true;
+            } else {
+                playerBInput.readOnly = false;
+                playerBInput.value = '';
+            }
+        });
+    }
+
     async open1v1GameForm(localGameDiv: HTMLElement) {
+        if (!localGameDiv || !state.user?.id)
+            return;
+
         localGameDiv.innerHTML = `
             <form id="new-game-form">
                 <div style="margin-bottom: 15px;">
@@ -122,26 +181,7 @@ export class GamePage extends BasePage {
         const playerBInput = document.getElementById('player_b') as HTMLInputElement;
 
         // Add functionality : only 1 checkbox is available
-        playerAMeCheckbox?.addEventListener('change', () => {
-            if (playerAMeCheckbox.checked) {
-                playerBMeCheckbox.checked = false;
-                playerAInput.value = state.user?.username || '';
-                playerAInput.readOnly = true;
-            } else {
-                playerAInput.readOnly = false;
-                playerAInput.value = '';
-            }
-        });
-        playerBMeCheckbox?.addEventListener('change', () => {
-            if (playerBMeCheckbox.checked) {
-                playerAMeCheckbox.checked = false;
-                playerBInput.value = state.user?.username || '';
-                playerBInput.readOnly = true;
-            } else {
-                playerBInput.readOnly = false;
-                playerBInput.value = '';
-            }
-        });
+        this.meCheckBox1ChoiceOnly(playerAMeCheckbox, playerBMeCheckbox, playerAInput, playerBInput);
 
         // Add the cancel button functionality
         document.getElementById('cancel-btn')?.addEventListener('click', () => {
@@ -173,7 +213,6 @@ export class GamePage extends BasePage {
                 alert('Please enter both player names');
                 return;
             }
-
             if (playerA === playerB) {
                 alert('Player names must be different');
                 return;
@@ -181,6 +220,8 @@ export class GamePage extends BasePage {
 
             try {
                 // Create game with API
+                if (!state.user?.id)
+                    throw new Error('Not connected');
                 const request = await createLocalGame(state.user?.id, playerA, playerB);
                 if (!request.ok) {
                     throw new Error('Failed to create game');
