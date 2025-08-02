@@ -5,57 +5,39 @@ export default async function registerUser(request, reply)
 {
     const db = request.server.db;
     const avatar = 'default.jpg'
+    const username = request.body.username;
+    const password = request.body.password;
     let idUser = -1;
 
-    console.log("\nREQUEST :\n");
-    console.log("URL : " + request.url + "\n");
-    console.log("username : " + request.body.username + "\n");
-    console.log("password : " + request.body.password + "\n");
-    console.log("LAAAAAAAAAAAAAAAAA");
+        //verifier si user et password respectent la norme
+    //pourquoi le username peut pas etre defaut ?
 
-    //verifier si user et password respectent la norme
-    //Voir le token
-    //L'avatar
-
-    //si user existe deja
-    const existingUser = db.prepare('SELECT 1 FROM users WHERE username = ?').get(request.body.username);
-    //get renvoie soit un objet sur la cmd au dessus ou un undefined
-    if (existingUser) //si pas undefined
+    const existingUser = db.prepare('SELECT 1 FROM users WHERE username = ?').get(username);
+    if (existingUser) ////get renvoie soit un objet sur la cmd au dessus ou un undefined
         return reply.code(409).send({error: "Username already exist"});
 
-    //hacher mdp --> hashsync est une fonction synchrone, hash --> asynchrone
-    //besoin de await pour toute fonction async
-
     //Generer slug
-    const baseSlug = slugify(request.body.username, { lower: true, strict: true });
-    //verifier pas de doublon de slug
-    const slug = generateUniqueSlug(baseSlug, db);
+    const baseSlug = slugify(username, { lower: true, strict: true });
+    const slug = generateUniqueSlug(baseSlug, db); //verifier pas doublon
 
-    
+    //Hacher mdp
     let saltRounds = 10;//nombre de tour de calcul
-    const pw_hash = bcrypt.hashSync(request.body.password, saltRounds);
+    const pw_hash = bcrypt.hashSync(password, saltRounds);
     try 
     {
         const statement = db.prepare('INSERT INTO users (username, slug, avatar, pw_hash) VALUES (?, ?, ?, ?)');
-        const result = statement.run(request.body.username, slug, avatar, pw_hash);
+        const result = statement.run(username, slug, avatar, pw_hash);
         idUser = result.lastInsertRowid;
-        //mettre la génération du token dans le try ?
-        return reply.code(200).send({ username: request.body.username, slug: slug }); //mettre token, username, slug
+        //generation token : pas mis de date d'expiration
+        const token = await reply.jwtSign({ idUser, username, slug });
+        return reply.code(200).send({ token: token, username: username, slug: slug }); //mettre token, username, slug
     }
     catch (err)
     {
         db.prepare("DELETE FROM users WHERE id = ?").run(idUser);
-        return reply.code(500).send({ error: "User creation failed" });
+        return (reply.code(500).send( {error : "Internal Server Error"} ));
     }
-    
     //mettre status a la place de code ?? 
-
-    //consruit la reponse http (res) a partir de send : 
-    // va sérialiser l’objet { token, username, slug } 
-    //en JSON dans le corps de la réponse HTTP, 
-    //définir les en-têtes (ex: Content-Type: application/json) et envoyer un statut HTTP 201.
-    //Le client peut faire await res.json() pour récupérer les données envoyées par le serveur.
-
 }
 
 function generateUniqueSlug(baseSlug, db)

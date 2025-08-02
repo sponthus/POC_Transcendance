@@ -7,5 +7,5 @@ export default async function newRoutes(fastify, options)
     console.log("LES ROUTES c'est PAR LA");
 
     fastify.post("/register", registerUser);
-    fastify.get("/login", loginUser);
+    fastify.post("/login", loginUser);
 }
