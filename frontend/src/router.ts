@@ -68,8 +68,9 @@ export async function setupRouter() {
         if (target.matches('[data-link]')) {
             event.preventDefault();
             const href = target.getAttribute('href');
-            if (href)
+            if (href) {
                 navigate(href);
+			}
         }
     });
 

@@ -17,13 +17,15 @@ export class LoginPage extends BasePage {
 
     async render(): Promise<void> {
 		const res = await checkLog();
-        if (res.ok) {
+	
+		if (res.ok) {
 			this.app.innerHTML = `
 			<h1></h1>
 			<h1>Already logged in as ${res.user.username}.</h1>
             `;
-            return ;
+			return ;
         }
+		this.app.innerHTML = "";
 		this.renderBanner();
 
 		await this.initDivs();

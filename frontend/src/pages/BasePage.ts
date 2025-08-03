@@ -24,24 +24,24 @@ export abstract class BasePage {
     // Mandatory : Implement this in pages
     abstract render(): Promise<void>;
 
-    protected async renderBanner(): Promise<void> {
-       renderBaseBanner(this.banner);
+	protected async renderBanner(): Promise<void> {
+		renderBaseBanner(this.banner);
 
-        if (state.isLoggedIn()) {
-            const user: null | { username: string, slug: string } = state.user;
-            if (user) {
-                await renderLoggedInBanner(this.banner);
-            }
-            else
-                await renderLoggedOutBanner(this.banner);
-        }
-        else
-            await renderLoggedOutBanner(this.banner);
-    }
+		if (state.isLoggedIn()) {
+			const user: null | { username: string, slug: string } = state.user;
+			if (user) {
+				await renderLoggedInBanner(this.banner);
+			}
+			else
+				await renderLoggedOutBanner(this.banner);
+		}
+		else 
+			await renderLoggedOutBanner(this.banner);
+	}
 
 	protected initBackground(): HTMLElement {
 		const BackgroundHome = document.createElement('div');
-		BackgroundHome.className = "flex flex-col items-center min-h-screen bg-gradient-to-br from-orange-100 to-orange-300 p-8";
+		BackgroundHome.className = "flex flex-col items-center min-h-screen p-8";
 		BackgroundHome.style.backgroundImage = "url('/background1.gif')";
 		BackgroundHome.style.backgroundSize = "cover";
 		BackgroundHome.style.backgroundPosition = "center";

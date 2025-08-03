@@ -10,6 +10,7 @@ const navLinks = document.createElement('ul');
 /*************************************export Functions for creatin banner*************************************/
 export function renderBaseBanner(banner: HTMLElement): void {
 	banner.innerHTML = '';
+	console.log('coucou');
 	initWrapper();
 	initUserInfo();
 	initLogo();
@@ -53,7 +54,7 @@ function initUserInfo() {
 }
 
 function initLogo() {
-	logo.className = 'mx-auto order-2'
+	logo.className = 'mx-auto order-2 snap-center'
 
 	const logoLink = document.createElement('a');
 	logoLink.href = '/';
@@ -70,14 +71,6 @@ function initLogo() {
 function initNavLink() {
 	navLinks.className = 'flex justify-end space-x-4 order-3 list-none';
 	navLinks.id = 'nav-links';
-}
-
-function addInBanner(banner: HTMLElement) {
-	wrapper.appendChild(logo);
-	wrapper.appendChild(userInfo);
-	wrapper.appendChild(navLinks);
-
-	banner.appendChild(wrapper);
 }
 
 /*************************************Function for creating logout Banner*************************************/
@@ -119,19 +112,19 @@ function setLoginUserInfo() {
 	usersForm.className = "flex flex-col text-left text-sm text-emerald-600";
 
 	setTextLoginUserInfo(usersForm);
-	setAvatarLoginUserInfo(usersForm);
+	setAvatarLoginUserInfo();
 
 	userInfo.appendChild(usersForm);
 }
 
 function setTextLoginUserInfo(usersForm: HTMLElement) {
 
-	const userState = document.createElement('div');
+	const userState = document.createElement('h1');
 	userState.id = "user-state";
 	userState.className = "";
 	userState.textContent = "online 💚"; //  call API
 
-	const userName = document.createElement('div');
+	const userName = document.createElement('h1');
 	userName.id = "user-name";
 	userName.className = "text-emerald-900";
 	if (state.user)
@@ -141,19 +134,19 @@ function setTextLoginUserInfo(usersForm: HTMLElement) {
 	usersForm.appendChild(userName);
 }
 
-function setAvatarLoginUserInfo(usersForm: HTMLElement) {
-	const userIconForm = document.createElement('a') as HTMLAnchorElement;
-	userIconForm.href = `/user/${state.user?.slug}`;
-	userIconForm.className = "flex items-center mr-2";
+function setAvatarLoginUserInfo() {
+	const userIconbutton = document.createElement('a') as HTMLAnchorElement;
+	userIconbutton.href = `/user/${state.user?.slug}`;
+	userIconbutton.className = "flex items-center mr-2";
 
 	const userIcon = document.createElement('div');
 	userIcon.className = "flex items-center justify-center bg-orange-300 hover:bg-orange-400 rounded-full relative w-14 h-14";
 
 	SetUserImg(userIcon);
 
-	userIconForm.appendChild(userIcon);
+	userIconbutton.appendChild(userIcon);
 
-	userInfo.appendChild(userIconForm);
+	userInfo.appendChild(userIconbutton);
 }
 
 async function SetUserImg(userIcon: HTMLElement) {
@@ -164,9 +157,7 @@ async function SetUserImg(userIcon: HTMLElement) {
 	const userData = req.user;
 	console.log(`user data = ` + JSON.stringify(userData));
 	const avatar: string = userData.avatar;
-	console.log("avatar = ", avatar);
 	const srcImg: string = `https://localhost:4443/uploads/${avatar}`; // problem firefox https autosignate certificate 
-	console.log("srcImg = ", srcImg);
 
 	const userImg = document.createElement('img');
 	userImg.id = "user-img";
@@ -183,7 +174,6 @@ function SetLogOutEvent() {
 	logoutLink.addEventListener('click', async (e) => {
 		e.preventDefault();
 		state.logout();
-		await navigate('/');
 		location.reload();
 	});
 }
@@ -201,4 +191,10 @@ function createItem(href: string, TextContent: string, ClassName: string) {
 	navLinks.append(Link);
 }
 
+function addInBanner(banner: HTMLElement) {
+	wrapper.appendChild(logo);
+	wrapper.appendChild(userInfo);
+	wrapper.appendChild(navLinks);
 
+	banner.appendChild(wrapper);
+}
