@@ -13,6 +13,7 @@ export default async function loginUser (request, reply)
 
     if (!username || !password)
         return (reply.code(400).send({error : "Username and password are required"}));
+    //stock donne de user si elle exister dans user
     const userData = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
     if (!userData)
         return (reply.code(401).send({error : "Username or password invalid"}));

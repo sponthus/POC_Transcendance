@@ -29,7 +29,7 @@ export default async function registerUser(request, reply)
         const result = statement.run(username, slug, avatar, pw_hash);
         idUser = result.lastInsertRowid;
         //generation token : pas mis de date d'expiration
-        const token = await reply.jwtSign({ idUser, username, slug });
+        const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '10s'});
         return reply.code(200).send({ token: token, username: username, slug: slug }); //mettre token, username, slug
     }
     catch (err)

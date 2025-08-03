@@ -12,6 +12,4 @@ export default async function newRoutes(fastify, options)
 
     fastify.post("/register", registerUser);
     fastify.post("/login", loginUser);
-
-    
 }

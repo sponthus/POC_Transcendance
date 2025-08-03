@@ -23,19 +23,25 @@ export async function checkLog(): Promise<Result> {
         },
         cache: 'no-store'
     });
-
+    //la méthode .json() ne peut être appelée qu’une seule fois par réponse — 
+    //la deuxième fois, ça plante, et donc tes données ne sont pas bien récupérées
+    const data = await res.json();
+    /*if (res.status === 401)
+    {
+        alert("Session expired");
+    }*/
     if (res.ok) {
-        const data = await res.json();
         state.login(data.username, data.slug); // Restore user in local state
         console.log("Log check successful"); // Debug
         return { ok: true, user: { username: data.username, slug: data.slug } };
     } else {
         // Invalid or expired token = Disconnect
+        alert("Session expired");
         localStorage.removeItem("token");
         localStorage.removeItem("user-info");
         console.log("Log check failure");
+        return { ok: false, error: data.error || "User not found"};
     }
-    return { ok: false };
 }
 
 /* Example of use :
