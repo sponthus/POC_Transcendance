@@ -23,7 +23,7 @@ export default async function routes(fastify, options) {
     fastify.register(
         // TODO : Function probably not working, weird stuff; when you delete DB the request still says OK ...
         async function (getRoutes) {
-            getRoutes.get('/me',
+            getRoutes.get('/protected',
                 {onRequest: [fastify.authenticate]},
                 async (req, reply) => {
                     req.log.info({userId: req.user.id}, 'User accessed /me');

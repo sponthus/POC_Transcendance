@@ -8,14 +8,11 @@ export default async function loginUser (request, reply)
     console.log("username : " + request.body.username + "\n");
     console.log("password : " + request.body.password + "\n");
 
-    console.log("COUCOU");
-
     const db = request.server.db;
     const { username, password } = request.body;
 
     if (!username || !password)
         return (reply.code(400).send({error : "Username and password are required"}));
-    //stock donne de user si elle exister dns user
     const userData = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
     if (!userData)
         return (reply.code(401).send({error : "Username or password invalid"}));

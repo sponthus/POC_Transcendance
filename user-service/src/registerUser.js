@@ -9,7 +9,7 @@ export default async function registerUser(request, reply)
     const password = request.body.password;
     let idUser = -1;
 
-        //verifier si user et password respectent la norme
+    //verifier si user et password respectent la norme
     //pourquoi le username peut pas etre defaut ?
 
     const existingUser = db.prepare('SELECT 1 FROM users WHERE username = ?').get(username);

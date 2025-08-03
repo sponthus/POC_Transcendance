@@ -25,6 +25,9 @@ export type GetUserResult = AuthFullSuccess | Failure;
 export type AvatarUploadResult = AvatarUploadSuccess | Failure;
 export type UserModificationResult = UserModificationSuccess | Failure;
 
+
+
+
 // POST /api/login request to log in with username + login, updates local infos about user
 export async function loginUser(username: string, password: string): Promise<LoginResult> {
     const res = await fetch('/api/user/login', {

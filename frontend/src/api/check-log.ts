@@ -16,7 +16,7 @@ export async function checkLog(): Promise<Result> {
         return { ok: false};
     }
 
-    const res = await fetch('/api/user/me', {
+    const res = await fetch('/api/user/protected', {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`
