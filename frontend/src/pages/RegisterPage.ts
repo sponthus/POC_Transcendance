@@ -2,7 +2,7 @@ import { navigate } from '../router.js';
 import { checkLog } from "../api/check-log.js";
 import { registerUser } from "../api/user.js";
 import { BasePage } from "./BasePage.js";
-import { className } from '@babylonjs/core';
+// import { className } from '@babylonjs/core';
 // import { FromHalfFloat } from '@babylonjs/core';
 
 export class RegisterPage extends BasePage {

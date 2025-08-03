@@ -4,6 +4,12 @@ import { checkLog } from "../api/check-log.js";
 import { BasePage } from "./BasePage.js";
 
 export class HomePage extends BasePage {
+
+	private _Background?: HTMLElement;
+	private _front?: HTMLElement;
+	private _ButtonDiv?: HTMLElement;
+	private _LogoDiv?: HTMLElement;
+
     constructor() {
         super();
     }
@@ -12,87 +18,90 @@ export class HomePage extends BasePage {
         this.renderBanner();
         checkLog();
 
-        if (state.isLoggedIn()) {
-			const BackgroundHome = this.initBackground();
+		await this.InitDivs();
+		await this.createLogo();
 
-			const front = document.createElement('div');
-			front.className = "flex rounded-xl shadow-2xl p-12 max-w-md w-full text-center";
+		if (state.isLoggedIn()) 
+			await this.renderLogInHome();
+		else 
+			await this.rengerLogoutHome();
 
-			const logoDiv = this.initLogo();
+		await this.addInApp();
 
-			const playButton = document.createElement('button');
-			playButton.id = 'play-btn';
-			playButton.textContent = "click to play";
-			playButton.className = "w-full mt-8 bg-sky-600 hover:bg-sky-700 text-orange-100 font-bold py-4 px-8 rounded-lg text-xl transition-colors duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300";
-
-			front.appendChild(playButton);
-			BackgroundHome.appendChild(logoDiv);
-			BackgroundHome.appendChild(front);
-			
-
-			this.app.appendChild(BackgroundHome);
-
-        } else {
-			const BackgroundHome = this.initBackground();
-
-			const front = document.createElement('div');
-			front.className = "rounded-xl shadow-2xl p-12 max-w-md w-full text-center";
-
-			const logoDiv = this.initLogo();
-
-			const ButtonDiv = document.createElement('div');
-			ButtonDiv.className = "flex flex-col space-y-4";
-
-			const loginButton = document.createElement('a');
-			loginButton.href = "/login";
-			loginButton.className = "bg-orange-300 hover:bg-orange-400 text-emerald-600 font-bold py-3 px-6 rounded-lg transition-colors duration-200 transform 	hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300";
-            loginButton.textContent = "Login";
-
-			const registerButton = document.createElement('a');
-			registerButton.href = "/register";
-			registerButton.className = "bg-orange-300 hover:bg-orange-400 text-emerald-600 font-bold py-3 px-6 rounded-lg transition-colors duration-200 transform";
-			registerButton.textContent = "Register";
-		
-			ButtonDiv.appendChild(loginButton);
-			ButtonDiv.appendChild(registerButton);
-
-			front.appendChild(ButtonDiv);
-			BackgroundHome.appendChild(logoDiv);
-			BackgroundHome.appendChild(front);
-
-			this.app.appendChild(BackgroundHome);
-
-        }
-
-        document.getElementById('play-btn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            navigate('/game');
-			location.reload();
-        });
     }
+	
+	private async InitDivs() {
+		this._Background = this.initBackground();
+		
+		this._front = document.createElement('div');
+		this._front.className = "rounded-xl shadow-2xl p-12 max-w-md w-full text-center";
+		
+		this._ButtonDiv = document.createElement('div');
+		this._ButtonDiv.className = "flex flex-col ispace-y-4";
+	}
+	
+	private async createLogo() {
+		const LogoDiv = this.initLogo();
+	
+		if (this._Background)
+			this._Background.appendChild(LogoDiv);
+	}
+
+	private async renderLogInHome() {
+		await this.createButton('play-btn', "click to play", '/game');
+	}
+
+	private async rengerLogoutHome() {
+
+		await this.createButton('login-btn', "Login", '/login');
+		await this.createButton('register-btn', "Register", '/register');
+	}
+
+	/*************************************Function for creating Button*************************************/
+	private async createButton(Id: string, TextContent: string, link: string) {
+		const Button = document.createElement('a');
+		Button.id = Id;
+		Button.href = link;
+		Button.textContent = TextContent;
+		Button.className = "w-full mt-8 bg-orange-300 hover:bg-orange-400 text-emerald-600 font-bold py-4 px-8 rounded-lg text-xl transition-colorsduration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300";
+
+		if (this._ButtonDiv)
+			this._ButtonDiv.appendChild(Button);
+	}
+
+	/*************************************Function for creating logo*************************************/
 	private initLogo(): HTMLElement {
 		const logoDiv = document.createElement('div');
-			logoDiv.className = "flex items-center justify-center relative h-full w-full ";
-			
-			const logo = document.createElement('img');
-			logo.id = "logo-img";
-			logo.className = "mx-auto object-cover object-center h-1/2 w-1/2";
-			logo.src = "/logo/logoIlsandWorld.png";
+		logoDiv.className = "flex items-center justify-center relative h-full w-full ";
+		
+		const logo = document.createElement('img');
+		logo.id = "logo-img";
+		logo.className = "mx-auto object-cover object-center h-1/2 w-1/2";
+		logo.src = "/logo/logoIlsandWorld.png";
+		
+		const logoTitleText = document.createElement('img');
+		logoTitleText.id = "logo-title-Text";
+		logoTitleText.className = "absolute h-1/2 w-1/2 bottom-4";
+		logoTitleText.src = "/logo/IslandWorldText.png";
+		
+		const loglWelcomeText = document.createElement('img');
+		loglWelcomeText.id = "logo-Welcome.text";
+		loglWelcomeText.className = "absolute h-1/2 w-1/2 translate-x-14";
+		loglWelcomeText.src = "/logo/welcomeText.png";
+		
+		logoDiv.appendChild(logo);
+		logoDiv.appendChild(loglWelcomeText);
+		logoDiv.appendChild(logoTitleText);
+		
+		return logoDiv;
+	}
 
-			const logoTitleText = document.createElement('img');
-			logoTitleText.id = "logo-title-Text";
-			logoTitleText.className = "absolute h-1/2 w-1/2 bottom-4";
-			logoTitleText.src = "/logo/IslandWorldText.png";
-
-			const loglWelcomeText = document.createElement('img');
-			loglWelcomeText.id = "logo-Welcome.text";
-			loglWelcomeText.className = "absolute h-1/2 w-1/2 translate-x-14";
-			loglWelcomeText.src = "/logo/welcomeText.png";
-
-			logoDiv.appendChild(logo);
-			logoDiv.appendChild(loglWelcomeText);
-			logoDiv.appendChild(logoTitleText);
-
-			return logoDiv;
+	/*************************************Function utils*************************************/
+	private async addInApp() {
+		if (this._Background && this._front && this._ButtonDiv) {
+			this._front.appendChild(this._ButtonDiv);
+			this._Background.appendChild(this._front);
+			this.app.appendChild(this._Background);
+		}
 	}
 }
