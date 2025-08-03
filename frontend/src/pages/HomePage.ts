@@ -3,16 +3,6 @@ import { navigate } from "../router.js";
 import { checkLog } from "../api/check-log.js";
 import { BasePage } from "./BasePage.js";
 
-export function initBackground(): HTMLElement {
-	const BackgroundHome = document.createElement('div');
-	BackgroundHome.className = "flex flex-col items-center min-h-screen bg-gradient-to-br from-orange-100 to-orange-300 p-8";
-	BackgroundHome.style.backgroundImage = "url('/background1.gif')";
-	BackgroundHome.style.backgroundSize = "cover";
-	BackgroundHome.style.backgroundPosition = "center";
-	return BackgroundHome;
-}
-
-
 export class HomePage extends BasePage {
     constructor() {
         super();
@@ -23,7 +13,7 @@ export class HomePage extends BasePage {
         checkLog();
 
         if (state.isLoggedIn()) {
-			const BackgroundHome = initBackground();
+			const BackgroundHome = this.initBackground();
 
 			const front = document.createElement('div');
 			front.className = "flex rounded-xl shadow-2xl p-12 max-w-md w-full text-center";
@@ -43,7 +33,7 @@ export class HomePage extends BasePage {
 			this.app.appendChild(BackgroundHome);
 
         } else {
-			const BackgroundHome = initBackground();
+			const BackgroundHome = this.initBackground();
 
 			const front = document.createElement('div');
 			front.className = "rounded-xl shadow-2xl p-12 max-w-md w-full text-center";
@@ -59,7 +49,7 @@ export class HomePage extends BasePage {
             loginButton.textContent = "Login";
 
 			const registerButton = document.createElement('a');
-			registerButton.href = "/login";
+			registerButton.href = "/register";
 			registerButton.className = "bg-orange-300 hover:bg-orange-400 text-emerald-600 font-bold py-3 px-6 rounded-lg transition-colors duration-200 transform";
 			registerButton.textContent = "Register";
 		

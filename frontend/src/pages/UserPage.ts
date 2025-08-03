@@ -3,14 +3,15 @@ import { checkLog } from "../api/check-log.js";
 import { getUserInfo, modifyUserAvatar, modifyUserInfo } from "../api/user.js";
 import { uploadAvatar } from "../api/avatar.js";
 import { BasePage } from "./BasePage.js";
+import { state } from '../ui/state.js';
 
 export class UserPage extends BasePage {
-    protected slug: string;
+    protected slug?: string;
 
     constructor(slug: string) {
         super();
         console.log('Constructor');
-        this.slug = slug;
+        this.slug = state!.user?.slug;
     }
 
     async render(): Promise<void> {
@@ -30,7 +31,7 @@ export class UserPage extends BasePage {
         }
         const connectedUser = res.user.slug;
 
-        const req = await getUserInfo(this.slug);
+        const req = await getUserInfo(this.slug!);
         if (req.ok) {
             const userData = req.user;
             console.log(`user data = ` + JSON.stringify(userData));
@@ -42,11 +43,12 @@ export class UserPage extends BasePage {
             }
         }
         else {
-            console.error(`error is` + req.error);
-            this.app.innerHTML = `
-                <h1>Error while loading profile</h1>
-                <button id="retry">Try again</button>
+			this.app.innerHTML = `
+			<h1>Error while loading profile</h1>
+			<button id="retry">Try again</button>
             `;
+            console.error("error is" , req.error);
+			console.log("yo the slug is ", state!.user?.slug);
             document.getElementById('retry')?.addEventListener('click', async () => {
                 await navigate('/' + this.slug);
             });

@@ -4,6 +4,7 @@ import { BasePage } from "./pages/BasePage.js";
 import { LoginPage } from "./pages/LoginPage.js";
 import { RegisterPage } from "./pages/RegisterPage.js";
 import { HomePage } from './pages/HomePage.js';
+import { SettingPage } from "./pages/SettingPage.js";
 
 let currentPage: BasePage | null = null;
 
@@ -38,6 +39,8 @@ export async function renderRoute(path: string) {
 					
 				}
                 break;
+			case '/setting':
+				currentPage = new SettingPage();
         }
     }
 

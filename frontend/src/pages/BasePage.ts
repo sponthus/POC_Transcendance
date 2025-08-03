@@ -39,9 +39,18 @@ export abstract class BasePage {
             await renderLoggedOutBanner(this.banner);
     }
 
+	protected initBackground(): HTMLElement {
+		const BackgroundHome = document.createElement('div');
+		BackgroundHome.className = "flex flex-col items-center min-h-screen bg-gradient-to-br from-orange-100 to-orange-300 p-8";
+		BackgroundHome.style.backgroundImage = "url('/background1.gif')";
+		BackgroundHome.style.backgroundSize = "cover";
+		BackgroundHome.style.backgroundPosition = "center";
+		return BackgroundHome;
+	}
     // Optional : does nothing, can be overloaded if needed, to destroy listeners
     destroy(): void {}
 }
+
 
 // How to inherit from BasePage :
 // export class GamePage extends BasePage {

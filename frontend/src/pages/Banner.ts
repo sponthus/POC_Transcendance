@@ -124,7 +124,7 @@ export async function renderLoggedInBanner(banner: HTMLElement): Promise<void> {
 	const settingItem = document.createElement('li');
 	const settingLink = document.createElement('a');
 	settingLink.href = '/setting';
-	settingLink.textContent = "Setting";
+	settingLink.textContent = "Settings";
 	settingLink.className = "px-4 py-2 text-emerald-600 hover:text-emerald-800 hover:bg-orange-300 rounded-md transition-colors";
 	settingItem.appendChild(settingLink);
 	navLinks.appendChild(settingItem);
