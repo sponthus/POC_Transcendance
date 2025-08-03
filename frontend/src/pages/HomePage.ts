@@ -15,16 +15,16 @@ export class HomePage extends BasePage {
     }
 
     async render(): Promise<void> {
-        this.renderBanner();
-        checkLog();
-
+		checkLog();
+		this.renderBanner();
+		
 		await this.InitDivs();
 		await this.createLogo();
-
+		
 		if (state.isLoggedIn()) 
 			await this.renderLogInHome();
 		else 
-			await this.rengerLogoutHome();
+		await this.rengerLogoutHome();
 
 		await this.addInApp();
 

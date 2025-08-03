@@ -1,93 +1,130 @@
-import { navigate } from '../router.js';
+import { navigate, setupRouter } from '../router.js';
 import { state } from "../ui/state";
+import { getUserInfo, modifyUserAvatar, modifyUserInfo } from "../api/user.js";
 
+const wrapper = document.createElement('div');
+const userInfo = document.createElement('div');
+const logo = document.createElement('div');
+const navLinks = document.createElement('ul');
+
+/*************************************export Functions for creatin banner*************************************/
 export function renderBaseBanner(banner: HTMLElement): void {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'grid grid-cols-3 items-center justify-between p-4 bg-orange-200 shadow-md';
-    
-	const userInfo = document.createElement('div');
-    userInfo.className = 'flex flex-wrap order-1 text-sm text-gray-600';
-    userInfo.id = 'user-info';
+	banner.innerHTML = '';
+	initWrapper();
+	initUserInfo();
+	initLogo();
+	initNavLink();
+	addInBanner(banner);
+}
 
-    const logo = document.createElement('div');
-    logo.className = 'mx-auto order-2'
+export async function renderLoggedOutBanner(banner: HTMLElement): Promise<void> {
+	if (!checkLogoutElement(banner)) {
+		return;
+	}
 
-    const logoLink = document.createElement('a');
-    logoLink.href = '/';
-    // logoLink.textContent = 'Island World';
+	setLogoutUserInfo();
+
+	createItem('/login', 'Login', 'px-4 py-2 text-emerald-600  hover:text-emerald-800 hover:bg-orange-300 rounded-md transition-colors');
+	createItem('/register', 'Register', 'px-4 py-2 bg-emerald-600 text-green-200 hover:bg-emerald-800 rounded-md transition-colors');
+}
+
+export async function renderLoggedInBanner(banner: HTMLElement): Promise<void> {
+	if (!checkLoginElement(banner)) {
+		return;
+	}
+
+	setLoginUserInfo();
+
+	createItem('/setting', "Settings", "px-4 py-2 text-emerald-600 hover:text-emerald-800 hover:bg-orange-300 rounded-md transition-colors");
+	createItem(`/user/${state.user?.slug}`, 'Profile', 'px-4 py-2 text-emerald-600 hover:text-emerald-800 hover:bg-orange-300 rounded-md transition-colors');
+	createItem('/', 'Logout', 'px-4 py-2 text-red-200 bg-red-600 hover:text-red-300 hover:bg-red-800 rounded-md transition-colors cursor-pointer');
+
+	SetLogOutEvent();
+}
+
+/*************************************Function for creating Base Banner*************************************/
+function initWrapper() {
+	wrapper.className = 'grid grid-cols-3 items-center justify-between p-4 bg-orange-200 shadow-md';
+}
+
+function initUserInfo() {
+	userInfo.className = 'flex flex-wrap order-1 text-sm text-gray-600';
+	userInfo.id = 'user-info';
+}
+
+function initLogo() {
+	logo.className = 'mx-auto order-2'
+
+	const logoLink = document.createElement('a');
+	logoLink.href = '/';
 	logoLink.className = 'text-2xl font-bold text-emerald-400 hover:text-emerald-800 transition-colors'
-	
+		
 	const logoImg = document.createElement('img');
 	logoImg.className = "mx-auto object-cover rounded-full hover:bg-emerald-600 object-center h-12 w-18";
 	logoImg.src = "/logo/logoIlsandWorld.png";
 
 	logoLink.appendChild(logoImg);
-    logo.appendChild(logoLink);
-	
-    wrapper.appendChild(logo);
-
-
-    const navLinks = document.createElement('ul');
-    navLinks.className = 'flex justify-end space-x-4 order-3 list-none';
-    navLinks.id = 'nav-links';
-
-    wrapper.appendChild(userInfo);
-    wrapper.appendChild(navLinks);
-
-    banner.innerHTML = ''; // cleans existing
-    banner.appendChild(wrapper);
+	logo.appendChild(logoLink);
 }
 
-export async function renderLoggedOutBanner(banner: HTMLElement): Promise<void> {
-    const navLinks = document.getElementById('nav-links');
-    const userInfo = document.getElementById('user-info');
-    if (!navLinks || !userInfo) {
-        if (!navLinks)
-            console.log("No nav link");
-        if (!userInfo)
-            console.log("No user info");
-        banner.innerHTML = '<div class="text-red-500 font-semibold">Error</div>';
-        return;
-    }
+function initNavLink() {
+	navLinks.className = 'flex justify-end space-x-4 order-3 list-none';
+	navLinks.id = 'nav-links';
+}
 
-    userInfo.textContent = 'You are not connected.';
+function addInBanner(banner: HTMLElement) {
+	wrapper.appendChild(logo);
+	wrapper.appendChild(userInfo);
+	wrapper.appendChild(navLinks);
+
+	banner.appendChild(wrapper);
+}
+
+/*************************************Function for creating logout Banner*************************************/
+function setLogoutUserInfo() {
+	userInfo.textContent = 'You are not connected.';
 	userInfo.className = 'text-sm text-emerald-600';
-
-    const loginItem = document.createElement('li');
-    const loginLink = document.createElement('a');
-    loginLink.href = '/login';
-    loginLink.textContent = 'Login';
-	loginLink.className = 'px-4 py-2 text-emerald-600  hover:text-emerald-800 hover:bg-orange-300 rounded-md transition-colors';
-    loginItem.appendChild(loginLink);
-
-    const registerItem = document.createElement('li');
-    const registerLink = document.createElement('a');
-    registerLink.href = '/register';
-    registerLink.textContent = 'Register';
-	registerLink.className = 'px-4 py-2 bg-emerald-600 text-green-200 hover:bg-emerald-800 rounded-md transition-colors';
-    registerItem.appendChild(registerLink);
-
-    navLinks.appendChild(loginItem);
-    navLinks.appendChild(registerItem);
 }
 
-export async function renderLoggedInBanner(banner: HTMLElement): Promise<void> {
-    const navLinks = document.getElementById('nav-links');
-    const userInfo = document.getElementById('user-info');
-    if (!navLinks || !userInfo || !state.user) {
-        if (!navLinks)
-            console.log("No nav link");
-        if (!userInfo)
-            console.log("No user info");
-        if (!state.user) {
-            console.log("No user in state");
-        }
-        banner.innerHTML = '<div class="text-red-500 font-semibold">Error</div>';
-        return;
-    }
+function checkLogoutElement(banner: HTMLElement): boolean {
+	if (!navLinks || !userInfo) {
+		if (!navLinks)
+			console.log("No nav link");
+		if (!userInfo)
+			console.log("No user info");
+		banner.innerHTML = '<div class="text-red-500 font-semibold">Error</div>';
+		return false;
+	}
+	return true;
+}
 
+/*************************************Function for creating login Banner*************************************/
+function checkLoginElement(banner: HTMLElement): boolean {
+	if (!navLinks || !userInfo || !state.user) {
+		if (!navLinks)
+			 console.log("No nav link");
+		if (!userInfo)
+			console.log("No user info");
+		if (!state.user) {
+			console.log("No user in state");
+		}
+		banner.innerHTML = '<div class="text-red-500 font-semibold">Error</div>';
+		return false;
+	}
+	return true;
+}
+
+function setLoginUserInfo() {
 	const usersForm = document.createElement('div');
 	usersForm.className = "flex flex-col text-left text-sm text-emerald-600";
+
+	setTextLoginUserInfo(usersForm);
+	setAvatarLoginUserInfo(usersForm);
+
+	userInfo.appendChild(usersForm);
+}
+
+function setTextLoginUserInfo(usersForm: HTMLElement) {
 
 	const userState = document.createElement('div');
 	userState.id = "user-state";
@@ -97,59 +134,71 @@ export async function renderLoggedInBanner(banner: HTMLElement): Promise<void> {
 	const userName = document.createElement('div');
 	userName.id = "user-name";
 	userName.className = "text-emerald-900";
-	userName.textContent = state.user?.username;
+	if (state.user)
+		userName.textContent = state.user?.username;
 
 	usersForm.appendChild(userState);
 	usersForm.appendChild(userName);
+}
 
-
-	const userIconForm = document.createElement('div');
+function setAvatarLoginUserInfo(usersForm: HTMLElement) {
+	const userIconForm = document.createElement('a') as HTMLAnchorElement;
+	userIconForm.href = `/user/${state.user?.slug}`;
 	userIconForm.className = "flex items-center mr-2";
 
 	const userIcon = document.createElement('div');
-	userIcon.className = "flex items-center justify-center bg-orange-300 rounded-full relative w-14 h-14";
+	userIcon.className = "flex items-center justify-center bg-orange-300 hover:bg-orange-400 rounded-full relative w-14 h-14";
 
-	const userImg = document.createElement('img');
-	userImg.id = "user-img";
-	userImg.className = "w-12 h-12 rounded-full object-cover object-center";
-	userImg.src = "asset/pic/carlo.jpg"; // call api for userImg
-	
-	userIcon.appendChild(userImg);
+	SetUserImg(userIcon);
 
 	userIconForm.appendChild(userIcon);
 
 	userInfo.appendChild(userIconForm);
-	userInfo.appendChild(usersForm);
+}
 
-	const settingItem = document.createElement('li');
-	const settingLink = document.createElement('a');
-	settingLink.href = '/setting';
-	settingLink.textContent = "Settings";
-	settingLink.className = "px-4 py-2 text-emerald-600 hover:text-emerald-800 hover:bg-orange-300 rounded-md transition-colors";
-	settingItem.appendChild(settingLink);
-	navLinks.appendChild(settingItem);
+async function SetUserImg(userIcon: HTMLElement) {
+	const req = await getUserInfo(state.user?.slug!);
+	if (!req.ok) {
+		return ;
+	}
+	const userData = req.user;
+	console.log(`user data = ` + JSON.stringify(userData));
+	const avatar: string = userData.avatar;
+	console.log("avatar = ", avatar);
+	const srcImg: string = `https://localhost:4443/uploads/${avatar}`; // problem firefox https autosignate certificate 
+	console.log("srcImg = ", srcImg);
 
-    const profileItem = document.createElement('li');
-    const profileLink = document.createElement('a');
-    profileLink.href = `/user/${state.user?.slug}`;
-    profileLink.textContent = 'Profile';
-	profileLink.className = 'px-4 py-2 text-emerald-600 hover:text-emerald-800 hover:bg-orange-300 rounded-md transition-colors';
-    profileItem.appendChild(profileLink);
-    navLinks.appendChild(profileItem);
+	const userImg = document.createElement('img');
+	userImg.id = "user-img";
+	userImg.className = "w-12 h-12 rounded-full object-cover object-center";
+	userImg.src = srcImg;
 
-	const logoutItem = document.createElement('li');
-	const logoutLink = document.createElement('a');
-	logoutLink.href = '/';
-	logoutLink.textContent = 'Logout';
-	logoutLink.className = 'px-4 py-2 text-red-200 bg-red-600 hover:text-red-300 hover:bg-red-800 rounded-md transition-colors cursor-pointer';
+	userIcon.appendChild(userImg);
+}
+
+function SetLogOutEvent() {
+	const logoutLink = document.getElementById('Logout_id');
+	if (!logoutLink)
+		return ;
 	logoutLink.addEventListener('click', async (e) => {
 		e.preventDefault();
 		state.logout();
 		await navigate('/');
 		location.reload();
 	});
-	logoutItem.appendChild(logoutLink);
-	navLinks.appendChild(logoutItem);
-
-
 }
+
+/*************************************Function utils*************************************/
+function createItem(href: string, TextContent: string, ClassName: string) {
+	const Item = document.createElement('li');
+	const Link = document.createElement('a');
+	Link.id = TextContent + "_id";
+	Link.href = href;
+	Link.textContent = TextContent;
+	Link.className = ClassName;
+	Item.appendChild(Link);
+
+	navLinks.append(Link);
+}
+
+
