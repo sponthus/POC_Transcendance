@@ -14,6 +14,6 @@ export default async function newRoutes(fastify, options)
     fastify.post("/register", registerUser);
     fastify.post("/login", loginUser);
 
-    //pas de page de profil, voir avec emma
+    //pas de page de profil, fonction tester avec nc --> MARCHE :)))))))
     fastify.put("/:slug", { preHandler: [fastify.authenticate] } , updateUsername);
 }
