@@ -1,6 +1,7 @@
 import registerUser from "./registerUser.js";
 import loginUser from "./loginUser.js";
 import loginThroughToken from "./loginThroughToken.js";
+import updateUsername from "./updateUsername.js";
 // le default permet de pas mettre les accolade dans import
 
 export default async function newRoutes(fastify, options) 
@@ -12,4 +13,7 @@ export default async function newRoutes(fastify, options)
 
     fastify.post("/register", registerUser);
     fastify.post("/login", loginUser);
+
+    //pas de page de profil, voir avec emma
+    fastify.put("/:slug", { preHandler: [fastify.authenticate] } , updateUsername);
 }

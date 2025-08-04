@@ -15,7 +15,7 @@ type UserFull = UserBasic & {
 type AuthSuccess = { ok: true; token: string; user: UserBasic };
 type AuthFullSuccess = { ok: true; token: string; user: UserFull };
 type AvatarUploadSuccess = { ok: true; avatar: string };
-type UserModificationSuccess = { ok: true; user: UserBasic}
+type UserModificationSuccess = { ok: true; user: UserBasic; token: string}
 type Failure = { ok: false; error: string };
 
 // Union of possibilities for the type of answer
@@ -121,16 +121,14 @@ export async function modifyUserInfo(slug: string, username: string): Promise<Us
     });
 
     if (res.ok) {
-        console.log("Request for avatar path change accepted");
+        console.log("New username accepted");
         const data = await res.json();
-        return {
-            ok: true, user: data.user
-        };
+        localStorage.setItem("token", data.token); //mise a jour token avec le nouveau username
+        return {ok: true, user: data.user, token: data.token};
     }
     else {
         const error = await res.json();
-        return { ok: false,
-            error: error?.error || "Info not received from back" };
+        return { ok: false, error: error?.error || "Info not received from back" };
     }
 }
 

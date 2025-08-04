@@ -152,6 +152,7 @@ export async function modifyUser(request, reply) {
         return reply.status(404).send({ error: 'User not found' });
     }
 
+    //comprend pas l'interet de cette ligne
     let newUsername = null;
     if (request.body.username && request.body.username.length > 0) {
         newUsername = request.body.username;
