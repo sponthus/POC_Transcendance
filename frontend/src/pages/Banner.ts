@@ -117,7 +117,14 @@ function setLoginUserInfo() {
 	userInfo.appendChild(usersForm);
 }
 
-function setTextLoginUserInfo(usersForm: HTMLElement) {
+async function setTextLoginUserInfo(usersForm: HTMLElement) {
+
+	const req = await getUserInfo(state.user?.slug!);
+	if (!req.ok) {
+		return ;
+	}
+
+	const userData = req.user;
 
 	const userState = document.createElement('h1');
 	userState.id = "user-state";
@@ -128,7 +135,7 @@ function setTextLoginUserInfo(usersForm: HTMLElement) {
 	userName.id = "user-name";
 	userName.className = "text-emerald-900";
 	if (state.user)
-		userName.textContent = state.user?.username;
+		userName.textContent = userData.username;
 
 	usersForm.appendChild(userState);
 	usersForm.appendChild(userName);
@@ -174,6 +181,7 @@ function SetLogOutEvent() {
 	logoutLink.addEventListener('click', async (e) => {
 		e.preventDefault();
 		state.logout();
+		navigate('/');
 		location.reload();
 	});
 }

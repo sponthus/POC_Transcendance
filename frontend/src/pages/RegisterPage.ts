@@ -120,7 +120,7 @@ export class RegisterPage extends BasePage {
 
 		const Text: HTMLElement = document.createElement('p');
 		Text.textContent = texteContent;
-		Text.className = "block text-sm  text-left font-medium text-emerald-500 mb-2";
+		Text.className = "block text-sm  text-center font-medium text-emerald-500 mb-2";
 		
 
 		Div.appendChild(Text);
