@@ -37,16 +37,17 @@ export class LocalGamePage extends BasePage {
         }
         this.resizeCanvas(canvas);
 
-        new PongGame();
+        const pongGameApp = new PongGame();
+        await pongGameApp.start();
         console.log("Pong game created");
     }
 
     // TODO = Add this in a listener of resizing ?
     resizeCanvas(canvas: HTMLCanvasElement) {
-        if (window.innerWidth * 0.6 >= 600)
+        if (window.innerWidth * 0.6 >= 900)
             state.canvas.width = window.innerWidth * 0.6;
         else
-            state.canvas.width = 600;
+            state.canvas.width = 900;
         state.canvas.height = state.canvas.width * 2/3;
         canvas.width = state.canvas.width;
         canvas.height = state.canvas.height;

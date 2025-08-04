@@ -9,9 +9,10 @@
   },
   "author": "sponthus",
   "dependencies": {
-    "@babylonjs/core": "^8.12.1",
     "env-schema": "^6.0.1",
     "typescript": "~5.8.3",
     "vite": "^6.3.5"
+    "@babylonjs/core": "^8.17.1",
+    "@babylonjs/loaders": "^8.17.1"
   }
 }
