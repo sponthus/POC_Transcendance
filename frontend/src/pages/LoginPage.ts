@@ -1,4 +1,4 @@
-import { navigate } from '../router.js';
+import { navigate } from '../core/router.js';
 import { checkLog } from "../api/check-log.js";
 import { loginUser } from "../api/user.js";
 import { BasePage } from "./BasePage.js";
@@ -9,16 +9,16 @@ export class LoginPage extends BasePage {
     }
 
     async render(): Promise<void> {
-        this.renderBanner();
-
-        const res = await checkLog();
-        if (res.ok) {
-            this.app.innerHTML = `
-                <h1></h1>
-                <h1>Already logged in as ${res.user.username}.</h1>
-            `;
-            return ;
-        }
+        await this.renderBanner();
+        // TODO = Check log
+        // const res = await checkLog();
+        // if (res.ok) {
+        //     this.app.innerHTML = `
+        //         <h1></h1>
+        //         <h1>Already logged in as ${res.user.username}.</h1>
+        //     `;
+        //     return ;
+        // }
 
         this.app.innerHTML = `
             <h1></h1>

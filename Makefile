@@ -23,9 +23,28 @@ ENV = .env
 
 COMPOSE_FILE = ./docker-compose.yml
 
-all: up
+all: $(ENV) up
+
+$(ENV): env
+
+env:
+	@if [ ! -f "$(ENV)" ]; then \
+		echo " ✘ No .env found"; \
+		sh config/init_env.sh; \
+	fi
+	@echo " ✔ .env present"
 
 re: fclean all
+
+dev: env
+	sh config/change_mode.sh NODE_ENV development
+	$(MAKE) down
+	$(MAKE) build
+
+prod: env
+	sh config/change_mode.sh NODE_ENV production
+	$(MAKE) down
+	$(MAKE) build
 
 build:
 	docker compose -f $(COMPOSE_FILE) up --build
@@ -132,4 +151,4 @@ clean-modules:
     	$(API_DIR)/package-lock.json
 	@echo " ✔ Node modules deleted";
 
-.PHONY: all re clean fclean down up subject env clean-modules clean-db
+.PHONY: all re clean fclean down up subject env clean-modules clean-db dev prod

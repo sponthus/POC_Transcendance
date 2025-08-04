@@ -11,4 +11,12 @@ fi
 cp public/favicon.ico dist/favicon.ico
 echo copy done
 
-exec npm run dev
+echo "Launching in $NODE_ENV mode"
+
+if env | grep -q "^NODE_ENV=development"; then
+	exec npm run dev
+else
+	exec npm run build
+fi
+
+#tail -f

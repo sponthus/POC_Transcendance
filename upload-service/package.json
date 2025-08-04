@@ -14,8 +14,8 @@
     "@fastify/jwt": "^9.1.0",
     "@fastify/multipart": "^9.0.3",
     "env-schema": "^6.0.1",
-	"path": "^0.12.7",
-	"nodemon": "^3.1.10",
+	  "path": "^0.12.7",
+	  "nodemon": "^3.1.10",
     "fs": "^0.0.1-security",
     "pump": "^3.0.2"
   }

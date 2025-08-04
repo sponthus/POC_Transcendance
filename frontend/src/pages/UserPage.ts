@@ -1,4 +1,4 @@
-import { navigate } from '../router.js';
+import { navigate } from '../core/router.js';
 import { checkLog } from "../api/check-log.js";
 import { getUserInfo, modifyUserAvatar, modifyUserInfo } from "../api/user.js";
 import { uploadAvatar } from "../api/avatar.js";
@@ -15,21 +15,22 @@ export class UserPage extends BasePage {
 
     async render(): Promise<void> {
         await this.renderBanner();
-        console.log('getUserPage', this.slug);
 
         this.app.innerHTML = `<h1>Loading user page...</h1>`;
         console.log("Loading user page with username = " + this.slug);
 
-        const res = await checkLog();
-        if (!res.ok) {
-            this.app.innerHTML = `
-                <h1></h1>
-                <h1>Not logged in, no access allowed</h1>
-            `;
-            return;
-        }
-        const connectedUser = res.user.slug;
-
+        // TODO = Check log + get infos
+        // const res = await checkLog();
+        // if (!res.ok) {
+        //     this.app.innerHTML = `
+        //         <h1></h1>
+        //         <h1>Not logged in, no access allowed</h1>
+        //     `;
+        //     return;
+        // }
+        // const connectedUser = res.user.slug;
+        // TODO = Make me functional : connectedUser is logged in user, not just the provided URL
+        const connectedUser = this.slug;
         const req = await getUserInfo(this.slug);
         if (req.ok) {
             const userData = req.user;

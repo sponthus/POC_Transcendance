@@ -3,16 +3,15 @@
   "version": "1.0.0",
   "description": "Frontend service",
   "scripts": {
-    "dev": "vite --clearScreen false --host 0.0.0.0",
-    "build": "tsc && vite build --clearScreen false",
+    "dev": "vite --clearScreen false --host 0.0.0.0 --mode development",
+    "build": "tsc && vite build --clearScreen false --mode production",
     "preview": "vite preview --clearScreen false"
   },
   "author": "sponthus",
-  "devDependencies": {
+  "dependencies": {
+    "env-schema": "^6.0.1",
     "typescript": "~5.8.3",
     "vite": "^6.3.5"
-  },
-  "dependencies": {
     "@babylonjs/core": "^8.17.1",
     "@babylonjs/loaders": "^8.17.1"
   }

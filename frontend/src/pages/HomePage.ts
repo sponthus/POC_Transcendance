@@ -1,7 +1,8 @@
-import { state } from "../ui/state.js";
-import { navigate } from "../router.js";
-import { checkLog } from "../api/check-log.js";
+import { navigate } from "../core/router.js";
 import { BasePage } from "./BasePage.js";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 export class HomePage extends BasePage {
     constructor() {
@@ -9,10 +10,10 @@ export class HomePage extends BasePage {
     }
 
     async render(): Promise<void> {
-        this.renderBanner();
-        checkLog();
+        await this.renderBanner();
 
-        if (state.isLoggedIn()) {
+        // TODO = Add real check of log
+        if (state.user) {
             this.app.innerHTML = `
             <h1>Welcome to Pong !</h1>
             <p>Ready to play?</p>
@@ -27,7 +28,7 @@ export class HomePage extends BasePage {
 
         document.getElementById('play-btn')?.addEventListener('click', async (e) => {
             e.preventDefault();
-            navigate('/game');
+            await navigate('/game');
         });
 
     }

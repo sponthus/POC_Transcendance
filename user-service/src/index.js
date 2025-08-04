@@ -21,17 +21,16 @@ fastify.decorate("authenticate", async function (request, reply) {
         await request.jwtVerify();
     } catch (err) {
         console.error("JWT error:", err);
-        reply.send(err);
+        reply.code(401).send(err);
     }
 });
 
 fastify.register(fastifyJwt, {
-    secret: env.secret,
+    secret: env.hashKey,
 });
 
 fastify.register(dbConnector);
 
-// TODO implement routes
 await fastify.register(routes);
 
 // fastify.get('/', async (req, reply) => {

@@ -6,7 +6,7 @@ import env from "../config/env.js";
 
 // Initializes database from a file spec. in env variables, default = ./blog.db
 async function dbConnector(fastify, options) {
-    const dbFile = env.dbFile || "./users.db";
+    const dbFile = env.usersDbFile || "./users.db";
     const db = new Database(dbFile, { verbose: console.log });
 
     db.exec(`
@@ -27,7 +27,7 @@ async function dbConnector(fastify, options) {
         done();
     });
 
-    console.log("Database and posts table created successfully");
+    console.log("Database and users table created successfully");
 }
 
 export default fp(dbConnector);
