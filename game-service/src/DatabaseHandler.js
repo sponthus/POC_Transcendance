@@ -139,7 +139,7 @@ export default class DatabaseHandler {
         })
     }
 
-    // todo tcheck the update
+    // test seems ok
     async   updateGameStatus(gameId, status) {
         console.log('updating game ' + gameId + ' with status ' + status);
         if (status === 'ongoing') {
@@ -206,7 +206,6 @@ export default class DatabaseHandler {
     }
 
     async recordWinner(gameId) {
-        console.log("test me !");
         return new Promise((resolve, reject) => {
             try {
                 const stmt = this.db.prepare(`
