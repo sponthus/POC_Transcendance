@@ -14,7 +14,7 @@ export default class DatabaseHandler {
                 id_user INTEGER NOT NULL,
                 name TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                began_at DATETIME
+                began_at DATETIME,
                 finished_at DATETIME
             );
         `);
@@ -30,7 +30,7 @@ export default class DatabaseHandler {
                 score_b INTEGER DEFAULT 0,
                 tournament_id INTEGER REFERENCES tournaments(id),
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                began_at DATETIME
+                began_at DATETIME,
                 finished_at DATETIME,
                 winner TEXT
             );
@@ -55,13 +55,22 @@ export default class DatabaseHandler {
     }
 
     // Test ok
-    async   createGame(userId, playerA, playerB) {
+    async   createGame(userId, playerA, playerB, tournamentId) {
         return new Promise((resolve, reject) => {
             try {
-                const stmt = this.db.prepare(`
+                let res;
+                if (tournamentId === 0) {
+                    const stmt = this.db.prepare(`
                     INSERT INTO games (status, id_user, player_a, player_b) VALUES (?, ?, ?, ?)
-                `);
-                const res = stmt.run('pending', userId, playerA, playerB);
+                    `);
+                    res = stmt.run('pending', userId, playerA, playerB);
+                }
+                else {
+                    const stmt = this.db.prepare(`
+                    INSERT INTO games (status, id_user, player_a, player_b, tournament_id) VALUES (?, ?, ?, ?, ?)
+                    `);
+                    res = stmt.run('pending', userId, playerA, playerB, tournamentId);
+                }
                 const id = res.lastInsertRowId;
                 resolve({
                     game_id: id, 
@@ -80,12 +89,13 @@ export default class DatabaseHandler {
         return new Promise((resolve, reject) => {
             try {
                 const stmt = this.db.prepare(`
-                    SELECT id, status, player_a, player_b, score_a, score_b, created_at
+                    SELECT *
                     FROM games
-                    WHERE id_user = ? AND status = 'pending'
+                    WHERE id_user = ?
                     ORDER BY created_at DESC
                 `);
                 const res = stmt.all(userId);
+                // console.log(res);
                 resolve(res);
             } catch (err) {
                 reject(err);
@@ -98,22 +108,20 @@ export default class DatabaseHandler {
         return new Promise((resolve, reject) => {
             try {
                 const stmt = this.db.prepare(`
-                    SELECT id, status, id_user, player_a, player_b
+                    SELECT *
                     FROM games
                     WHERE id = ?
                 `);
                 const res = stmt.all(gameId);
                 resolve(res);
-        const games = statement.all(gameId);
             } catch (err) {
                 reject(err);
             }
         });
     }
 
-    // Test me please
+    // Test ok
     async   deleteGame(gameId) {
-        console.log('test me plz');
         return new Promise((resolve, reject) => {
             try {
                 const stmt = this.db.prepare(`
@@ -131,24 +139,50 @@ export default class DatabaseHandler {
         })
     }
 
-    // todo update diff dates when begin / cancel / end
+    // todo tcheck the update
     async   updateGameStatus(gameId, status) {
-        return new Promise((resolve, reject) => {
-            try {
-                const stmt = this.db.prepare(`
+        console.log('updating game ' + gameId + ' with status ' + status);
+        if (status === 'ongoing') {
+            return new Promise((resolve, reject) => {
+                try {
+                    const stmt = this.db.prepare(`
                     UPDATE games 
-                    SET status = ? 
+                    SET status = ?, began_at = CURRENT_TIMESTAMP
                     WHERE id = ?
                 `);
-                const res = stmt.run(status, gameId);
-                if (res.changes === 0) {
-                    throw new Error("No game found with the given gameId");
+                    const res = stmt.run(status, gameId);
+                    if (res.changes === 0) {
+                        throw new Error("No game found with the given gameId");
+                    }
+                    resolve(res);
+                } catch (err) {
+                    reject(err);
                 }
-                resolve(res);
-            } catch (err) {
-                reject(err);
-            }
-        });
+            });
+        }
+        else if (status === 'finished' || status === 'canceled') {
+            return new Promise((resolve, reject) => {
+                try {
+                    const stmt = this.db.prepare(`
+                    UPDATE games 
+                    SET status = ?, finished_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                    `);
+                    const res = stmt.run(status, gameId);
+                    if (res.changes === 0) {
+                        throw new Error("No game found with the given gameId");
+                    }
+                    resolve(res);
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }
+        else {
+            return new Promise((resolve, reject) => {
+                reject('Unknown game status');
+            });
+        }
     }
 
     async   updateScore(gameId, newScoreA, newScoreB) {
@@ -184,15 +218,14 @@ export default class DatabaseHandler {
                 if (!game)
                     reject(new Error("Game not found"));
                 
-                const winner = null;
-
+                let winner = null;
                 if (game.score_a > game.score_b) {
                     winner = game.player_a;
                 } else if (game.score_b > game.score_a) {
                     winner = game.player_b;
                 }
                 const updateStmt = this.db.prepare(`
-                    UPDATE game 
+                    UPDATE games 
                     SET winner = ?, finished_at = CURRENT_TIMESTAMP 
                     WHERE id = ?
                 `);

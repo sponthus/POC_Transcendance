@@ -1,6 +1,6 @@
 import { State } from "../core/state.js";
 
-const state = State.getInstance();
+// const state = State.getInstance();
 
 type Failure = { ok: false; error: string };
 type Success = { ok: true; message: string };
@@ -11,19 +11,34 @@ type GameInfoResult =
     | { ok: true; gameId: number, status: string, player_a: string, player_b: string }
     | Failure
 
-type PendingGameInfos = {
+type PendingGamesInfos = {
     id: number;
     status: 'pending' | 'ongoing' | 'finished' | 'canceled';
     player_a: string;
     player_b: string;
-    score_a: number;
-    score_b: number;
     created_at: string;
 }
 
-type AvailableGamesList = { ok: true; games: PendingGameInfos[] }
+type AllGamesInfos = {
+    id: number;
+    status: 'pending' | 'ongoing' | 'finished' | 'canceled';
+    id_user: number,
+    player_a: string;
+    player_b: string;
+    score_a: number;
+    score_b: number;
+    tournament_id: number;
+    created_at: string;
+    began_at: string;
+    finished_at: string;
+    winner: string;
+}
 
+type AvailableGamesList = { ok: true; games: PendingGamesInfos[] }
 export type AvailableGamesResult = AvailableGamesList | Failure;
+
+type AllGamesList = { ok: true; games: AllGamesInfos[] }
+export type AllGamesResult = AllGamesList | Failure;
 
 // POST /games/game request creates a new game for the user, taking names for players
 export async function createLocalGame(userId: number, player_a: string, player_b: string): Promise<GameInfoResult> {
@@ -57,8 +72,8 @@ export async function createLocalGame(userId: number, player_a: string, player_b
         };
     } else {
         // Invalid or expired token = Disconnect
-        alert("API Error starting game : " + data?.error || "Game start impossible");
-        return { ok: false, error: data?.error || "Game start impossible" };
+        alert("API Error starting game : " + data?.error as string  || "Game start impossible");
+        return { ok: false, error: data?.error as string  || "Game start impossible" };
     }
 }
 
@@ -89,12 +104,37 @@ export async function startGame(gameId: number): Promise<GameInfoResult> {
         return { ok: true, gameId: data.game_id, status: data.status, player_a: data.player_a, player_b: data.player_b };
     }
     catch (error) {
-        return { ok: false, error: error };
+        return { ok: false, error: error as string  };
     }
 }
 
-// GET /:userId/games = all available pending games for a user
+// GET /:userId/games = all available PENDING games for a user, gives only useful infos
 export async function getAvailableGames(userId: number): Promise<AvailableGamesResult> {
+    try {
+        const allGamesResult = await getAllGames(userId);
+        if (!allGamesResult.ok) {
+            return { ok: false, error: allGamesResult.error };
+        }
+        const pendingGames: PendingGamesInfos[] = allGamesResult.games
+            .filter(game => game.status === 'pending')
+            .map(game => ({
+                id: game.id,
+                status: game.status,
+                player_a: game.player_a,
+                player_b: game.player_b,
+                created_at: game.created_at
+            }));
+
+        return { ok: true, games: pendingGames };
+
+    } catch (error) {
+        console.error('error filtering pending games', error as string );
+        return { ok: false, error: error as string  };
+    }
+}
+
+// GET /:userId/games = all games for a user (useful for history, gives you every info available on each game)
+export async function getAllGames(userId: number): Promise<AllGamesResult> {
     // TODO = Add log check
 
     if (!userId) {
@@ -113,13 +153,13 @@ export async function getAvailableGames(userId: number): Promise<AvailableGamesR
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const games: PendingGameInfos[] = await response.json();
+        const games: AllGamesInfos[] = await response.json();
 
         return { ok: true, games: games };
 
     } catch (error) {
         console.error('Error fetching available games:', error);
-        return { ok: false, error: error };
+        return { ok: false, error: error as string  };
     }
 }
 
@@ -139,6 +179,6 @@ export async function deleteGame(gameId: number): Promise<SimpleResult> {
         }
         return { ok: true, message: gameId + ' game has been deleted' };
     } catch(error) {
-        return { ok: false, error: error };
+        return { ok: false, error: error as string  };
     }
 }

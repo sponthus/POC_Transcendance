@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 export class Socket {
     static instance: null | Socket = null;
     private ws: WebSocket | null = null;
@@ -77,8 +79,8 @@ export class Socket {
         };
     }
     private getWsUrl(): string {
-        console.log(import.meta.env);
-        const status = import.meta.env.MODE;
+        console.log(import.meta.env?.MODE);
+        const status = import.meta.env?.MODE;
         if (status === "development")
             return 'ws://localhost:8080/ws/';
         else

@@ -6,7 +6,7 @@ export async function createGame(request, reply) {
 
     console.log('User accessed POST /game');
     console.log('userId = ' + userId + ' playA ' + player_a + ' playB ' + player_b);
-    if (!userId || !player_a || !player_b || player_a == player_b) {
+    if (!userId || !player_a || !player_b || player_a === player_b) {
         console.log("Lack of given data");
         return reply.status(400).send({error: 'Invalid input, expected : userId, player_a != player_b'});
     }
@@ -15,7 +15,7 @@ export async function createGame(request, reply) {
     }
 
     try {
-        const result = await db.createGame(userId, player_a, player_b);
+        const result = await db.createGame(userId, player_a, player_b, 0);
         return reply.status(201).send(result);
     }
     catch (error) {
@@ -23,6 +23,7 @@ export async function createGame(request, reply) {
     }
 }
 
+// Test OK gives full history
 export async function getGamesForUserId(request, reply) {
     const { userId } = request.params;
     const { db } = request.server;
@@ -129,6 +130,7 @@ export async function deleteGame(request, reply) {
         // TODO = Add authentication / userId
 
         const del = await db.deleteGame(gameId);
+        return reply.status(200).send(del);
     } catch (error) {
         console.error('Error deleting game: ' + error);
     }

@@ -58,6 +58,7 @@ export class GamePage extends BasePage {
             this.app.innerHTML = `Error`;
             return;
         }
+
         try {
             // GET games for userId
             const result = await getAvailableGames(state.user?.id);
@@ -89,7 +90,10 @@ export class GamePage extends BasePage {
                 // Add functionality for "Play button"
                 document.querySelectorAll('.play-btn').forEach(button => {
                     button.addEventListener('click', async (e) => {
-                        const gameId = (e.target as HTMLElement).getAttribute('data-game-id') as number;
+                        const gameIdStr = (e.target as HTMLElement).getAttribute('data-game-id');
+                        const gameId = gameIdStr ? parseInt(gameIdStr, 10) : 0;
+                        if (gameId == 0)
+                            return;
                         console.log('Play button clicked for gameId ' + gameId);
                         await this.launchGame(gameId);
                     });
@@ -98,7 +102,10 @@ export class GamePage extends BasePage {
                 // Add functionality for "Delete button"
                 document.querySelectorAll('.delete-btn').forEach(button => {
                     button.addEventListener('click', async (e) => {
-                        const gameId = (e.target as HTMLElement).getAttribute('data-game-id') as number;
+                        const gameIdStr = (e.target as HTMLElement).getAttribute('data-game-id');
+                        const gameId = gameIdStr ? parseInt(gameIdStr, 10) : 0;
+                        if (gameId == 0)
+                            return;
                         console.log('Delete button clicked for gameId ' + gameId);
                         await this.deleteGame(gameId);
                     });

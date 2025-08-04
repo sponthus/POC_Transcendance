@@ -15,7 +15,7 @@ export default class WebSocketManager {
             ws.on('message', (data) => {
                 try {
                     const message = JSON.parse(data);
-                    console.log(message);
+                    console.log('Message received : ' + message);
                     this.handleMessage(ws, message);
                 } catch (error) {
                     console.error('Invalid JSON:', error);
@@ -78,7 +78,7 @@ export default class WebSocketManager {
                 oldClient.ws.close(1000, 'New session started');
             }
             state.addUser(ws, userId);
-            console.log("Authenticated user = " + userId);
+            // console.log("Authenticated user = " + userId);
 
             this.sendToUser(userId, {
                 type: 'auth_success',

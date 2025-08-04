@@ -13,6 +13,8 @@ export default class GameServer {
         this.scoreA = 0;
         this.scoreB = 0;
 
+        // TODO : Don't forget to start game when player launches the game (press space ?)
+        // this.startGame();
         this.setHandlers();
         this.intervalId = setInterval(() => {
             if (this.state === 'paused') {
@@ -38,7 +40,10 @@ export default class GameServer {
 
     endGame() {
         this.state = 'finished';
-        gameEventEmitter.emitGameEvent('game:ended', this.gameId, this.scoreA, this.scoreB);
+        gameEventEmitter.emitGameEvent('game:ended', this.gameId, {
+            scoreA: this.scoreA,
+            scoreB: this.scoreB
+        });
         this.destroy();
     }
 
