@@ -1,9 +1,5 @@
 NETWORK = pongnet
 
-# IMAGES =
-#
-# CONTAINER =
-
 NGINX_DIR = nginx
 FRONTEND_DIR = frontend
 USERS_DIR = user-service
@@ -152,7 +148,7 @@ clean-modules:
 	@echo " ✔ Node modules deleted";
 
 clean-env:
-    @rm .env
-    @rm -r secrets
+	@rm .env
+	@rm -r secrets
 
 .PHONY: all re clean fclean down up subject env clean-modules clean-db clean-env dev prod
