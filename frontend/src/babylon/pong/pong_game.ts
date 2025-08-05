@@ -1,9 +1,10 @@
 import { BabylonSceneBuilder } from "./displayGame/scene_maker";
 import { DisplayAssets } from "./displayGame/display_Assets";
 import { GamePhysics } from "./displayGame/game_Physics";
+
 import * as Babylon from "@babylonjs/core"
 
-export class PongGame {
+export class PongGame  {
 	private _sceneBuilder?: BabylonSceneBuilder;
 	private _displayAssets?: DisplayAssets;
 	private _gamePhysics?: GamePhysics;

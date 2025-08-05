@@ -1,7 +1,9 @@
-import { navigate } from "../router";
+import { navigate } from "../core/router";
 import { BasePage } from "./BasePage";
-import { state } from "../ui/state.js";
+import { State } from "../core/state.js";
 import { DropDown } from "../Utils/dropDown";
+
+const state = State.getInstance();
 
 export class SettingPage extends BasePage {
 
@@ -11,6 +13,7 @@ export class SettingPage extends BasePage {
 
 	async render(): Promise<void> {
 		if (state.isLoggedIn()) {
+			console.log('coucou');
 
 			this.renderBanner();
 

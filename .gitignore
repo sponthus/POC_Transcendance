@@ -7,3 +7,5 @@ test*
 node_modules/*
 *-lock.json
 *.db
+secrets
+.env

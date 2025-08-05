@@ -1,7 +1,7 @@
 import env from "./env.js";
 
 export default {
-    level: env.logLevel,
+    level: process.env.logLevel,
     formatters: {
         // Deletes useless infos
         bindings: () => ({}),

@@ -9,7 +9,7 @@
   <tr>
     <td>
       Transcendance is the last group common core project at 42 school. The goal is to create a website to play <a href="https://fr.wikipedia.org/wiki/Pong">Pong</a>, with a lot of modules around this concept : frontend, DevObs architecture, user authentification and chat, match history, online games and cybersecurity. 
-      Therefore, many programming languages and concepts are expected and they are pretty new to me. This repo contains a few researched I've made on these concepts.
+      Therefore, many programming languages and concepts are expected. This repo contains our WIP for this project.
     </td>
   </tr>
 </table>
@@ -17,20 +17,21 @@
 ## :memo: Status
 <p align="center">
   <strong>Ongoing :</strong> <br>
-  :star: Confirm global architecture of the project
-  :star: Complete game basics to allow work about IA opponent<br>
-  :star: Complete user authentification (2 tokens) <br>
-  :star: Implement needed databases and REST API
+  :star: Complete the game in backend<br>
+  :star: Complete frontend style<br>
+  :star: Complete IA opponent<br>
+  :star: Complete user authentication (2 tokens) <br>
+  :star: Finish needed REST API
 </p>
 
-## :orange_book: Features
+## :orange_book: Features (WIP)
 + Basic SPA website with router and back/forward navigation working
-+ Basic 3D pong game (local)
-+ Basic authentication, 1 token for now
++ 3D pong game (local), tournaments
++ User system with registration and log-in
 + Using `docker-compose` to launch the project with micro-services architecture :<br>
      - Nginx
-     - Vite server for frontend (temp)
-     - Backend server
+     - Frontend compilation, then served by nginx in prod mode / vite server in dev mode
+     - Backend servers : api-controller, game-service, users-service, upload-service
 
 ## :cyclone: Clone
 Clone the repository and enter it :
@@ -44,8 +45,8 @@ From the project directory, use :
 ```shell
 make
 ```
-Be awarwe that this is a WIP, and not designed to be a finished product : I only do researches on various subjects !
+Be awarwe that this is a WIP, and not designed to be a finished product !
 
 :hugs: Thanx !
 ---
-Made by sponthus
+Made by ebriere, endoliam, mbogey, sponthus

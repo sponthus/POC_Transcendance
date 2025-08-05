@@ -1,4 +1,4 @@
-import { setupRouter } from './router.js';
+import { setupRouter } from './core/router.js';
 import { checkLog } from "./api/check-log.js";
 import { App } from './babylon/main.js';
 
@@ -12,6 +12,6 @@ if (app) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    await checkLog();
     await setupRouter();
+    // TODO = Check log ? Restore a session according to cookies ?
 });

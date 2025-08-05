@@ -1,7 +1,8 @@
-import { state } from "../ui/state.js";
-import { navigate } from "../router.js";
-import { checkLog } from "../api/check-log.js";
+import { navigate } from "../core/router.js";
 import { BasePage } from "./BasePage.js";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 export class HomePage extends BasePage {
 
@@ -15,8 +16,8 @@ export class HomePage extends BasePage {
     }
 
     async render(): Promise<void> {
-		checkLog();
-		this.renderBanner();
+
+		await this.renderBanner();
 		
 		await this.InitDivs();
 		await this.createLogo();
@@ -27,7 +28,6 @@ export class HomePage extends BasePage {
 		await this.rengerLogoutHome();
 
 		await this.addInApp();
-
     }
 	
 	private async InitDivs() {

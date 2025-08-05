@@ -6,6 +6,8 @@ import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import { PongGame } from "../pong/pong_game";
 import { LoadingScreen } from "./loadingScreen";
+import { popUp } from "../../Utils/popUp";
+import { GamePage } from "../../pages/GamePage";
 
 enum state {HOME = 0, PONG = 1};
 
@@ -24,7 +26,10 @@ export class renderScene {
 	private _isocamera?: BABYLON.FreeCamera;
 	private _light?: BABYLON.HemisphericLight;
 
-	private _state: number;
+	private _state!: number;
+
+	// private _popUp?: popUp;
+	private _gameCreatorPage?: GamePage;
 
 
 	constructor() {
@@ -41,9 +46,22 @@ export class renderScene {
 		this._initIsoCamera();
 		this._initLight();
 
+		this._initState();
+
+		this._initGameCreatorPage();
+		// this._initPoPupPage();
+
 		this._setdebugLayer();
 
 		this._renderingloop();
+		
+	}
+
+	private _initGameCreatorPage() {
+		this._gameCreatorPage = new GamePage(this._pongScene!, this._engine!, this);
+	}
+
+	private _initState() {
 		this._state = 0;
 	}
 
@@ -164,7 +182,7 @@ export class renderScene {
 
 	private _renderingloop() {
 		let lastTime = 0;
-		const targetFPS = 60;
+		const targetFPS = 120;
 		const frameDuration = 1000 / targetFPS;
 		let now;
 		let delta;
@@ -180,18 +198,26 @@ export class renderScene {
 							this._homeScene.render();
 						break;
 					case state.PONG:
-						if (this._pongScene)
-							this._pongScene.render();
+						this.renderPongscene();
 						break;
 					default:break;
 				}
 			}
 		});
-	
+
 		window.addEventListener('resize', () => {
 		    this._engine!.resize();
 			location.reload();
 		});
+	}
+
+	private renderPongscene() {
+		this.engine?.stopRenderLoop();
+		
+		this._gameCreatorPage?.renderGamePage();
+		this._gameCreatorPage?.Manage1v1Event();
+
+		// this._pongScene?.render();
 	}
 
 	/***************************for debug to delete at end of project***************************/
@@ -204,5 +230,9 @@ export class renderScene {
 				else
 					this._homeScene!.debugLayer.show(); }
 		});
+	}
+
+	callRenderLoop() {
+		this._renderingloop();
 	}
 }

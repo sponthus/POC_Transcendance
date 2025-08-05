@@ -14,7 +14,7 @@ import { renderAsset } from "./displaying/renderAsset";
 import { sleep } from "./displaying/dialogueBox";
 
 
-export class App extends BasePage {
+export class Game extends BasePage {
 
 	private	_renderScene?: renderScene;
 

@@ -1,11 +1,13 @@
-import { navigate, setupRouter } from '../router.js';
-import { state } from "../ui/state";
-import { getUserInfo, modifyUserAvatar, modifyUserInfo } from "../api/user.js";
+import { navigate } from '../core/router.js';
+import { State } from "../core/state.js";
+import { getUserInfo, modifyUserAvatar , modifyUserInfo } from "../api/user.js";
 
 const wrapper = document.createElement('div');
 const userInfo = document.createElement('div');
 const logo = document.createElement('div');
 const navLinks = document.createElement('ul');
+
+const state = State.getInstance();
 
 /*************************************export Functions for creatin banner*************************************/
 export function renderBaseBanner(banner: HTMLElement): void {

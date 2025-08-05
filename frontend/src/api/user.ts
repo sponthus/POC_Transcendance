@@ -1,12 +1,14 @@
-import { state } from "../ui/state.js";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 // User infos possible to give back
 type UserBasic = {
     username: string;
     slug: string;
+    id: number;
 };
 type UserFull = UserBasic & {
-    id: number;
     avatar: string;
     created_at: string;
 };
@@ -27,6 +29,8 @@ export type UserModificationResult = UserModificationSuccess | Failure;
 
 // POST /api/login request to log in with username + login, updates local infos about user
 export async function loginUser(username: string, password: string): Promise<LoginResult> {
+    // TODO = Add lock check : no new login if already logged
+
     const res = await fetch('/api/user/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,10 +40,11 @@ export async function loginUser(username: string, password: string): Promise<Log
     if (res.ok) {
         const data = await res.json();
         localStorage.setItem("token", data.token); // Store token
-        state.login(data.username, data.slug); // Login in local state
+        state.login(data.username, data.slug, data.id); // Login in local state
         console.log('token is ' + data.token); // debug
         console.log('slug is ' + data.slug); // debug
-        return { ok: true, token: data.token, user: { username: data.username, slug: data.slug } };
+        console.log('id is ' + data.id); // debug
+        return { ok: true, token: data.token, user: { username: data.username, slug: data.slug, id: data.id } };
     } else {
         const error = await res.json();
         console.error(error?.error || "Account creation impossible");
@@ -49,6 +54,7 @@ export async function loginUser(username: string, password: string): Promise<Log
 
 // POST /api/user request to register a new user with username + login, updates local infos about user
 export async function registerUser(username: string, password: string): Promise<RegisterResult> {
+    // TODO = Log check, no register if already registered
     const res = await fetch('/api/user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -59,8 +65,8 @@ export async function registerUser(username: string, password: string): Promise<
         const data = await res.json();
         console.log('token is ' + data.token); // Debug
         localStorage.setItem("token", data.token); // Store token in local storage
-        state.login(data.username, data.slug); // Login in local state
-        return { ok: true, token: data.token, user: { username: data.username, slug: data.slug } };
+        state.login(data.username, data.slug, data.id); // Login in local state
+        return { ok: true, token: data.token, user: { username: data.username, slug: data.slug, id: data.id } };
     } else {
         const error = await res.json();
         alert("Error : " + error?.error || "Account creation impossible");
@@ -70,6 +76,7 @@ export async function registerUser(username: string, password: string): Promise<
 
 // GET /api/user/:slug request to get user infos
 export async function getUserInfo(slug: string): Promise<GetUserResult> {
+    // TODO : Log check not functional
     const token = localStorage.getItem("token");
     if (!token) {
         return { ok: false, error: "No token found" };
@@ -100,10 +107,10 @@ export async function getUserInfo(slug: string): Promise<GetUserResult> {
     }
 }
 
-// NOT TESTED
+// TODO : NOT TESTED
 // PUT /api/user/:slug request to change username
 export async function modifyUserInfo(slug: string, username: string): Promise<UserModificationResult> {
-	console.log("modify user info call user slug = ", `/api/user/${slug}`);
+    // TODO = Log check not functional
     const token = localStorage.getItem("token");
     if (!token) {
 		return { ok: false, error: "No token found" };
@@ -135,6 +142,7 @@ export async function modifyUserInfo(slug: string, username: string): Promise<Us
 
 // PUT /api/user/:slug/avatar request to change avatar path
 export async function modifyUserAvatar(slug: string, avatar: string): Promise<AvatarUploadResult> {
+    // TODO = Log check not functional
     const token = localStorage.getItem("token");
     if (!token) {
         return { ok: false, error: "No token found" };

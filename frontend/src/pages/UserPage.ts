@@ -1,17 +1,19 @@
-import { navigate } from '../router.js';
+import { navigate } from '../core/router.js';
 import { checkLog } from "../api/check-log.js";
 import { getUserInfo, modifyUserAvatar , modifyUserInfo } from "../api/user.js";
 import { uploadAvatar } from "../api/avatar.js";
 import { BasePage } from "./BasePage.js";
-import { state } from '../ui/state.js';
+import { State } from '../core/state.js';
 import { popUp } from '../Utils/popUp.js';
 import { sleep } from '../babylon/displaying/dialogueBox.js';
 
 enum BodyState {PROFILE = 0, FRIENDS = 1, HISTORY = 2};
 enum EditState {AVATAR = 0, USERNAME = 1};
 
+const state = State.getInstance();
+
 export class UserPage extends BasePage {
-    protected slug?: string;
+	protected slug?: string;
 
 	private _Background?: HTMLElement;
 	private _ProfileBanner?: HTMLElement;
@@ -52,13 +54,13 @@ export class UserPage extends BasePage {
 		    `;
 		    return;
 		}
-		const connectedUser = res.user.slug;
+		// const connectedUser = res.user.slug;
 		
 		const req = await getUserInfo(this.slug!);
 		if (req.ok) {
 			this._UserData = req.user;
 			console.log(`user data = ` + JSON.stringify(this._UserData));
-			this.isOwnProfile = this.slug === connectedUser;
+			this.isOwnProfile = true;// = this.slug === connectedUser;
 			this.StateBody = 0;
 			await this.showUserPage();
 		}

@@ -1,9 +1,9 @@
-
-
 // This page is the basic logic : every page should inherit from her.
 // Has render() and destroy()
-import {renderBaseBanner, renderLoggedInBanner, renderLoggedOutBanner} from "./Banner.js";
-import {state} from "../ui/state";
+import {renderBaseBanner, renderLoggedInBanner, renderLoggedOutBanner} from "./Banner";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 export abstract class BasePage {
     protected app: HTMLElement;
@@ -27,17 +27,17 @@ export abstract class BasePage {
 	protected async renderBanner(): Promise<void> {
 		renderBaseBanner(this.banner);
 
-		if (state.isLoggedIn()) {
-			const user: null | { username: string, slug: string } = state.user;
-			if (user) {
-				await renderLoggedInBanner(this.banner);
-			}
-			else
-				await renderLoggedOutBanner(this.banner);
-		}
-		else 
-			await renderLoggedOutBanner(this.banner);
-	}
+        if (state.isLoggedIn()) {
+            const user: null | { username: string, slug: string, id: number } = state.user;
+            if (user) {
+                await renderLoggedInBanner(this.banner);
+            }
+            else
+                await renderLoggedOutBanner(this.banner);
+        }
+        else
+            await renderLoggedOutBanner(this.banner);
+    }
 
 	protected initBackground(): HTMLElement {
 		const BackgroundHome = document.createElement('div');
