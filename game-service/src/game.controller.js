@@ -100,6 +100,7 @@ export async function startGame(request, reply) {
     }
     catch (error) {
         console.error('Error creating game server:', error);
+        return reply.status(400).send({error: 'Internal server error while creating games'});
     }
 }
 

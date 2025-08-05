@@ -6,6 +6,7 @@ import { LocalGamePage } from '../pages/LocalGamePage.js';
 import { UserPage } from '../pages/UserPage.js';
 import { GamePage } from '../pages/GamePage.js';
 import { State } from "./state.js";
+import {buttonClass} from "../pages/Tournaments.js";
 
 const state = State.getInstance();
 
@@ -41,6 +42,9 @@ export async function renderRoute(path: string) {
                 break;
             case '/local':
                 currentPage = new LocalGamePage();
+                break;
+            case '/tournament':
+                currentPage = new buttonClass(); // TODO = DEBUG only
                 break;
             default:
                 currentPage = null;
