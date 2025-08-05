@@ -1,8 +1,8 @@
 NETWORK = pongnet
 
-IMAGES =
-
-CONTAINER =
+# IMAGES =
+#
+# CONTAINER =
 
 NGINX_DIR = nginx
 FRONTEND_DIR = frontend
@@ -151,4 +151,8 @@ clean-modules:
     	$(API_DIR)/package-lock.json
 	@echo " ✔ Node modules deleted";
 
-.PHONY: all re clean fclean down up subject env clean-modules clean-db dev prod
+clean-env:
+    @rm .env
+    @rm -r secrets
+
+.PHONY: all re clean fclean down up subject env clean-modules clean-db clean-env dev prod
