@@ -171,6 +171,7 @@ export class SettingPage extends BasePage {
 				console.log("can't find returnDiv");
 			return ;
 		}
+
 		SettingText.textContent = "Game Settings";
 		ButtonDiv.classList.add('hidden');
 

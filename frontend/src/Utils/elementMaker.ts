@@ -12,7 +12,7 @@ export function createDiv(Id: string, ClassName: string): HTMLElement {
 export function createElement(Element: string, Id: string,  TextContent: string, ClassName: string): HTMLElement {
 
 	const text: HTMLElement = document.createElement(Element);
-	text.id = Id + "-text";
+	text.id = Id + "-" + Element;
 	text.className = ClassName;
 	text.textContent = TextContent;
 

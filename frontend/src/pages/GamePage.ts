@@ -45,22 +45,22 @@ export class GamePage extends popUp {
 
 	private initPage() {
 		this.Page = document.createElement('div');
-		this.Page.className = "flex flex-col items-center h-[80%] w-[80%] text-center border-4 border-orange-400 rounded-xl space-y-4 overflow-auto";
+		this.Page.className = "flex flex-col items-center h-[80%] w-[80%] text-center border-4 border-orange-400 rounded-xl space-y-4 overflow-hidden";
 	}
 
 	private initPopUpPage() {
-		this._Body.className = "flex flex-col items-center justify-center h-[60%] w-[60%] bg-orange-300 rounded-xl border-2 border-orange-400  shadow-2xl overflow-auto";
+		this._Body.className = "flex flex-col items-center justify-center h-[60%] w-[60%] bg-orange-300 rounded-xl border-2 border-orange-400 shadow-2xl overflow-auto";
 		this._Title.classList.add("text-emerald-600");
 		this._Body.appendChild(this.Page);
 	}
 
     async launchGame(gameId: number) {
         try {
-            const request = await startGame(gameId);
-            if (!request.ok) {
-                throw new Error('Unable to start game : ' + request.error);
-            }
-            state.launchGame(gameId);
+			const request = await startGame(gameId);
+			if (!request.ok) {
+			    throw new Error('Unable to start game : ' + request.error);
+			}
+			state.launchGame(gameId);
 			this.removeOverlayToWindow();
 			let lastTime = 0;
 			const targetFPS = 120;
@@ -105,10 +105,11 @@ export class GamePage extends popUp {
     }
 
     async refreshAvailableGames() {
-        const availableGamesDiv = document.getElementById('available-games');
+        const availableGamesDiv = document.getElementById('available-games-div');
         if (!availableGamesDiv || !state.user?.id) {
             console.log('availableGames debug');
-            this.Page.innerHTML = `Error`;
+			if(!availableGamesDiv)
+         	   this.Page.innerHTML = `Error don't find availables games`;
             return;
         }
 
@@ -121,24 +122,28 @@ export class GamePage extends popUp {
             }
             const games = result.games;
 
+			const TitlePartys = document.getElementById('Title-Party-p') as HTMLElement;
             // Render list of available games, possibility to show more info about each game if needed
             if (games.length === 0) {
-                availableGamesDiv.innerHTML = '<p>No games available</p>';
-            } else {
-                availableGamesDiv.innerHTML = games.map((game: any) => `
-                <div class="game-item" style="border: 1px solid #ccc; padding: 10px; margin: 5px 0; border-radius: 5px;">
-                    <h3>Game #${game.id}</h3>
-                    <p><strong>Players:</strong> ${game.player_a} vs ${game.player_b}</p>
-                    <p><strong>Status:</strong> ${game.status}</p>
-                    <p><strong>Created:</strong> ${game.created_at}</p>
-                    <button class="play-btn" data-game-id="${game.id}" style="background: #4CAF50; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
-                        ▶️ Play
-                    </button>
-                    <button class="delete-btn" data-game-id="${game.id}" style="background: #4CAF50; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">
-                        ❌ Delete
-                    </button>
-                </div>
-                `).join('');
+                TitlePartys.textContent = 'No games available';
+            }
+			else {
+				TitlePartys.textContent = 'available Partys';
+				const BodyParty = document.getElementById("Body-Party-div")  as HTMLElement;
+				let CheckBoxTab: HTMLLabelElement[];
+				games.map((Party: any, index: number) => {
+					const PartyDiv: HTMLElement = createDiv("game-item" + index.toString(), "flex border-2 border-orange-600 w-full h-[40%] space-x-4");
+
+					const GameId = createElement('h3', "party-item" + index.toString(), `Game #${Party.id} `, "") as HTMLElement;		
+					const PLayersName = createElement('p', "party-Players-Name" + index.toString(), `${Party.player_a} vs ${Party.player_b} `, "") as HTMLElement; 
+					const GamesStatue = createElement('p', "party-statue" + index.toString(), `Status ${Party.status} `, "") as HTMLElement;
+					const CreatedAt = createElement('p', "party-item" + index.toString(), `Status ${Party.status}`, "") as HTMLElement;
+					const checkbox = createCheckBoxLabel("party-check", "choose", "choose one", ["text-emerald-600 space-x-4"," space-x-4 "]);
+					// CheckBoxTab[index] = checkbox;
+
+					append(PartyDiv, [GameId, PLayersName, GamesStatue, CreatedAt, checkbox]);
+					append(BodyParty, [PartyDiv]);
+				})
 
                 // Add functionality for "Play button"
                 document.querySelectorAll('.play-btn').forEach(button => {
@@ -182,10 +187,10 @@ export class GamePage extends popUp {
 			if (MeCheckbox.checked) {
 				if (ElseCheckBox.checked) {
 					ElseCheckBox.checked = false;
-					if (this.isBotGame = true)
+					if (this.isBotGame == true)
 						ElsePlayerInput.value = 'Crabby The Bot';
 					else {
-						console.log("here the player input local ")
+						if (ElsePlayerInput.value )
 						ElsePlayerInput.value = '';
 					}
 					ElsePlayerInput.readOnly = false;
@@ -211,6 +216,8 @@ export class GamePage extends popUp {
 		this.meCheckBox1ChoiceOnly(playerAMeCheckbox, playerAInput, playerBMeCheckbox, playerBInput);
 		this.meCheckBox1ChoiceOnly(playerBMeCheckbox, playerBInput, playerAMeCheckbox, playerAInput);
 
+		await this.refreshAvailableGames();
+
     }
 
 	private async checkLocalBot() {
@@ -218,6 +225,7 @@ export class GamePage extends popUp {
 	
 		const Select = document.getElementById("PlayerMod-DropDown-Select") as HTMLSelectElement;
 		Select?.addEventListener('change', () =>{
+			console.log("select value : ", Select.value);
 			console.log("event changer select", )
 			if (Select.value == "1 player vs AI") {
 				playerBInput.value = "Crabby The Bot";
@@ -235,6 +243,7 @@ export class GamePage extends popUp {
 		this.Page.classList.remove("justify-center");
 		this.create1v1PageDiv();
 		this.create1v1FormDiv();
+		this.createAvailableGame();
 
         document.getElementById('New-btn')?.addEventListener('click', async () => {
 			this.ChangeBackPageButtonText([document.getElementById("Return-btn") as HTMLButtonElement, "Cancel"]
@@ -254,6 +263,16 @@ export class GamePage extends popUp {
 		this.render1v1FormDiv();
 	}
 
+	private async createAvailableGame() {
+		const AvailableDiv: HTMLElement = createDiv("available-games", "flex flex-col items-center w-[90%] h-[90%] space-y-8  mb-auto");
+
+		const TitlePartys = createElement('p', "Title-Party", "", "text-center text-emerald-600 w-[50%] font-bold border-4 rounded-xl translate-y-4 border-orange-400 shadow-xl")
+
+		const BodyParty: HTMLElement = createDiv("Body-Party", "flex flex-col w-[90%] h-64 border-4 border-orange-400 rounded-xl -translate-y-2 shadow-xl overflow-auto");
+
+		append(AvailableDiv, [TitlePartys, BodyParty]);
+		append(this.Page, [AvailableDiv]);
+	}
 	private async render1v1FormDiv() {
 		
 		this.renderDropdown(this.NewGameForm ,["1 player vs AI", "Local Multiplayer"], "PlayerMod", "Pong player Mod :");
@@ -390,6 +409,7 @@ export class GamePage extends popUp {
 			const SaveButton = document.getElementById("Save-btn") as HTMLButtonElement;
 			SaveButton.textContent = "Play";
 			this.StatePage = 1;
+			this.Page.classList.remove("border-4");
 			await this.generate1v1GamePage();
 		}
 		else if (SelectValue == "tournament")
@@ -439,7 +459,7 @@ export class GamePage extends popUp {
 		    alert('Error creating game. Please try again.');
 		}
 		// Refresh available games
-		// await this.refreshAvailableGames();
+		await this.refreshAvailableGames();
 
 		// Success message
 		alert('Game created successfully!');
@@ -468,6 +488,7 @@ export class GamePage extends popUp {
 		Array.from(this.Page.children).forEach((child)=>{
 			child.remove();
 		})
+		this.Page.classList.add("border-4");
 		this.generateGamePage();
 	}
 
