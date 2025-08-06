@@ -34,10 +34,10 @@ export class HomePage extends BasePage {
 		this._Background = this.initBackground();
 		
 		this._front = document.createElement('div');
-		this._front.className = "rounded-xl shadow-2xl p-12 max-w-md w-full text-center";
+		this._front.className = " flex items-center justify-center rounded-xl shadow-2xl p-12 max-w-md w-full h-[30%] text-center";
 		
 		this._ButtonDiv = document.createElement('div');
-		this._ButtonDiv.className = "flex flex-col ispace-y-4";
+		this._ButtonDiv.className = "flex flex-col items-center justify-center space-y-6 w-full ";
 	}
 	
 	private async createLogo() {
@@ -63,7 +63,7 @@ export class HomePage extends BasePage {
 		Button.id = Id;
 		Button.href = link;
 		Button.textContent = TextContent;
-		Button.className = "w-full mt-8 bg-orange-300 hover:bg-orange-400 text-emerald-600 font-bold py-4 px-8 rounded-lg text-xl transition-colorsduration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300";
+		Button.className = "w-full  mt-8 bg-orange-300 hover:bg-orange-400 text-emerald-600 font-bold py-4 px-8 rounded-lg text-xl transition-colorsduration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300";
 
 		if (this._ButtonDiv)
 			this._ButtonDiv.appendChild(Button);
@@ -72,16 +72,16 @@ export class HomePage extends BasePage {
 	/*************************************Function for creating logo*************************************/
 	private initLogo(): HTMLElement {
 		const logoDiv = document.createElement('div');
-		logoDiv.className = "flex items-center justify-center relative h-full w-full ";
+		logoDiv.className = "flex items-center justify-center h-[70%] w-full";
 		
 		const logo = document.createElement('img');
 		logo.id = "logo-img";
-		logo.className = "mx-auto object-cover object-center h-1/2 w-1/2";
+		logo.className = "mx-auto object-contain object-center absolute h-[70%] w-[70%]";
 		logo.src = "/logo/logoIlsandWorld.png";
 		
 		const logoTitleText = document.createElement('img');
 		logoTitleText.id = "logo-title-Text";
-		logoTitleText.className = "absolute h-1/2 w-1/2 bottom-4";
+		logoTitleText.className = "absolute h-1/2 w-1/2 translate-y-32";
 		logoTitleText.src = "/logo/IslandWorldText.png";
 		
 		const loglWelcomeText = document.createElement('img');

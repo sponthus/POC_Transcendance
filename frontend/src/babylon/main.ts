@@ -39,7 +39,7 @@ export class Game extends BasePage {
 		//document.body.innerHTML = "";
 		await this.renderBanner();
 		try {
-			this._renderScene = new renderScene();
+			this._renderScene = new renderScene(this.app);
 			if (this._renderScene.engine)
 				this._renderScene.engine.displayLoadingUI();
 

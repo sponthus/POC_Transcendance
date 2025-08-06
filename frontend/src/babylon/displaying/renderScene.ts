@@ -32,9 +32,9 @@ export class renderScene {
 	private _gameCreatorPage?: GamePage;
 
 
-	constructor() {
+	constructor(App: HTMLElement) {
 		/**********************scene builder***********************/
-		this._canvas = this._initCanvas();
+		this._canvas = this._initCanvas(App);
 
 		this._initEngine();
 	
@@ -58,26 +58,26 @@ export class renderScene {
 	}
 
 	private _initGameCreatorPage() {
-		this._gameCreatorPage = new GamePage(this._pongScene!, this._engine!, this);
+		this._gameCreatorPage = new GamePage(this);
 	}
 
 	private _initState() {
-		this._state = 0;
+		this._state = 1;
 	}
 
-	private _initCanvas(): HTMLCanvasElement {
+	private _initCanvas(App: HTMLElement): HTMLCanvasElement {
 		/**********************canvas builder***********************/
-		document.documentElement.style["overflow"] = "hidden";
-		document.documentElement.style.overflow = "hidden";
-		document.documentElement.style.width = "100%";
-		document.documentElement.style.height = "100%";
-		document.documentElement.style.margin = "0";
-		document.documentElement.style.padding = "0";
-		document.body.style.overflow = "hidden";
-		document.body.style.width = "100%";
-		document.body.style.height = "100%";
-		document.body.style.margin = "0";
-		document.body.style.padding = "0";
+		// document.documentElement.style["overflow"] = "hidden";
+		// document.documentElement.style.overflow = "hidden";
+		// document.documentElement.style.width = "100%";
+		// document.documentElement.style.height = "100%";
+		// document.documentElement.style.margin = "0";
+		// document.documentElement.style.padding = "0";
+		// document.body.style.overflow = "hidden";
+		// document.body.style.width = "100%";
+		// document.body.style.height = "100%";
+		// document.body.style.margin = "0";
+		// document.body.style.padding = "0";
 		//create the canvas html element and attach it to the webpage
 		this._canvas = document.createElement("canvas");
 		if (!this._canvas)
@@ -85,7 +85,7 @@ export class renderScene {
 		this._canvas.style.width = "100%";
 		this._canvas.style.height = "100%";
 		this._canvas.id = "gameCanvas";
-		document.body.appendChild(this._canvas);
+		App.appendChild(this._canvas);
 
 		console.log("Canvas create and add to DOM");
 		return this._canvas;
@@ -132,11 +132,11 @@ export class renderScene {
 		this._isocamera.orthoRight = (this._engine!.getRenderWidth() * zoom);
 		this._isocamera.orthoTop = (this._engine!.getRenderHeight() * zoom);
 		this._isocamera.orthoBottom =( -this._engine!.getRenderHeight() * zoom);
-		// this._isocamera.detachControl();
-		/***************************for debug to delete at end of project***************************/
-		this._isocamera.attachControl(this._canvas, true);
-		if (this._homeScene)
-			this._homeScene.activeCamera = this._isocamera;
+		this._isocamera.detachControl();
+		// /***************************for debug to delete at end of project***************************/
+		// this._isocamera.attachControl(this._canvas, true);
+		// if (this._homeScene)
+		// 	this._homeScene.activeCamera = this._isocamera;
 	}
 
 	private _initLight() {
@@ -158,26 +158,33 @@ export class renderScene {
 		return null;
 	}
 
+	
 	get pongScene(): BABYLON.Scene | null {
 		if (this._pongScene)
 			return this._pongScene;
 		return null;
 	}
-
+	
 	get engine(): BABYLON.Engine | null {
 		if (this._engine)
 			return this._engine;
 		return null;
 	}
-
+	
 	get	canvas(): HTMLCanvasElement | null {
 		if (this._canvas)
 			return this._canvas;
 		return null;
 	}
-
+	
 	set setState(state: number) {
 		this._state = state;
+	}
+	
+	get state(): number | null {
+		if (this._state)
+			return this._state;
+		return null;
 	}
 
 	private _renderingloop() {
@@ -213,11 +220,7 @@ export class renderScene {
 
 	private renderPongscene() {
 		this.engine?.stopRenderLoop();
-		
 		this._gameCreatorPage?.renderGamePage();
-		this._gameCreatorPage?.Manage1v1Event();
-
-		// this._pongScene?.render();
 	}
 
 	/***************************for debug to delete at end of project***************************/
