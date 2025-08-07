@@ -19,6 +19,7 @@ async function dbConnector(fastify, options) {
             slug TEXT UNIQUE NOT NULL,
             avatar TEXT NOT NULL,
             pw_hash TEXT NOT NULL,
+            last_username_change DATETIME,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     `);

@@ -25,11 +25,11 @@ export default async function registerUser(request, reply)
     const pw_hash = bcrypt.hashSync(password, saltRounds);
     try 
     {
-        const statement = db.prepare('INSERT INTO users (username, slug, avatar, pw_hash) VALUES (?, ?, ?, ?)');
-        const result = statement.run(username, slug, avatar, pw_hash);
+        const statement = db.prepare('INSERT INTO users (username, slug, avatar, last_username_change, pw_hash) VALUES (?, ?, ?, ?, ?)');
+        const result = statement.run(username, slug, avatar, pw_hash, CURRENT_TIMESTAMP);
         idUser = result.lastInsertRowid;
         //generation token : pas mis de date d'expiration
-        const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '1h'});
+        const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '10s'});
         return reply.code(200).send({ token: token, username: username, slug: slug }); //mettre token, username, slug
     }
     catch (err)

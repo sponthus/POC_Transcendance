@@ -5,6 +5,8 @@ import updateUsername from "./updateUsername.js";
 // le default permet de pas mettre les accolade dans import
 
 //TODO
+// Faire la verif de username et du pass dans register
+// Faire la verif du nouveau username dans updateUsername
 //Mettre a jour user info quand changement de username ou juste passer par le token ?
 // pareil pour l'id, Sarah en a besoin
 
@@ -20,4 +22,5 @@ export default async function newRoutes(fastify, options)
 
     //pas de page de profil, fonction tester avec nc --> MARCHE :)))))))
     fastify.put("/:slug", { preHandler: [fastify.authenticate] } , updateUsername);
+    //fastify.put("/:slug/avatar", { preHandler: [fastify.authenticate] }, updateAvatar);
 }

@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 
 export default async function loginUser (request, reply)
 {
-
     console.log("\nREQUEST :\n");
     console.log("URL : " + request.url + "\n");
     console.log("username : " + request.body.username + "\n");

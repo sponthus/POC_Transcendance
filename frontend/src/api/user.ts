@@ -150,14 +150,11 @@ export async function modifyUserAvatar(slug: string, avatar: string): Promise<Av
     if (res.ok) {
         console.log("Request for avatar path change accepted");
         const data = await res.json();
-        return {
-            ok: true, avatar: data.avatar
-        };
+        return { ok: true, avatar: data.avatar };
     }
     else {
         const error = await res.json();
-        return { ok: false,
-            error: error?.error || "Info not received from back" };
+        return { ok: false, error: error?.error || "Info not received from back" };
     }
 }
 
