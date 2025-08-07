@@ -14,7 +14,7 @@ export class PongGame  {
 	public async start(scene: Babylon.Scene, canvas: HTMLCanvasElement, engine: Babylon.Engine): Promise<void> {
 		this._sceneBuilder = new BabylonSceneBuilder(scene, canvas,  engine);
 
-		if (this._sceneBuilder && this) {
+		if (this._sceneBuilder) {
 			this._displayAssets = new DisplayAssets(
 				this._sceneBuilder.scene,
 				this._sceneBuilder!.paddle1!.position,
@@ -33,5 +33,6 @@ export class PongGame  {
 			);
 		}
 	}
+
 
 }
