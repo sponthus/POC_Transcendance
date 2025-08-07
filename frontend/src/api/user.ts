@@ -113,26 +113,27 @@ export async function modifyUserInfo(slug: string, username: string): Promise<Us
     // TODO = Log check not functional
     const token = localStorage.getItem("token");
     if (!token) {
-        return { ok: false, error: "No token found" };
+		return { ok: false, error: "No token found" };
     }
-
+	
     const res = await fetch(`/api/user/${slug}`, {
-        method: 'PUT',
+		method: 'PUT',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ username }),
     });
-
+	
     if (res.ok) {
-        console.log("Request for avatar path change accepted");
+		console.log("Request for username path change accepted");
         const data = await res.json();
         return {
-            ok: true, user: data.user
+			ok: true, user: data.user
         };
     }
     else {
+		console.log("no! ");
         const error = await res.json();
         return { ok: false,
             error: error?.error || "Info not received from back" };

@@ -1,15 +1,16 @@
+import {Game} from "../babylon/main.js"
 import { BasePage } from '../pages/BasePage.js';
 import { HomePage } from '../pages/HomePage.js';
 import { LoginPage } from '../pages/LoginPage.js';
 import { RegisterPage } from '../pages/RegisterPage.js';
-import { LocalGamePage } from '../pages/LocalGamePage.js';
+import { SettingPage } from "../pages/SettingPage.js";
 import { UserPage } from '../pages/UserPage.js';
 import { GamePage } from '../pages/GamePage.js';
 import { State } from "./state.js";
+import { LocalGamePage } from "../pages/LocalGamePage.js";
 
 const state = State.getInstance();
 
-// Typed by abstraction : needs to inherit from BasePage
 let currentPage: BasePage | null = null;
 
 export async function renderRoute(path: string) {
@@ -25,10 +26,10 @@ export async function renderRoute(path: string) {
     else {
         console.log("before navigation" + state.user?.username);
         // Static routes
-        switch (path) {
-            case '/':
-                currentPage = new HomePage();
-                break;
+	switch (path) {
+	    	case '/':
+				currentPage = new HomePage();
+				break;
             case '/login':
                 currentPage = new LoginPage();
                 break;
@@ -36,15 +37,19 @@ export async function renderRoute(path: string) {
                 currentPage = new RegisterPage();
                 break;
             case '/game':
-                // const { GamePage } = await import('./pages/GamePage.js');
-                currentPage = new GamePage();
+				console.log("state user :", state.user)
+				console.log("user slug :", state.user?.slug);
+				currentPage = new Game(state.user!.slug);
+				// currentPage = new LocalGamePage();
                 break;
-            case '/local':
-                currentPage = new LocalGamePage();
+            case '/setting':
+                currentPage = new SettingPage();
                 break;
             default:
                 currentPage = null;
                 break;
+			case '/setting':
+				currentPage = new SettingPage();
         }
     }
 
@@ -68,8 +73,9 @@ export async function setupRouter() {
         if (target.matches('[data-link]')) {
             event.preventDefault();
             const href = target.getAttribute('href');
-            if (href)
+            if (href) {
                 navigate(href);
+			}
         }
     });
 

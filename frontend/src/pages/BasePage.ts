@@ -24,8 +24,8 @@ export abstract class BasePage {
     // Mandatory : Implement this in pages
     abstract render(): Promise<void>;
 
-    protected async renderBanner(): Promise<void> {
-       renderBaseBanner(this.banner);
+	protected async renderBanner(): Promise<void> {
+		renderBaseBanner(this.banner);
 
         if (state.isLoggedIn()) {
             const user: null | { username: string, slug: string, id: number } = state.user;
@@ -39,9 +39,18 @@ export abstract class BasePage {
             await renderLoggedOutBanner(this.banner);
     }
 
+	protected initBackground(): HTMLElement {
+		const BackgroundHome = document.createElement('div');
+		BackgroundHome.className = "flex flex-col items-center min-h-screen p-8";
+		BackgroundHome.style.backgroundImage = "url('/background1.gif')";
+		BackgroundHome.style.backgroundSize = "cover";
+		BackgroundHome.style.backgroundPosition = "center";
+		return BackgroundHome;
+	}
     // Optional : does nothing, can be overloaded if needed, to destroy listeners
     destroy(): void {}
 }
+
 
 // How to inherit from BasePage :
 // export class GamePage extends BasePage {
