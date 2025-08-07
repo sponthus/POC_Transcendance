@@ -19,6 +19,10 @@ export class RegisterPage extends BasePage {
             `;
             return ;
         }
+        else {
+            if (res.error)
+                alert(res.error);
+        }
 
         this.app.innerHTML = `
         <h1></h1>

@@ -10,8 +10,13 @@ export class HomePage extends BasePage {
 
     async render(): Promise<void> {
         this.renderBanner();
-        checkLog();
-
+        const res = await checkLog();
+        console.log('HOME PAGE res = ', res);
+        if (!res.ok && res.error)
+        {
+            alert(res.error); //que si 401 (expired token)? ou si d'autre erreurs ?
+        }
+        
         if (state.isLoggedIn()) {
             this.app.innerHTML = `
             <h1>Welcome to Pong !</h1>

@@ -11,6 +11,6 @@ if (app) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    await checkLog();
+    //await checkLog();
     await setupRouter();
 });

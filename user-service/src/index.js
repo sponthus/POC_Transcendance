@@ -16,13 +16,12 @@ const fastify = Fastify({
 
 console.log('\nFastify user-service listen on port 3001\n'); // debug
 
-//enlever temporairement le token
 fastify.decorate("authenticate", async function (request, reply) {
     try {
         await request.jwtVerify();
     } catch (err) {
-        console.error("JWT error:", err);
-        reply.send(err);
+        //console.error("JWT error:", err);
+        reply.code(401).send({error : err.message});
     }
 });
 
@@ -32,14 +31,6 @@ fastify.register(fastifyJwt, {
 });
 
 fastify.register(dbConnector);
-
-// TODO implement routes
-
-//c'est ici qu'est appeler route.js
-// appelle la fonction : export default async function routes(fastify, options)
-// register sert a déclarer les routes dans un fichier séparé
-
-console.log("Test de nouvelles routes");
 
 await fastify.register(routes);
 
@@ -63,4 +54,3 @@ fastify.listen({ port: 3001, host: "0.0.0.0" }, (err, address) => {
     }
     fastify.log.info(`Server running in ${env.nodeEnv} mode at ${address}`);
 });
-
