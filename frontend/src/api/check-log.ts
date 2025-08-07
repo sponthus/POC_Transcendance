@@ -27,10 +27,6 @@ export async function checkLog(): Promise<Result> {
     //la deuxième fois, ça plante, et donc tes données ne sont pas bien récupérées
     const data = await res.json();
     console.log('res dans checklog', res);
-    if (res.status === 401)
-    {
-        console.log("ERRRRREURRR 401");
-    }
     if (res.ok) {
         state.login(data.username, data.slug); // Restore user in local state
         console.log("Log check successful"); // Debug
@@ -43,18 +39,3 @@ export async function checkLog(): Promise<Result> {
         return { ok: false, error: data.error};
     }
 }
-
-/* Example of use :
-
-    const res = await checkLog();
-    if (res.ok)
-    {
-        const slug = res.user.slug;
-        const token = localStorage.getItem("token"); <- To use it later, not included in answer
-    }
-    else ...
-
-// Possibility if needed in result : | { ok: false; error: string }
-// We call it discriminating method
-
- */

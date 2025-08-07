@@ -19,8 +19,7 @@ export class RegisterPage extends BasePage {
             `;
             return ;
         }
-        else { //je sais pas si besoin de checker l'expiration du token sur la register page
-            console.log("\nRES = " , res);
+        else {
             if (res.error)
                 alert(res.error);
         }

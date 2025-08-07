@@ -3,6 +3,10 @@ import loginUser from "./loginUser.js";
 import loginThroughToken from "./loginThroughToken.js";
 // le default permet de pas mettre les accolade dans import
 
+//TODO
+//Mettre a jour user info quand changement de username ou juste passer par le token ?
+// pareil pour l'id, Sarah en a besoin
+
 export default async function newRoutes(fastify, options) 
 {
     //preHandler oblige l'appel de la fonction authenticate soit appele (pour verifier la validité du token)
