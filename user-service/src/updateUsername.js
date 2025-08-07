@@ -10,8 +10,8 @@ export default async function updateUsername (request, reply)
     //verifier que le username existe et qu'il est valide
     try 
     {
-        const usernameDate = db.prepare("SELECT last_username_change FROM users WHERE id = ?").get(idUser);
-        if ()
+        if (checkIfUserCanUpdateUsername(db, idUser) == false)
+            return reply.code(400).send( { error: "Username can be change only once a day" } );
 
         const alreadyExistingUser = db.prepare("SELECT * FROM users WHERE username = ?").get(newUsername);
         if (alreadyExistingUser)
@@ -27,4 +27,14 @@ export default async function updateUsername (request, reply)
     {
         return reply.code(500).send( {error : "Internal Server Errore"} );
     }
+}
+
+function checkIfUserCanUpdateUsername (db, idUser)
+{
+    const   Date = db.prepare("SELECT last_username_change FROM users WHERE id = ?").get(idUser);
+    const   creationTime = new Date(Date.last_username_change);
+    const   actualTime = new Date();
+
+    const   diff = (actualTime - creationTime) / (1000 * 60 * 60);
+    
 }
