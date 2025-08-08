@@ -3,6 +3,9 @@ import { spawnImpactFX} from "./impactFX";
 import { spawnExplosionFX } from "./impactFX";
 import { crabmehamehaFX } from "./impactFX";
 import { Score } from "./score";
+import { State }  from "../../../core/state.js"
+
+const state = State.getInstance();
 
 interface BallMesh extends Mesh {
 	direction: Vector3;
@@ -55,7 +58,9 @@ export class GamePhysics {
 		const	playerId = "player1"; // prompt("t ki ? player1 ou player2 ?") || "player1";
 		const	gameOption = 1; 
 		const	inputMap: Record<string, boolean> = {};
-		const	socket = new WebSocket("ws://localhost:4000");
+		const	socket = state.ws;
+		if (!socket || !socket.ws)
+			return;
 		//const	socket = new WebSocket("ws://192.168.1.30:8080");
 
 		this._scene.actionManager = new ActionManager(this._scene);
@@ -71,7 +76,7 @@ export class GamePhysics {
 				inputMap[evt.sourceEvent.key.toLowerCase()] = false;
 			})
 		);
-		socket.onopen = () => {
+		socket.ws.onopen = () => {
 			console.log("🟢 WebSocket connectée");
 			socket.send(JSON.stringify({
 				type: "gameMode",
@@ -88,11 +93,15 @@ export class GamePhysics {
 				}));
 			}, 33); // 30fps
 		}
-		socket.onerror = (e) => console.error("❌ WS error", e);
-		socket.onclose = () => console.warn("🟠 WS fermée");
 		// stocke l’état serveur
-		socket.onmessage = (event) => {
+		socket.ws.onmessage = (event) => {
 			const data = JSON.parse(event.data); // Traduire en variable
+			if (data.type == "pong")
+			{
+				console.log('Received pong from server');
+				socket.clearHeartbeatTimeout();
+				return;
+			}
 			if (data.type === "stateUpdate")
 			{
 				this._serverState = data.gameState;

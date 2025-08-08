@@ -1,4 +1,5 @@
 import { gameEventEmitter } from "./GameEventEmitter.js";
+import { PongGame } from "./pongGame.js";
 
 // Handles game logic for one game actually running
 export default class GameServer {
@@ -27,17 +28,16 @@ export default class GameServer {
             });
 
             // balance le message a tout les players connecté
-            wss.clients.forEach(ws => {
-                if (ws.readyState === WebSocket.OPEN)
+            if (this.ws.readyState === 1)
                 {
-                    ws.send(stateMsg);
+                    this.ws.send(stateMsg);
                 }
-            });
+
         }, 16); // 60fps
 
         // quand un client se connecte
-        wss.on("connection", (ws) => {
-            ws.on("message", (msg) => {
+        this.ws.on("connection", (ws) => {
+            this.ws.on("message", (msg) => {
                 let data;
 
                 try
