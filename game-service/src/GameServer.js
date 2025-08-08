@@ -26,13 +26,12 @@ export default class GameServer {
                 type: "stateUpdate",
                 gameState: game.getState()
             });
-
+			console.log("helllo");
             // balance le message a tout les players connecté
             if (this.ws.readyState === 1)
-                {
-                    this.ws.send(stateMsg);
-                }
-
+			{
+				this.ws.send(stateMsg);
+			}
         }, 16); // 60fps
 
         // quand un client se connecte
