@@ -1,4 +1,5 @@
 import { gameEventEmitter } from "./GameEventEmitter.js";
+import { PongGame } from "./pongGame.js";
 
 // Handles game logic for one game actually running
 export default class GameServer {
@@ -15,14 +16,53 @@ export default class GameServer {
 
         // TODO : Don't forget to start game when player launches the game (press space ?)
         // this.startGame();
-        this.setHandlers();
-        this.intervalId = setInterval(() => {
-            if (this.state === 'paused') {
-                return;
-            }
-            // Calc ball position here with dx dy then send to ws the position
-            // console.log("Calculating positions");
-        }, 50);
+        // à chaque tick du serveur
+        const game = new PongGame();
+        setInterval(() => {
+            // Appliquer les inputs pour déplacer le paddle
+            game.update();
+            // broadcast du nouvel état
+            const stateMsg = JSON.stringify({
+                type: "stateUpdate",
+                gameState: game.getState()
+            });
+			console.log("helllo");
+            // balance le message a tout les players connecté
+            if (this.ws.readyState === 1)
+			{
+				this.ws.send(stateMsg);
+			}
+        }, 16); // 60fps
+
+        // quand un client se connecte
+        this.ws.on("connection", (ws) => {
+            this.ws.on("message", (msg) => {
+                let data;
+
+                try
+                {
+                    data = JSON.parse(msg);
+                } catch (err)
+                {
+                    console.error("ERR: JSON :", msg);
+                    return;
+                }
+
+                switch (data.type) {
+                    case "input":
+                        game.setInputs(data.playerId, data.input);
+                        break;
+
+                    case "gameMode":
+                        game.setGameMode(data.mode, data.option);
+                        break;
+
+                    default:
+                        console.warn("ERR: Type inconnu :", data.type);
+                }
+            });
+
+        });
     }
 
     setHandlers() {
