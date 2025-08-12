@@ -7,7 +7,6 @@ export default async function registerUser(request, reply)
     const avatar = 'default.jpg'
     const username = request.body.username;
     const password = request.body.password;
-    let idUser = -1;
 
     //verifier si user et password respectent la norme
     //pourquoi le username peut pas etre defaut ?
@@ -15,32 +14,25 @@ export default async function registerUser(request, reply)
     if (existingUser) ////get renvoie soit un objet sur la cmd au dessus ou un undefined
         return reply.code(409).send({error: "Username already exist"});
 
-    //Generer slug
     const baseSlug = slugify(username, { lower: true, strict: true });
     const slug = generateUniqueSlug(baseSlug, db); //verifier pas doublon
 
-    //Hacher mdp
     let saltRounds = 10;//nombre de tour de calcul
     const pw_hash = bcrypt.hashSync(password, saltRounds);
+    let idUser = -1;
     try 
     {
-        let statement = db.prepare('INSERT INTO users (username, slug, avatar, last_username_change, pw_hash) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)');
-        const result = statement.run(username, slug, avatar, pw_hash);
-        idUser = result.lastInsertRowid;
-        statement = db.prepare('INSERT INTO menu_state (menu_user_id) VALUES (?)');
-        statement.run(idUser);
-        //generation token : pas mis de date d'expiration
+        idUser = fillInfoUserInDb(db, username, slug, avatar, pw_hash);
         const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '10s'});
-        return reply.code(200).send({ token: token, username: username, slug: slug }); //mettre token, username, slug
+        return reply.code(200).send({ token: token, username: username, slug: slug });
     }
-    catch (err)
+     catch (err)
     {
-        db.prepare("DELETE FROM users WHERE id = ?").run(idUser);
+        //plus besoin de delete, db.transaction fait un rollback automatique si code sql echoue
         return (reply.code(500).send( {error : "Internal Server Error"} ));
     }
-    //mettre status a la place de code ?? 
 }
-
+ 
 function generateUniqueSlug(baseSlug, db)
 {
     let slug = baseSlug;
@@ -53,6 +45,23 @@ function generateUniqueSlug(baseSlug, db)
         counter++;
     }
     return slug;
+}
+
+function fillInfoUserInDb(db, username, slug, avatar, pw_hash)
+{
+    let statement;
+
+    const sqlRequest = db.transaction( (username, slug, avatar, pw_hash) =>
+    {
+        statement = db.prepare('INSERT INTO users (username, slug, avatar, last_username_change, pw_hash) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)');
+        const result = statement.run(username, slug, avatar, pw_hash);
+        const idUser = result.lastInsertRowid;
+        statement = db.prepare('INSERT INTO menu_state (menu_user_id) VALUES (?)');
+        statement.run(idUser);
+        return (idUser);
+    });
+    const idUser = sqlRequest(username, slug, avatar, pw_hash);
+    return (idUser);
 }
 
 
