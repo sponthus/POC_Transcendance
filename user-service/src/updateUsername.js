@@ -10,8 +10,8 @@ export default async function updateUsername (request, reply)
     //verifier que le username existe et qu'il est valide
     try 
     {
-        if (checkIfUserCanUpdateUsername(db, idUser) == false)
-            return reply.code(400).send( { error: "Username can be change only once a day" } );
+        /*if (checkIfUserCanUpdateUsername(db, idUser) == false) //recuperer travail ecole
+            return reply.code(400).send( { error: "Username can be change only once a day" } );*/
 
         const alreadyExistingUser = db.prepare("SELECT * FROM users WHERE username = ?").get(newUsername);
         if (alreadyExistingUser)
