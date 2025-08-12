@@ -23,5 +23,6 @@ export default async function newRoutes(fastify, options)
     //pas de page de profil, fonction tester avec nc --> MARCHE :)))))))
     //faudra juste verifier qu'il prend bien le nouveau token
     fastify.put("/:slug", { preHandler: [fastify.authenticate] } , updateUsername);
+  //  fastify.patch("/nickname", { preHandler: [fastify.authenticate] } , updateNickname);
     //fastify.put("/:slug/avatar", { preHandler: [fastify.authenticate] }, updateAvatar);
 }

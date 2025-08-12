@@ -1,6 +1,6 @@
 import { navigate } from '../router.js';
-import { checkLog } from "../api/check-log.js";
-import { getUserInfo, modifyUserAvatar, modifyUserInfo } from "../api/user.js";
+import { checkLog } from "../api/user-service/check-log.js";
+import { getUserInfo, modifyUserAvatar, updateUsername } from "../api/user-service/user.js";
 import { uploadAvatar } from "../api/avatar.js";
 import { BasePage } from "./BasePage.js";
 

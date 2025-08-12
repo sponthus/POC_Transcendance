@@ -20,6 +20,7 @@ async function dbConnector(fastify, options)
             avatar TEXT NOT NULL,
             pw_hash TEXT NOT NULL,
             last_username_change DATETIME,
+            nickname DEFAULT TEXT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     `);

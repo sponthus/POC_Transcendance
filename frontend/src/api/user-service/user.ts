@@ -1,4 +1,4 @@
-import { state } from "../ui/state.js";
+import { state } from "../../ui/state.js";
 
 // User infos possible to give back
 type UserBasic = {
@@ -19,7 +19,7 @@ type UserModificationSuccess = { ok: true; user: UserBasic; token: string}
 type Failure = { ok: false; error: string };
 
 // Union of possibilities for the type of answer
-export type LoginResult = AuthSuccess | Failure;
+//export type LoginResult = AuthSuccess | Failure;
 export type RegisterResult = AuthSuccess | Failure;
 export type GetUserResult = AuthFullSuccess | Failure;
 export type AvatarUploadResult = AvatarUploadSuccess | Failure;
@@ -29,7 +29,7 @@ export type UserModificationResult = UserModificationSuccess | Failure;
 
 
 // POST /api/login request to log in with username + login, updates local infos about user
-export async function loginUser(username: string, password: string): Promise<LoginResult> {
+/*export async function loginUser(username: string, password: string): Promise<LoginResult> {
     const res = await fetch('/api/user/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,7 +49,7 @@ export async function loginUser(username: string, password: string): Promise<Log
         return { ok: false, error: error?.error || "Account creation impossible" };
     }
 }
-
+*/
 // POST /api/user request to register a new user with username + login, updates local infos about user
 export async function registerUser(username: string, password: string): Promise<RegisterResult> {
     const res = await fetch('/api/user/register', {
@@ -105,7 +105,7 @@ export async function getUserInfo(slug: string): Promise<GetUserResult> {
 
 // NOT TESTED
 // PUT /api/user/:slug request to change username
-export async function modifyUserInfo(slug: string, username: string): Promise<UserModificationResult> {
+export async function updateUsername(slug: string, username: string): Promise<UserModificationResult> {
     const token = localStorage.getItem("token");
     if (!token) {
         return { ok: false, error: "No token found" };
