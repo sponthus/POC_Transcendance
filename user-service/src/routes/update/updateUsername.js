@@ -18,7 +18,7 @@ export default async function updateUsername (request, reply)
             return reply.code(401).send( {error: "Username already used"} );
 
         db.prepare("UPDATE users SET username = ? WHERE id = ?").run(newUsername, idUser);
-        db.prepare("UPDATE users SET last_username_change = ? WHERE id = ?").run(CURRENT_TIMESTAMP, idUser);
+        db.prepare("UPDATE users SET last_username_change = CURRENT_TIMESTAMP WHERE id = ?").run(idUser);
         //mise a jour du token avec le nouveau username
         const token = await reply.jwtSign({ idUser, newUsername, slug}, {expiresIn: '1h'});
         return reply.code(200).send( { user: { newUsername, slug }, token : token } );
