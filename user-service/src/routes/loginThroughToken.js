@@ -1,5 +1,3 @@
-
-
 export default async function loginThroughToken(request, reply)
 {
         console.log("Login through token");
