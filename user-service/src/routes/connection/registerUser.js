@@ -5,7 +5,7 @@ import slugify from "slugify";
 export default async function registerUser(request, reply) 
 {
      if (checkFormat(request) == false)
-        return reply.code(400).send( {error : "Invalid format for username"} );
+        return reply.code(400).send( {error : "Invalid format for username or password"} );
     
     const db = request.server.db;
     const avatar = 'default.jpg'
@@ -19,7 +19,7 @@ export default async function registerUser(request, reply)
 
     const baseSlug = slugify(username, { lower: true, strict: true });
     const slug = generateUniqueSlug(baseSlug, db); //verifier pas doublon
-
+    
     let saltRounds = 10;//nombre de tour de calcul
     const pw_hash = bcrypt.hashSync(password, saltRounds);
     let idUser = -1;

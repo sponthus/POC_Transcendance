@@ -8,25 +8,24 @@ type UserBasic = {
 type AuthSuccess = { ok: true; token: string; user: UserBasic };
 type Failure = { ok: false; error: string };
 
-export type LoginResult = AuthSuccess | Failure;
+export type RegisterResult = AuthSuccess | Failure;
 
-export async function loginUser(username: string, password: string): Promise<LoginResult> 
+export async function   registerUser(username: string, password: string): Promise<RegisterResult> 
 {
-    const res = await fetch('/api/user/login', 
+    const res = await fetch('/api/user/register', 
     {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
     });
-    const data = await res.json();
+    const data = await res.json();    
     if (res.ok) 
     {
-        localStorage.setItem("token", data.token);
-        state.login(data.username, data.slug); // Login in local state
         console.log('token is ' + data.token);
-        console.log('slug is ' + data.slug);
+        localStorage.setItem("token", data.token);
+        state.login(data.username, data.slug);
         return { ok: true, token: data.token, user: { username: data.username, slug: data.slug } };
-    } 
-    //    console.error(error?.error || "Account creation impossible");
-     return { ok: false, error: data.error};
+    }
+    //alert("Error : " + error?.error || "Account creation impossible"); //enlever alert ?
+    return { ok: false, error: data.error};
 }

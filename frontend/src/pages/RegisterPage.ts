@@ -1,6 +1,6 @@
 import { navigate } from '../router.js';
 import { checkLog } from "../api/user-service/check-log.js";
-import { registerUser } from "../api/user-service/user.js";
+import { registerUser } from "../api/user-service/registerUser.js";
 import { BasePage } from "./BasePage.js";
 
 export class RegisterPage extends BasePage {
