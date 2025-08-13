@@ -1,14 +1,17 @@
+import Ajv from "ajv"
 import bcrypt from "bcrypt";
 import slugify from "slugify";
 
 export default async function registerUser(request, reply) 
 {
+     if (checkFormat(request) == false)
+        return reply.code(400).send( {error : "Invalid format for username"} );
+    
     const db = request.server.db;
     const avatar = 'default.jpg'
     const username = request.body.username;
     const password = request.body.password;
 
-    //verifier si user et password respectent la norme
     //pourquoi le username peut pas etre defaut ?
     const existingUser = db.prepare('SELECT 1 FROM users WHERE username = ?').get(username);
     if (existingUser) ////get renvoie soit un objet sur la cmd au dessus ou un undefined
@@ -23,16 +26,37 @@ export default async function registerUser(request, reply)
     try 
     {
         idUser = fillInfoUserInDb(db, username, slug, avatar, pw_hash);
-        const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '10s'});
+        const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '10m'});
         return reply.code(200).send({ token: token, username: username, slug: slug });
     }
-     catch (err)
+    catch (err)
     {
         //plus besoin de delete, db.transaction fait un rollback automatique si code sql echoue
         return (reply.code(500).send( {error : "Internal Server Error"} ));
     }
 }
- 
+
+function    checkFormat(request)
+{
+    const schema = 
+    {
+        type: "object",
+        properties:
+        {
+            username: { type: "string", minLength: 3, maxLength: 15, pattern: "^(?=.*[a-zA-Z]).+$"},
+            password: { type: "string", minLength: 6, maxLength: 15, pattern: "^(?=.*[a-zA-Z]).+$"},
+        },
+        required: ["username", "password"],
+        additionalProperties: false
+    };
+    const ajv = new Ajv();
+    const contract = ajv.compile(schema);
+    const valid = contract(request.body);
+    if (!valid)
+        return (false);
+    return (true);
+}
+
 function generateUniqueSlug(baseSlug, db)
 {
     let slug = baseSlug;

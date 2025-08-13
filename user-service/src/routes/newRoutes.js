@@ -2,6 +2,7 @@ import registerUser from "./connection/registerUser.js";
 import loginUser from "./connection/loginUser.js";
 import loginThroughToken from "./connection/loginThroughToken.js";
 import updateUsername from "./update/updateUsername.js";
+import updateNickname from "./update/updateNickname.js";
 // le default permet de pas mettre les accolade dans import
 
 //TODO
@@ -20,7 +21,7 @@ export default async function newRoutes(fastify, options)
     fastify.post("/register", registerUser);
     fastify.post("/login", loginUser);
 
-    //pas de page de profil, fonction tester avec nc --> MARCHE :)))))))
+    //pas de page de profil, fonction tester avec curl --> MARCHE :)))))))
     //faudra juste verifier qu'il prend bien le nouveau token
     fastify.put("/:slug", { preHandler: [fastify.authenticate] } , updateUsername);
     fastify.patch("/nickname", { preHandler: [fastify.authenticate] } , updateNickname);

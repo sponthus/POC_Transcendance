@@ -7,12 +7,19 @@ export default async function   updateNickname (request, reply)
 
     const db = request.server.db;
     const newNickname = request.body.nickname;
-    const idUser = request.user.idUser;
-       
+    const idUser = request.user.idUser;      
     try
     {
-        db.prepapre ("UPDATE users SET nickname = ? WHERE id = ?").run(newNickname, idUser);
-        return reply.code(200).send( {} )
+        const existingNickname = db.prepare('SELECT 1 FROM users WHERE username = ?').get(username);
+        if (existingNickname) 
+             return reply.code(409).send({error: "Nickname already exist"});
+
+        db.prepare ("UPDATE users SET nickname = ? WHERE id = ?").run(newNickname, idUser);
+        return reply.code(200).send( {nickname: newNickname} )
+    }
+    catch (err)
+    {
+        return reply.code(500).send( {error : "Internal Server Error"} );
     }
 }
 
@@ -23,12 +30,12 @@ function    checkFormat(request)
         type: "object",
         properties:
         {
-            nickname: { type: "string", minLength: 3, maxLength: 15, pattern: "^[A-Za-z0-9._-]{3,15}$"}, //autoriser chiffre et certain char speciaux
+            nickname: { type: "string", minLength: 3, maxLength: 15, pattern: "^(?=.*[a-zA-Z]).+$"}, //autoriser chiffre et certain char speciaux
         },
         required: ["nickname"],
         additionalProperties: false //si autre chose dans properties que nickname --> refuse
     };
-    const ajv = new Ajv();
+    const ajv = new Ajv(); //le mettre ailleurs pour eco du CPU ?
     const contract = ajv.compile(schema);
     const valid = contract(request.body);
     if (!valid)

@@ -1,6 +1,10 @@
+import Ajv from "ajv"
 
 export default async function updateUsername (request, reply)
 {
+    if (checkFormat(request) == false)
+        return reply.code(400).send( {error : "Invalid format for username"} );
+
     const db = request.server.db;
     const newUsername = request.body.username;
     const idUser = request.user.idUser;
@@ -27,6 +31,27 @@ export default async function updateUsername (request, reply)
     {
         return reply.code(500).send( {error : "Internal Server Errore"} );
     }
+}
+
+function    checkFormat(request)
+{
+    const schema = 
+    {
+        type: "object",
+        properties:
+        {
+            username: { type: "string", minLength: 3, maxLength: 15, pattern: "^(?=.*[a-zA-Z]).+$"},
+
+        },
+        required: ["username"],
+        additionalProperties: false
+    };
+    const ajv = new Ajv();
+    const contract = ajv.compile(schema);
+    const valid = contract(request.body);
+    if (!valid)
+        return (false);
+    return (true);
 }
 
 function checkIfUserCanUpdateUsername (db, idUser)
