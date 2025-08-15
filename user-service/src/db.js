@@ -28,6 +28,7 @@ async function dbConnector(fastify, options)
         db.exec (`
         CREATE TABLE IF NOT EXISTS menu_state (
             menu_user_id INTEGER PRIMARY KEY,
+            menu_game_state INTEGER DEFAULT 0,
             menu_x_pos INTEGER DEFAULT 0,
             menu_y_pos INTEGER DEFAULT 0,
             menu_z_pos INTEGER DEFAULT 0,

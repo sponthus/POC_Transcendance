@@ -18,7 +18,7 @@ console.log('\nFastify user-service listen on port 3001\n'); // debug
 
 fastify.decorate("authenticate", async function (request, reply) {
     try {
-        await request.jwtVerify();
+        await request.jwtVerify(); //Décode et verifie le token et stock ses infos dans request
     } catch (err) {
         //console.error("JWT error:", err);
         reply.code(401).send({error : err.message});
