@@ -67,7 +67,7 @@ export function createCheckBoxLabel(Id: string, Name: string, TextContent: strin
 	Label.textContent = TextContent;
 
 	const Input = createInput(["checkbox", Id, "", false], Name, ClassName[1]);
-	
+
 	append(Label, [Input]);
 
 	return Label
