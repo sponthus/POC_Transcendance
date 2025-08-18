@@ -16,7 +16,7 @@ export async function updateUsername(slug: string, username: string): Promise<Us
     if (!token) {
         return { ok: false, error: "No token found" };
     }
-    const res = await fetch(`/api/user/${slug}`, {
+    const res = await fetch(`/api/user/user-info/${slug}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

@@ -5,7 +5,12 @@ export default async function loginThroughToken(request, reply)
         const idUser = request.user.idUser;
         try 
         {
-                const userData = db.prepare("SELECT * FROM users WHERE id = ?").get(idUser);
+                const userData = db.prepare("   SELECT \
+                                                        * \
+                                                FROM \
+                                                        users \
+                                                WHERE \
+                                                        id = ?").get(idUser);
                 if (!userData)
                         return reply.code(404).send({ error: "User not found" });
                 return reply.code(200).send({ username: userData.username, slug: userData.slug });

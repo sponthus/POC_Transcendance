@@ -1,6 +1,7 @@
 import { navigate } from '../router.js';
 import { checkLog } from "../api/user-service/check-log.js";
 import { getUserInfo, modifyUserAvatar, updateUsername } from "../api/user-service/user.js";
+// import {getUserInfo} from "../api/user-service/getUserInfo.js" //adapter user info qvec l'id
 import { uploadAvatar } from "../api/avatar.js";
 import { BasePage } from "./BasePage.js";
 

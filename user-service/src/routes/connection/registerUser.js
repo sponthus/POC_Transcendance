@@ -13,7 +13,12 @@ export default async function registerUser(request, reply)
     const password = request.body.password;
 
     //pourquoi le username peut pas etre defaut ?
-    const existingUser = db.prepare('SELECT 1 FROM users WHERE username = ?').get(username);
+    const existingUser = db.prepare('   SELECT \
+                                            1 \
+                                        FROM \
+                                            users \
+                                        WHERE \
+                                            username = ?').get(username);
     if (existingUser) ////get renvoie soit un objet sur la cmd au dessus ou un undefined
         return reply.code(409).send({error: "Username already exist"});
 
@@ -26,7 +31,7 @@ export default async function registerUser(request, reply)
     try 
     {
         idUser = fillInfoUserInDb(db, username, slug, avatar, pw_hash);
-        const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '10m'});
+        const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '1h'});
         return reply.code(200).send({ token: token, username: username, slug: slug });
     }
     catch (err)
@@ -77,10 +82,16 @@ function fillInfoUserInDb(db, username, slug, avatar, pw_hash)
 
     const sqlRequest = db.transaction( (username, slug, avatar, pw_hash) =>
     {
-        statement = db.prepare('INSERT INTO users (username, slug, avatar, last_username_change, pw_hash) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)');
+        statement = db.prepare('    INSERT INTO \
+                                        users (username, slug, avatar, last_username_change, pw_hash) \
+                                    VALUES \
+                                        (?, ?, ?, CURRENT_TIMESTAMP, ?)');
         const result = statement.run(username, slug, avatar, pw_hash);
         const idUser = result.lastInsertRowid;
-        statement = db.prepare('INSERT INTO menu_state (menu_user_id) VALUES (?)');
+        statement = db.prepare('    INSERT INTO \
+                                        menu_state (menu_user_id) \
+                                    VALUES \
+                                        (?)');
         statement.run(idUser);
         return (idUser);
     });

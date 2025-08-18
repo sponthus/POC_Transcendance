@@ -1,9 +1,8 @@
-
-export default async function   changeGameState (request, reply)
+export async function   changeGameState (request, reply)
 {
-    const db = request.server.db;
-    const idUser = request.user.idUser;
-    const newState = request.body.gameState;
+    const   db = request.server.db;
+    const   idUser = request.user.idUser;
+    const   newState = request.body.gameState;
 
     if (newState !== 0 && newState !== 1)
         return reply.code(400).send( { error: "Invalid Game State. Must be 0 or 1" } );
@@ -24,7 +23,7 @@ export default async function   changeGameState (request, reply)
                                         WHERE \
                                             menu_user_id = ?");
         statement.run (newState, idUser);
-        return reply.code(200).send({ ok: true, gameState: newState });
+        return reply.code(200).send({ gameState: newState });
     }
     catch (err)
     {
@@ -33,10 +32,27 @@ export default async function   changeGameState (request, reply)
     
 }
 
-/*export default async function   getGameState (request, reply)
+export async function   getGameState (request, reply)
 {
+    const   db = request.server.db;
+    const   idUser = request.user.idUser;
+    let     gameState;
     
-}*/
+    try
+    {
+        gameState = db.prepare("    SELECT \
+                                        menu_game_state \
+                                    FROM \
+                                        menu_state \
+                                    WHERE \
+                                        menu_user_id = ?").get(idUser);
+        return reply.code(200).send({ ok:true, gameState: gameState });
+    }
+    catch (err)
+    {
+        return reply.code(500).send({ error: "Internal Server Error" + err.message});
+    }
+}
 
 /*
 Une transaction est un bloc de plusieurs opérations SQL qui doivent être atomiques, c’est-à-dire :

@@ -4,12 +4,12 @@ type Failure = { ok: false; error: string };
 
 export type UpdateNicknameResult = UpdateNicknameSuccess | Failure 
 
-export async function   updateNickname (nickname: string): Promise<UpdateNicknameResult>
+export async function   updateNickname(nickname: string): Promise<UpdateNicknameResult>
 {
     const token = localStorage.getItem("token");
     if (!token)
         return { ok: false, error : "No token found" };
-    const res = await fetch('api/user/nickname', 
+    const res = await fetch('api/user/user-info/nickname', 
     {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },    

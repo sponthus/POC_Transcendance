@@ -1,9 +1,10 @@
 import registerUser from "./connection/registerUser.js";
 import loginUser from "./connection/loginUser.js";
 import loginThroughToken from "./connection/loginThroughToken.js";
-import updateUsername from "./update/updateUsername.js";
-import updateNickname from "./update/updateNickname.js";
-// le default permet de pas mettre les accolade dans import
+import updateUsername from "./user-info/updateUsername.js";
+import updateNickname from "./user-info/updateNickname.js";
+import { changeGameState, getGameState } from "./menu/gameState.js";
+import getUserInfo from "./user-info/getUserInfo.js";
 
 //TODO
 // Faire la verif de username et du pass dans register
@@ -23,7 +24,13 @@ export default async function newRoutes(fastify, options)
 
     //pas de page de profil, fonction tester avec curl --> MARCHE :)))))))
     //faudra juste verifier qu'il prend bien le nouveau token
-    fastify.put("/:slug", { preHandler: [fastify.authenticate] } , updateUsername);
-    fastify.patch("/nickname", { preHandler: [fastify.authenticate] } , updateNickname);
+    fastify.get("/user-info", { preHandler: [fastify.authenticate] }, getUserInfo);
+    fastify.put("/user-info/:slug", { preHandler: [fastify.authenticate] } , updateUsername);
+    fastify.patch("/user-info/nickname", { preHandler: [fastify.authenticate] } , updateNickname);
     //fastify.put("/:slug/avatar", { preHandler: [fastify.authenticate] }, updateAvatar);
+
+    //Routes pour le menu
+    fastify.patch("/menu/state", { preHandler: [fastify.authenticate] }, changeGameState);
+    fastify.get("/menu/state", { preHandler: [fastify.authenticate] }, getGameState);
+
 }

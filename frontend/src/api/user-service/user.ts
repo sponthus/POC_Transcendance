@@ -57,35 +57,6 @@ export async function getUserInfo(slug: string): Promise<GetUserResult> {
     }
 }
 
-// NOT TESTED
-// PUT /api/user/:slug request to change username
-export async function updateUsername(slug: string, username: string): Promise<UserModificationResult> {
-    const token = localStorage.getItem("token");
-    if (!token) {
-        return { ok: false, error: "No token found" };
-    }
-
-    const res = await fetch(`/api/user/${slug}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ username }),
-    });
-
-    if (res.ok) {
-        console.log("New username accepted");
-        const data = await res.json();
-        localStorage.setItem("token", data.token); //mise a jour token avec le nouveau username
-        return {ok: true, user: data.user, token: data.token};
-    }
-    else {
-        const error = await res.json();
-        return { ok: false, error: error?.error || "Info not received from back" };
-    }
-}
-
 // PUT /api/user/:slug/avatar request to change avatar path
 export async function modifyUserAvatar(slug: string, avatar: string): Promise<AvatarUploadResult> {
     const token = localStorage.getItem("token");

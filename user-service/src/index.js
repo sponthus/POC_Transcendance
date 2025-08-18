@@ -16,13 +16,35 @@ const fastify = Fastify({
 
 console.log('\nFastify user-service listen on port 3001\n'); // debug
 
-fastify.decorate("authenticate", async function (request, reply) {
-    try {
+fastify.decorate("authenticate", async function (request, reply)
+{
+    try 
+    {
         await request.jwtVerify(); //Décode et verifie le token et stock ses infos dans request
-    } catch (err) {
-        //console.error("JWT error:", err);
-        reply.code(401).send({error : err.message});
+    } 
+    catch (err)
+    {
+        return reply.code(401).send({error : err.message});
     }
+    /*try
+    {
+        const db = request.server.db;
+        const idUser = request.user.idUser;
+        const userExists = db.prepare(" SELECT \
+                                            1 \
+                                        FROM \
+                                            users \
+                                        WHERE \
+                                            idUser = ?").get(idUser);
+        if (!userExists)
+            return reply.code(404).send({ error: "User not found" });
+
+    }
+    catch (err)
+    {
+        return reply.code(500).send( {error : "Internal Server Error" + err.message} );
+    }*/
+    
 });
 
 //enregistre le plugin JWT dans fastify

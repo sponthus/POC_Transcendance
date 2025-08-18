@@ -1,6 +1,6 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
-import { checkLog } from "../api/check-log.js";
+import { checkLog } from "../api/user-service/check-log.js";
 import { BasePage } from "./BasePage.js";
 
 export class GamePage extends BasePage {
