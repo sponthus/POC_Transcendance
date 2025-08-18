@@ -162,7 +162,7 @@ export class GamePage extends popUp {
         const playerAInput = document.getElementById('Player1-input') as HTMLInputElement;
         const playerBInput = document.getElementById('Player2-input') as HTMLInputElement;
 
-		playerBInput.value = "Crabby the Bot";
+		// playerBInput.value = "Crabby the Bot";
 		this.meCheckBox1ChoiceOnly(playerAMeCheckbox, playerAInput, playerBMeCheckbox, playerBInput);
 		this.meCheckBox1ChoiceOnly(playerBMeCheckbox, playerBInput, playerAMeCheckbox, playerAInput);
 
@@ -311,8 +311,8 @@ export class GamePage extends popUp {
 						,ElsePlayerInput: HTMLInputElement) {
 
 		const Select = document.getElementById("PlayerMod-DropDown-Select") as HTMLSelectElement;
-		this.newPlayerCheckBoxEvent(MeCheckbox, MePlayerInput, ElseCheckBox, ElsePlayerInput, Select.value);
-		this.newPlayerSelectEvent(MeCheckbox, ElsePlayerInput, ElseCheckBox, Select);
+		this.newPlayerCheckBoxEvent(MeCheckbox, MePlayerInput, ElseCheckBox, ElsePlayerInput, Select);
+		this.newPlayerSelectEvent(MeCheckbox, ElseCheckBox, ElsePlayerInput, Select);
 	}
 
 	private async manageNewGameEvent() {
@@ -545,11 +545,11 @@ export class GamePage extends popUp {
 						,MePlayerInput: HTMLInputElement
 						,ElseCheckBox: HTMLInputElement
 						,ElsePlayerInput: HTMLInputElement
-						, SelectedValue: string) {
+						, Select: HTMLSelectElement) {
 			
 			MeCheckbox?.addEventListener('change', () => {
 			if (MeCheckbox.checked) {
-				this.ChangePlayerNameInput(ElseCheckBox, ElsePlayerInput, SelectedValue);
+				this.ChangePlayerNameInput(ElseCheckBox, ElsePlayerInput, Select.value);
 				MePlayerInput.value = state.user?.username || '';
 				MePlayerInput.readOnly = true;
 			} 
@@ -565,33 +565,37 @@ export class GamePage extends popUp {
 						,ElsePlayerInput: HTMLInputElement
 						, Select: HTMLSelectElement) {
 
-		const playerBInput = document.getElementById('Player2-input') as HTMLInputElement;
-			
+		if (!Select )
+			alert('there is no Select')
 		Select.addEventListener('change', () => {
-			console.log("mecheckbox = ", MeCheckbox.checked);
-			console.log("ElseCheckbox = ", ElseCheckBox.checked)
 			if (Select.value == "1 player vs AI") {
-				if (MeCheckbox) {
+				if (MeCheckbox.checked) {
 					ElsePlayerInput.value = "Crabby The Bot";
 					ElsePlayerInput.readOnly = true;
+					console.log("change player value to crabby the bot");
+					console.log("Valeur réelle après 0.5s :", ElsePlayerInput.value);
 				}
 			}
 			else {
-				if (MeCheckbox) {
+				if (MeCheckbox.checked) {
 					ElsePlayerInput.value = "";
 					ElsePlayerInput.readOnly = false;
 				}
 			}
+			console.log("Valeur réelle après 0.5s :", ElsePlayerInput.value);
 		})
+		
 	}
 
 	private ChangePlayerNameInput(ElseCheckBox: HTMLInputElement ,ElsePlayerInput: HTMLInputElement, SelectedValue: string) {
 		ElseCheckBox.checked = false;
+		console.log("selcted Value in checkbox: ", SelectedValue);
 		if (SelectedValue == "1 player vs AI") {
 			ElsePlayerInput.value = 'Crabby The Bot';
 			ElsePlayerInput.readOnly = true;
 		}
 		else {
+			console.log("bonjour");
 			if (ElsePlayerInput.value)
 				ElsePlayerInput.value = '';
 			ElsePlayerInput.readOnly = false;
