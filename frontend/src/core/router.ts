@@ -3,7 +3,7 @@ import { BasePage } from '../pages/BasePage.js';
 import { HomePage } from '../pages/HomePage.js';
 import { LoginPage } from '../pages/LoginPage.js';
 import { RegisterPage } from '../pages/RegisterPage.js';
-import { SettingPage } from "../pages/SettingPage.js";
+import { SettingPage } from "../pages/setting-page/SettingPage.js";
 import { UserPage } from "../pages/User-Pages/UserPage.js";
 import { State } from "./state.js";
 import { GamePage } from "../pages/Game-Pages/GamePage.js";
