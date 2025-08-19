@@ -1,55 +1,196 @@
-import { PongGame } from "../../babylon/pong/pong_game.js";
-import { BasePage } from "../BasePage.js";
 import { State } from "../../core/state.js";
+import { createDiv, createElement, createButton, createDropdownDiv, createFormDiv, createCheckBoxLabel, append} from '../../Utils/elementMaker.js';
+import { createLocalGame, getAvailableGames, startGame, deleteGame } from "../../api/game.js"
+import { renderDropdown } from "./GamePage.js";
+import { availableGames } from "./AvailableGames.js";
 
 const state = State.getInstance();
 
-export class LocalGamePage extends BasePage {
-    constructor() {
-        super();
-    }
+export class LocalGamePage {
 
-    // Possibility : If several game modes are available = inherits from a game page with several players
-    async render(): Promise<void> {
-        await this.renderBanner();
-        // TODO = Check user connexion
-        // const res = await checkLog();
-        // if (!res.ok) {
-        //     await navigate('/login');
-        //     return;
-        // }
+	private Page!: HTMLElement;
+	private NewGameForm!: HTMLElement;
+	private PartyMap!: Map<number, HTMLInputElement>;
+	private AvailableGames: availableGames;
 
-        this.app.innerHTML = `<h1>Loading game...</h1>`;
-        // Insert here logic to check which game to join + ws initialization
+	constructor(Page: HTMLElement) {
+		this.Page = Page;
+		this.PartyMap = new Map<number, HTMLInputElement>();
+		this.AvailableGames = new availableGames(this.Page, this.PartyMap);
+	}
 
-        // Show game options
-        this.app.innerHTML = `
-            <h1>Local game</h1>
-            <p>Controls : ⬆️ ⬇️ (not implemented - auto right now) and  🇦 🇩  - Pause : SPACE bar (not implemented)</p>
-            <div id="score"> Score : </div>
-            <canvas id="game"> Game canvas. </canvas>
-        `;
+	async render() {
+		this.Page.classList.remove("justify-center");
 
-        const canvas = document.getElementById('game') as HTMLCanvasElement;
-        if (!canvas) {
-            console.error("Canvas element not found.");
-            return;
-        }
-        this.resizeCanvas(canvas);
+		await this.create1v1PageDiv();
+		await this.create1v1FormDiv();
+		this.AvailableGames.render();
+		this.open1v1GameForm();
+	}
 
-        const pongGameApp = new PongGame();
-        await pongGameApp.start();
-        console.log("Pong game created");
-    }
+	private async create1v1PageDiv() {
+		const Div : HTMLElement = createDiv("New", "flex flex-col items-center justify-center");
+		
+		this.createNewGameText(Div);
+		this.createNewGameBtn(Div);
+		append(this.Page, [Div]);
+	}
 
-    // TODO = Add this in a listener of resizing ?
-    resizeCanvas(canvas: HTMLCanvasElement) {
-        if (window.innerWidth * 0.6 >= 900)
-            state.canvas.width = window.innerWidth * 0.6;
-        else
-            state.canvas.width = 900;
-        state.canvas.height = state.canvas.width * 2/3;
-        canvas.width = state.canvas.width;
-        canvas.height = state.canvas.height;
-    }
+	private createNewGameText(Div: HTMLElement) {
+		const TextDiv: HTMLElement =  createDiv("1v1Page-title", "flex items-center justify-center");
+		const GameModText: HTMLElement = createElement('h1', "1v1Page-title", "Create New Game",  "text-emerald-600 text-center underline");
+		append(TextDiv, [GameModText]);
+
+		if (Div)
+			append(Div, [TextDiv]);
+	}
+
+	private createNewGameBtn(Div: HTMLElement) {
+		const BtnDiv: HTMLElement = createDiv("New", "flex items-center justify-center text-center p-4 bg-transparent py-3 px-4 w-full space-x-24");
+
+		const ClassNameBtn: string = "bg-orange-200 hover:bg-orange-400 text-emerald-600 font-bold rounded-lg transition-colors duration-200transform w-full";
+		const NewBtn: HTMLButtonElement = createButton("New", ClassNameBtn, "New");
+
+		append(BtnDiv, [NewBtn]);
+		if (Div)
+			append(Div, [BtnDiv]);
+	}
+
+	private async create1v1FormDiv() {
+		this.NewGameForm = createDiv("Form", "flex flex-col items-center justify-center w-full space-y-6 hidden");
+		append(this.Page, [this.NewGameForm]);
+		this.render1v1FormDiv();
+	}
+
+	private async render1v1FormDiv() {
+		this.renderNewGameFormDropDown();
+
+		const FormsDiv: HTMLFormElement = this.createNewGameFormDiv();
+		this.addPlayersNameForm(FormsDiv, "Player1", "player_a_me", "Player 1 Name");
+		this.addPlayersNameForm(FormsDiv, "Player2", "player_b_me", "Player 2 Name");
+	}
+
+	private createNewGameFormDiv() : HTMLFormElement {
+		const FormsDiv: HTMLFormElement = document.createElement('form');
+		FormsDiv.id = "new-game-form";
+		FormsDiv.className =  "flex items-center justify-center w-full";
+		append(this.NewGameForm, [FormsDiv]);
+
+		return FormsDiv
+	}
+
+	private renderNewGameFormDropDown() {
+		renderDropdown(this.NewGameForm ,["1 player vs AI", "Local Multiplayer"], "PlayerMod", "Pong player Mod :");
+		renderDropdown(this.NewGameForm ,["5", "10", "15", "20", "No Limit"], "ScoreLimit", "Score Limit");
+	}
+
+	private addPlayersNameForm(Div: HTMLElement, IdForm: string, idCheckBox: string, TextContent: string) {
+		const Player: HTMLElement = createFormDiv(["text", IdForm, TextContent , true]
+										,IdForm
+										,""
+										,["flex items-center flex-row-reverse space-x-4"
+											,"block text-sm font-medium text-emerald-600 mb-2"
+											,"w-full border bg-orange-200 border-emerald-600 rounded-lg focus:ring-2 focus:ring-emerald-800focus:border-emerald-8 00 transition-colors duration-200 placeholder-emerald-600 text-center"
+											,"block text-sm text-center font-medium text-emerald-500 mb-2"]);
+	
+		const checkbox = createCheckBoxLabel(idCheckBox, idCheckBox, "me", ["text-emerald-600",""]);
+		append(Player, [checkbox]);
+		append(Div, [Player]);
+	}
+
+
+						/*********************************create open games Form*********************************/
+	private async open1v1GameForm() {
+		const playerAMeCheckbox = document.getElementById('player_a_me-input') as HTMLInputElement;
+		const playerBMeCheckbox = document.getElementById('player_b_me-input') as HTMLInputElement;
+		const playerAInput = document.getElementById('Player1-input') as HTMLInputElement;
+		const playerBInput = document.getElementById('Player2-input') as HTMLInputElement;
+
+		this.meCheckBox1ChoiceOnly(playerAMeCheckbox, playerAInput, playerBMeCheckbox, playerBInput);
+		this.meCheckBox1ChoiceOnly(playerBMeCheckbox, playerBInput, playerAMeCheckbox, playerAInput);
+
+		await this.refreshAvailableGames();
+	}
+
+	async refreshAvailableGames() {
+		this.AvailableGames.refreshAvailableGames();
+	}
+
+	private meCheckBox1ChoiceOnly(MeCheckbox: HTMLInputElement
+					,MePlayerInput: HTMLInputElement
+					,ElseCheckBox: HTMLInputElement
+					,ElsePlayerInput: HTMLInputElement) {
+		const Select = document.getElementById("PlayerMod-DropDown-Select") as HTMLSelectElement;
+		this.newPlayerCheckBoxEvent(MeCheckbox, MePlayerInput, ElseCheckBox, ElsePlayerInput, Select);
+		this.newPlayerSelectEvent(MeCheckbox, ElseCheckBox, ElsePlayerInput, Select);
+	}
+
+	private newPlayerCheckBoxEvent(MeCheckbox: HTMLInputElement
+					,MePlayerInput: HTMLInputElement
+					,ElseCheckBox: HTMLInputElement
+					,ElsePlayerInput: HTMLInputElement
+					, Select: HTMLSelectElement) {
+		
+		MeCheckbox?.addEventListener('change', () => {
+		if (MeCheckbox.checked) {
+			this.ChangePlayerNameInput(ElseCheckBox, ElsePlayerInput, Select.value);
+			MePlayerInput.value = state.user?.username || '';
+			MePlayerInput.readOnly = true;
+		} 
+		else {
+			MePlayerInput.readOnly = false;
+			MePlayerInput.value = '';
+		}
+		});
+	}
+
+	private newPlayerSelectEvent(MeCheckbox: HTMLInputElement
+						,ElseCheckBox: HTMLInputElement
+						,ElsePlayerInput: HTMLInputElement
+						, Select: HTMLSelectElement) {
+
+		if (!Select )
+			alert('there is no Select')
+		Select.addEventListener('change', () => {
+			if (Select.value == "1 player vs AI") {
+				if (MeCheckbox.checked) {
+					ElsePlayerInput.value = "Crabby The Bot";
+					ElsePlayerInput.readOnly = true;
+					console.log("change player value to crabby the bot");
+					console.log("Valeur réelle après 0.5s :", ElsePlayerInput.value);
+				}
+			}
+			else {
+				if (MeCheckbox.checked) {
+					ElsePlayerInput.value = "";
+					ElsePlayerInput.readOnly = false;
+				}
+			}
+			console.log("Valeur réelle après 0.5s :", ElsePlayerInput.value);
+		})
+		
+	}
+
+	private ChangePlayerNameInput(ElseCheckBox: HTMLInputElement ,ElsePlayerInput: HTMLInputElement, SelectedValue: string) {
+		ElseCheckBox.checked = false;
+		console.log("selcted Value in checkbox: ", SelectedValue);
+		if (SelectedValue == "1 player vs AI") {
+			ElsePlayerInput.value = 'Crabby The Bot';
+			ElsePlayerInput.readOnly = true;
+		}
+		else {
+			console.log("bonjour");
+			if (ElsePlayerInput.value)
+				ElsePlayerInput.value = '';
+			ElsePlayerInput.readOnly = false;
+		}
+	}
+
+	get _PartyMap(): Map<number, HTMLInputElement>{
+		return this.PartyMap;
+	}
+	
+	get _NewGameForm(): HTMLElement {
+		return this.NewGameForm;
+	}
 }
