@@ -2,6 +2,8 @@ import { state } from "../ui/state.js";
 import { navigate } from "../router.js";
 import { checkLog } from "../api/user-service/check-log.js";
 import { BasePage } from "./BasePage.js";
+import { changeCharacterAsset, getCharacterAsset } from "../api/user-service/characterAsset.js";
+import { changeNpcAsset, getNpcAsset } from "../api/user-service/npcAsset.js";
 
 export class HomePage extends BasePage {
     constructor() {
@@ -23,6 +25,23 @@ export class HomePage extends BasePage {
             <p>Ready to play?</p>
             <button id="play-btn">Play</button>
         `;
+
+            let res = await getNpcAsset();
+            if (res.ok)
+            {
+                console.log('asset = ', res.asset);
+            }
+            else
+                console.log('Error = ', res.error);
+
+            res = await changeNpcAsset(10);
+            if (res.ok)
+            {
+                console.log('asset = ', res.asset);
+            }
+            else
+                console.log('Error = ', res.error);
+
         } else {
             this.app.innerHTML = `
             <h1>Welcome to Pong !</h1>

@@ -5,6 +5,8 @@ import updateUsername from "./user-info/updateUsername.js";
 import updateNickname from "./user-info/updateNickname.js";
 import { changeGameState, getGameState } from "./menu/gameState.js";
 import getUserInfo from "./user-info/getUserInfo.js";
+import { getCharacterAsset, changeCharacterAsset } from "./menu/characterAsset.js";
+import { getNpcAsset, changeNpcAsset } from "./menu/npcAsset.js";
 
 //TODO
 // Faire la verif de username et du pass dans register
@@ -32,5 +34,9 @@ export default async function newRoutes(fastify, options)
     //Routes pour le menu
     fastify.patch("/menu/state", { preHandler: [fastify.authenticate] }, changeGameState);
     fastify.get("/menu/state", { preHandler: [fastify.authenticate] }, getGameState);
+    fastify.patch("/menu/character/asset", { preHandler: [fastify.authenticate] }, changeCharacterAsset);
+    fastify.get("/menu/character/asset", { preHandler: [fastify.authenticate] }, getCharacterAsset);
+    fastify.patch("/menu/npc/asset", { preHandler: [fastify.authenticate] }, changeNpcAsset);
+    fastify.get("/menu/npc/asset", { preHandler: [fastify.authenticate] }, getNpcAsset);
 
 }

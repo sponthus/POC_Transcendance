@@ -27,6 +27,5 @@ export async function loginUser(username: string, password: string): Promise<Log
         console.log('slug is ' + data.slug);
         return { ok: true, token: data.token, user: { username: data.username, slug: data.slug } };
     } 
-    //    console.error(error?.error || "Account creation impossible");
-     return { ok: false, error: data.error};
+    return { ok: false, error: data.error};
 }

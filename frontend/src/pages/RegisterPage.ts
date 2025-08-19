@@ -52,6 +52,7 @@ export class RegisterPage extends BasePage {
                 return ; // back to home
             }
             else {
+                alert (req.error);
                 return ; // registerUser already alerts user
             }
         });
