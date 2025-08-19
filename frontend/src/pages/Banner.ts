@@ -95,7 +95,7 @@ function checkLogoutElement(banner: HTMLElement): boolean {
 
 /*************************************Function for creating login Banner*************************************/
 function checkLoginElement(banner: HTMLElement): boolean {
-	if (!navLinks || !userInfo || !state.user) {
+	if (!navLinks || !userInfo || !state.isLoggedIn()) {
 		if (!navLinks)
 			 console.log("No nav link");
 		if (!userInfo)

@@ -4,10 +4,10 @@ import { HomePage } from '../pages/HomePage.js';
 import { LoginPage } from '../pages/LoginPage.js';
 import { RegisterPage } from '../pages/RegisterPage.js';
 import { SettingPage } from "../pages/SettingPage.js";
-import { UserPage } from '../pages/UserPage.js';
-import { GamePage } from '../pages/GamePage.js';
+import { UserPage } from "../pages/User-Pages/UserPage.js";
 import { State } from "./state.js";
-import { LocalGamePage } from "../pages/LocalGamePage.js";
+import { GamePage } from "../pages/Game-Pages/GamePage.js";
+import { LocalGamePage } from "../pages/Game-Pages/LocalGamePage.js";
 
 const state = State.getInstance();
 

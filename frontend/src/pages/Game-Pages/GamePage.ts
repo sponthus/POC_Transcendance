@@ -1,13 +1,13 @@
-import { navigate } from '../core/router.js';
-import { checkLog } from "../api/check-log.js";
-import { BasePage } from "./BasePage.js";
+import { navigate } from '../../core/router.js';
+import { checkLog } from "../../api/check-log.js";
+import { BasePage } from "../BasePage.js";
 import * as BABYLON from "@babylonjs/core";
-import { State } from "../core/state.js";
-import { createLocalGame, getAvailableGames, startGame, deleteGame } from "../api/game.js"
-import { popUp } from '../Utils/popUp.js';
-import { renderScene } from '../babylon/displaying/renderScene.js';
-import { DropDown } from "../Utils/dropDown";
-import { createDiv, createElement, createButton, createDropdownDiv, createFormDiv, createCheckBoxLabel, append} from '../Utils/elementMaker.js';
+import { State } from "../../core/state.js";
+import { createLocalGame, getAvailableGames, startGame, deleteGame } from "../../api/game.js"
+import { popUp } from '../../Utils/popUp.js';
+import { renderScene } from '../../babylon/displaying/renderScene.js';
+import { DropDown } from "../../Utils/dropDown";
+import { createDiv, createElement, createButton, createDropdownDiv, createFormDiv, createCheckBoxLabel, append} from '../../Utils/elementMaker.js';
 import { Checkbox } from '@babylonjs/inspector/fluent/primitives/checkbox';
 
 const state = State.getInstance();

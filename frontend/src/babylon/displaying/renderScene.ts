@@ -7,7 +7,7 @@ import "@babylonjs/inspector";
 import { PongGame } from "../pong/pong_game";
 import { LoadingScreen } from "./loadingScreen";
 import { popUp } from "../../Utils/popUp";
-import { GamePage } from "../../pages/GamePage";
+import { GamePage } from "../../pages/Game-Pages/GamePage";
 
 enum state {HOME = 0, PONG = 1};
 

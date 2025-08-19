@@ -1,6 +1,6 @@
-import { PongGame } from "../babylon/pong/pong_game.js";
-import { BasePage } from "./BasePage.js";
-import { State } from "../core/state.js";
+import { PongGame } from "../../babylon/pong/pong_game.js";
+import { BasePage } from "../BasePage.js";
+import { State } from "../../core/state.js";
 
 const state = State.getInstance();
 
