@@ -62,7 +62,7 @@ export class renderScene {
 	}
 
 	private _initState() {
-		this._state = 1;
+		this._state = 0;
 	}
 
 	private _initCanvas(App: HTMLElement): HTMLCanvasElement {

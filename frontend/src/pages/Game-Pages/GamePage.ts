@@ -100,6 +100,7 @@ export class GamePage extends popUp {
 		if (Div)
 			append(Div, [BtnDiv]);
 	}
+
 						/*********************************create 1v1 Form div*********************************/
 	private async create1v1FormDiv() {
 		this.NewGameForm = createDiv("Form", "flex flex-col items-center justify-center w-full space-y-6 hidden");

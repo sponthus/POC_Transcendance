@@ -36,6 +36,15 @@ export function createLabel(Name: string, ClassName: string): HTMLLabelElement {
 	return Label;
 }
 
+export function createImage(Id: string, ClassName: string, srcImg: string): HTMLImageElement {
+	const Img = document.createElement('img') as HTMLImageElement;
+	Img.id = Id + "-img";
+	Img.className = ClassName;
+	Img.src = srcImg;
+
+	return Img;
+}
+
 export function createInput(InpuOptions: [Type: string,  id: String, PlaceHolder: string, required: boolean],  Name: string, ClassName: string): HTMLInputElement {
 	const Input: HTMLInputElement = document.createElement('input');
 	Input.className = ClassName;
