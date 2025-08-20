@@ -8,7 +8,7 @@ export async function   changeGameState (request, reply)
         return reply.code(400).send( { error: "Invalid Game State. Must be 0 or 1" } );
     try
     {
-        const State = db.prepare (" SELECT \
+        const State = db.prepare("  SELECT \
                                         menu_game_state \
                                     FROM \
                                         menu_state  \

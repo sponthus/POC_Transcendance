@@ -40,7 +40,17 @@ async function dbConnector(fastify, options)
             menu_asset_npc INTERGER DEFAULT 0 CHECK(menu_asset_character BETWEEN 0 AND 11),
             FOREIGN KEY (menu_user_id) REFERENCES users(id)
         );
-        `);
+    `); //status : 0 = en attente, 1 = accepté, 2 = refusé
+        db.exec (`
+        CREATE TABLE IF NOT EXISTS friends (
+            frie_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            frie_user_id INTEGER NOT NULL,
+            frie_friend_user_id INTEGER NOT NULL,
+            frie_status INTEGER NOT NULL CHECK(fri_status BETWEEN 0 AND 2),
+            FOREIGN KEY (fri_user_id) REFERENCES users(id),
+            FOREIGN KEY (fri_friend_user_id) REFERENCE users(id)
+        );
+    `);
     }
     catch (err)
     {
