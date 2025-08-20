@@ -13,6 +13,7 @@ export class availableGames {
 		this.Page = page;
 		this.PartyMap = PartyMap;
 	}
+
 	render () {
 		this.createAvailableGame();
 	}
@@ -20,11 +21,8 @@ export class availableGames {
 	private async createAvailableGame() {
 		const AvailableDiv: HTMLElement = createDiv("available-games", "flex flex-col items-center w-[90%] h-[90%] space-y-8  mb-auto");
 
-		const TitlePartys = createElement('p', "Title-Party", "", "text-center text-emerald-600 w-[50%] font-bold border-4 rounded-xl translate-y-4border-orange-400 shadow-xl")
-
-		const BodyParty: HTMLElement = createDiv("Body-Party", "flex flex-col w-[90%] h-64 border-4 border-orange-400 rounded-xl -translate-y-2shadow-xl overflow-auto");
-
-		append(AvailableDiv, [TitlePartys, BodyParty]);
+		append(AvailableDiv, [(createElement('p', "Title-Party", "", "text-center text-emerald-600 w-[50%] font-bold border-4 rounded-xl translate-y-4 border-orange-400 shadow-xl") as HTMLElement)
+							, (createDiv("Body-Party", "flex flex-col w-[90%] h-64 border-4 border-orange-400 rounded-xl -translate-y-2shadow-xl overflow-auto") as HTMLElement)]);
 		append(this.Page, [AvailableDiv]);
 	}
 
@@ -48,26 +46,8 @@ export class availableGames {
 				return;
 			}
 			const games = result.games;
-
 			const TitlePartys = document.getElementById('Title-Party-p') as HTMLElement;
-
-			if (games.length === 0) {
-				TitlePartys.textContent = 'No games available';
-			}
-			else {
-				TitlePartys.textContent = 'available Partys';
-				games.map((Party: any, index: number) => {
-					const PartyDiv: HTMLElement = createDiv("game-item" + index.toString(), "flex border-2 border-orange-600 w-full h-[40%]space-x-10");
-
-					this.CreateGameIdDiv(PartyDiv, index, Party);
-					this.CreatePlayerNamesDiv(PartyDiv, index, Party);
-					this.createGameStatusDiv(PartyDiv, index, Party);
-					this.createCreatedAtDiv(PartyDiv, index, Party);
-					this.createCheckBoxDiv(PartyDiv, index, Party);
-					append(BodyParty, [PartyDiv]);
-				})
-				this.ManagePartyEvent();
-			}
+			this.renderParty(games, BodyParty, TitlePartys);
 		}
 		catch (error) {
 			console.error('Error fetching games:', error);
@@ -75,50 +55,66 @@ export class availableGames {
 		}
 	}
 
-	private CreateGameIdDiv(Div: HTMLElement, index: number, Party: any) {
-		const GameIdDivs = createDiv("party-item" + index.toString(), "flex items-center") as HTMLElement;
-		const GameIdText = createElement('h2', "party-item " + index.toString(), `Game #${Party.id} :` , "text-emerald-600 text-center underlinefont-bold") as HTMLElement;
+	private renderParty(games:any, Parent: HTMLElement , TitlePartys: HTMLElement) {
+			if (games.length === 0) {
+				TitlePartys.textContent = 'No games available';
+			}
+			else {
+				TitlePartys.textContent = 'available Partys';
+				games.map((Party: any, index: number) => {
+					const PartyDiv: HTMLElement = createDiv("game-item" + index.toString(), "flex border-2 border-orange-600 w-full h-[40%] space-x-8");
 
-		append(GameIdDivs, [GameIdText]);
+					this.CreateGameIdDiv(PartyDiv, index, Party);
+					this.CreatePlayerNamesDiv(PartyDiv, index, Party);
+					this.createGameStatusDiv(PartyDiv, index, Party);
+					this.createCreatedAtDiv(PartyDiv, index, Party);
+					this.createCheckBoxDiv(PartyDiv, index, Party);
+					append(Parent, [PartyDiv]);
+				})
+				this.ManagePartyEvent();
+			}
+	}
+
+	private CreateGameIdDiv(Div: HTMLElement, index: number, Party: any) {
+		const GameIdDivs = createDiv("party-item" + index.toString(), "w-[15%] h-full flex items-center") as HTMLElement;
+
+		append(GameIdDivs, [(createElement('h2', "party-item " + index.toString(), `Game #${Party.id} :` , "text-emerald-600 text-center underline font-bold") as HTMLElement)]);
 		append(Div, [GameIdDivs]);
 	}
 
 	private CreatePlayerNamesDiv(Div: HTMLElement, index: number, Party: any) {
-		const PLayersNameDivs = createDiv("party-Players-Name" + index.toString(), "grid grid-rows-4 items-center justify-center") as HTMLElement;
-		const PlayerText =  createElement('h2', "party-Players-Name" + index.toString(), "Players : ", "text-emerald-600 text-center font-boldunderline") as HTMLElement;
-		const PlayerAText = createElement('h1', "party-Player-a-Name" + index.toString(), `${Party.player_a}`, "text-emerald-600 text-center") as HTMLElement;
-		const VsText = createElement('h1', "party-vs-Name" + index.toString(), `vs`, "text-emerald-600 text-center") as HTMLElement;
-		const PlayerBText = createElement('h1', "party-Player-b-Name" + index.toString(), `${Party.player_b}`, "text-emerald-600 text-center") as HTMLElement;
+		const PLayersNameDivs = createDiv("party-Players-Name" + index.toString(), "w-[20%] h-full grid grid-rows-4 items-center justify-center") as HTMLElement;
 
-		append(PLayersNameDivs, [PlayerText, PlayerAText, VsText, PlayerBText]);
+		append(PLayersNameDivs, [(createElement('h2', "party-Players-Name" + index.toString(), "Players : ", "text-emerald-600 text-center font-bold underline") as HTMLElement)
+								, (createElement('h1', "party-Player-a-Name" + index.toString(), `${Party.player_a}`, "text-emerald-600 text-center") as HTMLElement)
+								, (createElement('h1', "party-vs-Name" + index.toString(), `vs`, "text-emerald-600 text-center") as HTMLElement)
+								, (createElement('h1', "party-Player-b-Name" + index.toString(), `${Party.player_b}`, "text-emerald-600 text-center") as HTMLElement)]);
 		append(Div, [PLayersNameDivs]);
 	}
 
 	private createGameStatusDiv(Div: HTMLElement, index: number, Party: any) {
-		const GamesStatueDivs = createDiv("party-statue" + index.toString(), "grid grid-rows-4 items-center justify-center space-y-12") as HTMLElement;
-		const StatueText = createElement('h2', "party-statue" + index.toString(), `Status : `, "text-emerald-600 text-center underline font-bold") as HTMLElement;
-		const PartyStatueText = createElement('h1', "party-statue" + index.toString(), `${Party.status}`, "text-emerald-600 text-center") as HTMLElement;
+		const GamesStatueDivs = createDiv("party-statue" + index.toString(), "w-[20%] h-full grid grid-rows-4 items-center justify-center space-y-12") as HTMLElement;
 
-		append(GamesStatueDivs, [StatueText, PartyStatueText]);
+		append(GamesStatueDivs, [(createElement('h2', "party-statue" + index.toString(), `Status : `, "text-emerald-600 text-center underline font-bold") as HTMLElement)
+								, (createElement('h1', "party-statue" + index.toString(), `${Party.status}`, "text-emerald-600 text-center") as HTMLElement)]);
 		append(Div, [GamesStatueDivs]);
 	}
 
 	private createCreatedAtDiv(Div: HTMLElement, index: number, Party: any) {
-		const CreatedAtDivs = createDiv("party-item" + index.toString(), "grid grid-rows-4 items-center justify-center space-y-12") as HTMLElement;
-		const CreatedAtText = createElement('h2', "party-statue" + index.toString(), `Created At : `, "text-emerald-600 text-center underlinefont-bold") as HTMLElement;
-		const DateText = createElement('h1', "party-statue" + index.toString(), `${Party.created_at}`, "text-emerald-600 text-center") as HTMLElement;	
+		const CreatedAtDivs = createDiv("party-item" + index.toString(), "w-[20%] h-full grid grid-rows-4 items-center justify-center space-y-12") as HTMLElement;
 		
-		append(CreatedAtDivs, [CreatedAtText, DateText]);
+		append(CreatedAtDivs, [(createElement('h2', "party-statue" + index.toString(), `Created At : `, "text-emerald-600 text-center underline font-bold") as HTMLElement)
+								, (createElement('h1', "party-statue" + index.toString(), `${Party.created_at}`, "text-emerald-600 text-center") as HTMLElement)]);
 		append(Div, [CreatedAtDivs]);
 	}
 
 	private createCheckBoxDiv(Div: HTMLElement, index: number, Party: any) {
-		const checkboxDiv = createDiv("party-check", "grid grid-rows-4 items-center justify-center space-y-12") as HTMLElement;
-		const CheckBoxText = createElement('h2', "choose", "choose one :", "text-emerald-600 font-bold underline") as HTMLElement;
+		const checkboxDiv = createDiv("party-check", "w-[20%] h-full grid grid-rows-4 items-center justify-center space-y-12") as HTMLElement;
 		const checkbox = createCheckBoxLabel(`$(Party.id)`, "choose", "", ["text-emerald-600 space-x-4",""]);
 		this.PartyMap?.set(Party.id as number, (checkbox.querySelector('input')) as HTMLInputElement);
 
-		append(checkboxDiv, [CheckBoxText, checkbox]);
+		append(checkboxDiv, [(createElement('h2', "choose", "choose one :", "text-emerald-600 font-bold underline") as HTMLElement)
+							, checkbox]);
 		append(Div, [checkboxDiv]);
 	}
 
@@ -136,8 +132,10 @@ export class availableGames {
 				if (value.checked) {
 					await this.deleteGame(key);
 					await this.refreshAvailableGames();
+					return ;
 				}
 			})
+			alert("please choose a Party");
 		})
 	}
 

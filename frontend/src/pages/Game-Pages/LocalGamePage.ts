@@ -189,7 +189,7 @@ export class LocalGamePage {
 	get _PartyMap(): Map<number, HTMLInputElement>{
 		return this.PartyMap;
 	}
-	
+
 	get _NewGameForm(): HTMLElement {
 		return this.NewGameForm;
 	}

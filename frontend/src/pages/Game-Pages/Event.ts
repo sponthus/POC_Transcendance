@@ -19,7 +19,7 @@ export class Event {
 	private LaunchPong: launchPong;
 
 	constructor(LocalGamePage: LocalGamePage, GamePage: GamePage) {
-		this.StatePage = 0;
+		this.StatePage = PageState.MOD;
 		this.LocalGamePage = LocalGamePage;
 		this.GamePage = GamePage;
 		this.LaunchPong = new launchPong(this.GamePage._render);
@@ -29,6 +29,7 @@ export class Event {
 		this.createReturnDiv();
 	}
 
+	/*************************************Function for creating Return and Save button*************************************/
 	private async createReturnDiv(): Promise<void> {
 		const Div: HTMLElement = createDiv("Submit", "flex items-center justify-center text-center p-4 bg-transparent py-3 px-4 h-[20%] w-full space-x-24");
 
@@ -41,6 +42,7 @@ export class Event {
 		append(this.GamePage.Body, [Div]);
 	}
 
+	/*************************************Function for Manage Event Return and Save button*************************************/
 	async ManageEvent() {
 		this.ManageSaveEvent();
 		this.ManageReturnEvent();
@@ -51,12 +53,13 @@ export class Event {
 			this.ChangeBackPageButtonText([document.getElementById("Return-btn") as HTMLButtonElement, "Cancel"]
 			, [document.getElementById("Save-btn")  as HTMLButtonElement, "Save New Game"]);
 	
-			this.StatePage = 2;
+			this.StatePage = PageState.NEWGAME;
 			this.removeDeleteButton();
 			this.LocalGamePage._NewGameForm.classList.remove("hidden");
 		});
 	}
 
+	/*************************************Function for Event Return button*************************************/
 	private async ManageReturnEvent() {
 		const ReturnButton = document.getElementById("Return-btn") as HTMLButtonElement;
 		if (!ReturnButton)
@@ -76,11 +79,44 @@ export class Event {
 			}
 		})
 	}
-	
-	private async ManageSaveEvent() {
-		const SaveButton = document.getElementById("Save-btn") as  HTMLButtonElement;
 
-		SaveButton.addEventListener('click', async(e) => {
+					/*********************************function utils for return*********************************/
+	private ReturnToLobby(){
+		this.GamePage.cleanPage();
+		this.GamePage.cleanBody();
+		this.GamePage.removeOverlayToWindow();
+		this.GamePage.startGamePage();
+		this.LaunchPong.returnLobby();
+	}
+
+	private returnToGameMod() {
+		this.ChangeButtonText(document.getElementById("Save-btn") as HTMLButtonElement, "Save");
+		this.StatePage = PageState.MOD;
+		Array.from(this.GamePage._Page.children).forEach((child)=>{
+			child.remove();
+		})
+
+		this.removeDeleteButton();
+
+		this.GamePage._Page.classList.add("border-4");
+		this.GamePage.generateGamePage();
+	}
+
+	private CancelNewGame() {
+		this.ChangeBackPageButtonText([document.getElementById("Return-btn") as HTMLButtonElement, "Return"]
+		, [document.getElementById("Save-btn")  as HTMLButtonElement, "Play"]);
+
+		this.StatePage = PageState.PARTY;
+	
+		this.addDeleteButton();
+	
+		console.log("Cancel New Game function called")
+		this.LocalGamePage._NewGameForm.classList.add('hidden');
+	}
+
+	/*************************************Function for Event Save button*************************************/
+	private async ManageSaveEvent() {
+		 document.getElementById("Save-btn")?.addEventListener('click', async(e) => {
 				switch(this.StatePage) {
 				case PageState.MOD:
 					this.SaveGameMod();
@@ -96,11 +132,11 @@ export class Event {
 		})
 	}
 
+				/*********************************function utils for saving games*********************************/
 	private async SaveGameMod() {
 		const SelectValue = this.FindSelectValue("GameMod-DropDown-div");
 		if (SelectValue == "1v1") {
-			const SaveButton = document.getElementById("Save-btn") as HTMLButtonElement;
-			SaveButton.textContent = "Play";
+			(document.getElementById("Save-btn") as HTMLButtonElement).textContent = "Play";
 			this.StatePage = 1;
 			this.GamePage._Page.classList.remove("border-4");
 			await this.GamePage.generate1v1GamePage();
@@ -108,19 +144,48 @@ export class Event {
 		else if (SelectValue == "tournament")
 			alert("tournament in build please choose 1v1 mode");
 		else if (!SelectValue)
-			alert("can't find Select Value");
+			alert("Please Select Value");
 	}
 
 	private FindSelectValue(Id: string): string | undefined {
-		const DropDownDiv =  document.getElementById(Id) as HTMLElement;
-		const Select = DropDownDiv.querySelector('select');
+		const Select = (document.getElementById(Id) as HTMLElement)?.querySelector('select');
 
 		return Select?.value;
 	}
 
+	private PlayGame() {
+		this.LocalGamePage._PartyMap?.forEach(async(value, key) => {
+			if (value.checked) {
+				this.launchGame(key);
+				return ;
+			}
+		})
+		alert("please choose a Party");
+	}
+
+	private async launchGame(gameId: number) {
+		try {
+			const request = await startGame(gameId);
+			if (!request.ok) {
+				throw new Error('Unable to start game : ' + request.error);
+			}
+			state.launchGame(gameId);
+			this.GamePage.removeOverlayToWindow();
+			this.renderGame();
+		} 
+		catch (error) {
+			alert(error);
+			await navigate('/game');
+		}
+	}
+
+	private renderGame() {
+		this.LaunchPong.render();
+	}
+
 	private async SaveNewParty() {
 		this.saveParty()
-		this.StatePage = 1;
+		this.StatePage = PageState.PARTY;
 		this.ChangeBackPageButtonText([document.getElementById("Return-btn") as HTMLButtonElement, "Return"]
 		, [document.getElementById("Save-btn")  as HTMLButtonElement, "Play"]);
 		this.addDeleteButton();
@@ -129,13 +194,12 @@ export class Event {
 	}
 
 	private saveParty() {
-		const form = document.getElementById('new-game-form');
-		const formData = new FormData(form as HTMLFormElement) ;
+		const formData = new FormData(document.getElementById('new-game-form') as HTMLFormElement) ;
 
 		const PlayerA = this.GetDataForm('Player1', formData);
 		const PlayerB = this.GetDataForm('Player2', formData);
 
-		if (!PlayerA && !PlayerB)
+		if (!PlayerA || !PlayerB)
 			return ;
 		if (PlayerA === PlayerB) {
 			alert('Player names must be different');
@@ -157,103 +221,43 @@ export class Event {
 			alert('Please enter both player names');
 		return Player;
 	}
-
-	private PlayGame() {
-		this.LocalGamePage._PartyMap?.forEach(async(value, key) => {
-			if (value.checked) {
-				this.launchGame(key);
-			}
-		})
-	}
-
-	private async launchGame(gameId: number) {
-		try {
-			const request = await startGame(gameId);
-			if (!request.ok) {
-				throw new Error('Unable to start game : ' + request.error);
-			}
-			state.launchGame(gameId);
-			this.GamePage.removeOverlayToWindow();
-			this.renderGame();
-		   
-		} catch (error) {
-			alert(error);
-			await navigate('/game');
-		}
-	}
-
-	private renderGame() {
-		this.LaunchPong.render();
-	}
-
+	
 	private async addPartyToServer(PlayerA: string, PlayerB: string) {
 		try {
 			if (!state.user?.id)
 				throw new Error('user not connected');
 			const req = await createLocalGame(state.user?.id, PlayerA, PlayerB);
-			if (!req) 
+			if (!req.ok) 
 				throw new Error('Failed to create Game');
 		}
 		catch (error) {
 			console.log("Error creating Games : ", error);
-			alert('Error creating Game. PLease try again');
+			alert('Error creating Game PLease try again: ' + error);
 		}
 	}
-	
-	private ReturnToLobby(){
-		this.GamePage.cleanPage();
-		this.GamePage.cleanBody();
-		this.GamePage.removeOverlayToWindow();
-		this.GamePage.startGamePage();
-		this.LaunchPong.returnLobby();
-	}
 
-	private returnToGameMod() {
-		this.ChangeButtonText(document.getElementById("Save-btn") as HTMLButtonElement, "Save");
-		this.StatePage = 0;
-		Array.from(this.GamePage._Page.children).forEach((child)=>{
-			child.remove();
-		})
-
-		this.removeDeleteButton();
-
-		this.GamePage._Page.classList.add("border-4");
-		this.GamePage.generateGamePage();
-	}
-
-	private CancelNewGame() {
-		this.ChangeBackPageButtonText([document.getElementById("Return-btn") as HTMLButtonElement, "Return"]
-		, [document.getElementById("Save-btn")  as HTMLButtonElement, "Play"]);
-
-		this.StatePage = 1;
-	
-		this.addDeleteButton();
-	
-		console.log("Cancel New Game function called")
-		this.LocalGamePage._NewGameForm.classList.add('hidden');
-	}
-
-	private ChangeButtonText(btn: HTMLButtonElement, TextContent: string) {
-		btn.textContent = TextContent;
-	}
-
+	/*************************************Function utils*************************************/
 	private ChangeBackPageButtonText(Return: [ReturnBtn: HTMLButtonElement, ReturnText: string], Save: [Savebtn: HTMLButtonElement, SaveText: string]) {
 		this.ChangeButtonText(Return[0], Return[1]);
 		this.ChangeButtonText(Save[0], Save[1]);
 	}
 
-	set setStatePage(State: number) {
-		this.StatePage = State;
+	private ChangeButtonText(btn: HTMLButtonElement, TextContent: string) {
+		btn.textContent = TextContent;
 	}
-
+	
 	addDeleteButton() {
 		const deletebtn = document.getElementById("delete-btn");
 		deletebtn?.classList.remove('hidden');
 	}
-
+	
 	private removeDeleteButton() {
 		const deletebtn = document.getElementById("delete-btn");
 		deletebtn?.classList.add('hidden');
+	}
+	
+	set setStatePage(State: number) {
+		this.StatePage = State;
 	}
 
 }

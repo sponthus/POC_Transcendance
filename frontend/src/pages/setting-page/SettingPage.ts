@@ -3,6 +3,8 @@ import { BasePage } from "../BasePage";
 import { State } from "../../core/state.js";
 import { createDiv, createElement, createButton, createDropdownDiv, createFormDiv, createCheckBoxLabel, append, createImage} from '../../Utils/elementMaker.js';
 import { renderGameSetting } from "./GameSettings";
+import { renderProfileSetting } from "./ProfileSetting";
+
 const state = State.getInstance();
 
 export class SettingPage extends BasePage {
@@ -82,7 +84,7 @@ export class SettingPage extends BasePage {
 	private createProfileSettingButton() {
 		const ProfileSettingButton = createButton("profile-setting", "bg-orange-300 hover:bg-orange-400 text-emerald-600 font-bold py-3 px-6 rounded-lg", "Profile Setting");
 		ProfileSettingButton.addEventListener('click', async(e) => {
-			this.renderProfileSetting();
+			await renderProfileSetting(this.SettingText, this.ButtonDiv, this.SettingDiv, this.ReturnDiv);
 		});
 		append(this.ButtonDiv, [ProfileSettingButton]);
 	}
@@ -137,5 +139,6 @@ export class SettingPage extends BasePage {
 			child.remove();
 		})
 		this.ButtonDiv.classList.remove('hidden');
+		this.ReturnDiv.classList.add('hidden');
 	}
 }
