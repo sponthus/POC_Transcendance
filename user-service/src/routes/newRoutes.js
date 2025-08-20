@@ -7,6 +7,7 @@ import { changeGameState, getGameState } from "./menu/gameState.js";
 import getUserInfo from "./user-info/getUserInfo.js";
 import { getCharacterAsset, changeCharacterAsset } from "./menu/characterAsset.js";
 import { getNpcAsset, changeNpcAsset } from "./menu/npcAsset.js";
+import { changeBackgroundColor, getBackgroundColor } from "./menu/backgroundColor.js";
 
 //TODO
 // Faire la verif de username et du pass dans register
@@ -16,7 +17,7 @@ import { getNpcAsset, changeNpcAsset } from "./menu/npcAsset.js";
 
 export default async function newRoutes(fastify, options) 
 {
-    //preHandler oblige l'appel de la fonction authenticate soit appele (pour verifier la validité du token)
+    //preHandler oblige l'appel de la fonction authenticate soit appel (pour verifier la validité du token)
     //avant d'excuter la fonction d'après
     //la méthode request.jwtVerify() decode le token et place les donnes du token (payload) dans request.user
     fastify.get("/protected", { preHandler : [fastify.authenticate] }, loginThroughToken);
@@ -38,5 +39,7 @@ export default async function newRoutes(fastify, options)
     fastify.get("/menu/character/asset", { preHandler: [fastify.authenticate] }, getCharacterAsset);
     fastify.patch("/menu/npc/asset", { preHandler: [fastify.authenticate] }, changeNpcAsset);
     fastify.get("/menu/npc/asset", { preHandler: [fastify.authenticate] }, getNpcAsset);
+    fastify.patch("/menu/color", { preHandler: [fastify.authenticate] }, changeBackgroundColor);
+    fastify.get("/menu/color", { preHandler: [fastify.authenticate] }, getBackgroundColor);
 
 }

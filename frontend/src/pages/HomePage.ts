@@ -5,6 +5,8 @@ import { BasePage } from "./BasePage.js";
 import { changeCharacterAsset, getCharacterAsset } from "../api/user-service/characterAsset.js";
 import { changeNpcAsset, getNpcAsset } from "../api/user-service/npcAsset.js";
 
+import { getBackgroundColor, changeBackgroundColor } from "../api/user-service/backgroundColor.js";
+
 export class HomePage extends BasePage {
     constructor() {
         super();
@@ -26,23 +28,31 @@ export class HomePage extends BasePage {
             <button id="play-btn">Play</button>
         `;
 
-            let res = await getNpcAsset();
+            let res = await getBackgroundColor();
             if (res.ok)
             {
-                console.log('asset = ', res.asset);
+                console.log('asset = ', res.rgbColor);
             }
             else
                 console.log('Error = ', res.error);
 
-            res = await changeNpcAsset(10);
+            res = await changeBackgroundColor(12, 254, 102);
             if (res.ok)
             {
-                console.log('asset = ', res.asset);
+                console.log('asset = ', res.rgbColor);
             }
             else
                 console.log('Error = ', res.error);
 
-        } else {
+            res = await getBackgroundColor();
+            if (res.ok)
+            {
+                console.log('asset = ', res.rgbColor);
+            }
+            else
+                console.log('Error = ', res.error);
+        }
+        else {
             this.app.innerHTML = `
             <h1>Welcome to Pong !</h1>
             <p>Please, connect to play.</p>
