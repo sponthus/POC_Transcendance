@@ -1,4 +1,4 @@
-import { state } from "../../ui/state.js";
+import { state } from "../../../ui/state.js";
 
 type UserBasic = {
     username: string;

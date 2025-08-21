@@ -1,4 +1,4 @@
-import { state } from "../../ui/state.js";
+import { state } from "../../../ui/state.js";
 
 type GameStateSuccess = { ok: true; gameState: number };
 type Failure = { ok: false; error: string };

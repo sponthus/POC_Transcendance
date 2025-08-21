@@ -1,16 +1,16 @@
-import { state } from "../../ui/state.js";
+import { state } from "../../../ui/state.js";
 
 type AssetSuccess = { ok: true; asset: number };
 type Failure = { ok: false; error: string };
 
 export type AssetResult = AssetSuccess | Failure;
 
-export async function   changeCharacterAsset (asset: number): Promise<AssetResult>
+export async function   changeNpcAsset (asset: number): Promise<AssetResult>
 {
     const token = localStorage.getItem("token");
     if (!token)
         return {ok: false, error: "No token found"};
-    const res = await fetch('/api/user/menu/character/asset', 
+    const res = await fetch('/api/user/menu/npc/asset', 
     {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -24,12 +24,12 @@ export async function   changeCharacterAsset (asset: number): Promise<AssetResul
     return { ok: false, error: data.error};
 }
 
-export async function   getCharacterAsset(): Promise<AssetResult>
+export async function   getNpcAsset(): Promise<AssetResult>
 {
     const token = localStorage.getItem("token");
     if (!token)
         return {ok: false, error: "No token found"};
-    const res = await fetch('/api/user/menu/character/asset', 
+    const res = await fetch('/api/user/menu/npc/asset', 
     {
         method: 'GET',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },

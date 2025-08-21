@@ -1,9 +1,11 @@
-type UserInfo = 
+type UserInfo = //VA ETRE CHANGER, le token renvoie le username et l'id du user
 {
+    id: number
     username: string;
     nickname: string;
     avatar: string;
     slug: string;
+    created_at: string;
 };
 
 type getUserInfoSuccess = {ok: true; userInfo: UserInfo}

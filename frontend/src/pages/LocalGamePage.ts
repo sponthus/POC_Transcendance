@@ -1,6 +1,6 @@
 import { state } from '../ui/state.js';
 import { navigate } from '../router.js';
-import { checkLog } from "../api/user-service/check-log.js";
+import { checkLog } from "../api/user-service/connection/check-log.js";
 // import { startLocalGame } from "../api/game.js";
 import { PongGame } from "../game/pong_game.js";
 import { BasePage } from "./BasePage.js";

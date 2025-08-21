@@ -1,6 +1,6 @@
 import { navigate } from '../router.js';
-import { checkLog } from "../api/user-service/check-log.js";
-import { loginUser } from "../api/user-service/loginUser.js";
+import { checkLog } from "../api/user-service/connection/check-log.js";
+import { loginUser } from "../api/user-service/connection/loginUser.js";
 import { BasePage } from "./BasePage.js";
 
 export class LoginPage extends BasePage {

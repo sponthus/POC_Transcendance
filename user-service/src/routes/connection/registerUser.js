@@ -37,7 +37,7 @@ export default async function registerUser(request, reply)
     catch (err)
     {
         //plus besoin de delete, db.transaction fait un rollback automatique si code sql echoue
-        return (reply.code(500).send( {error : "Internal Server Error"} ));
+        return (reply.code(500).send( {error : "Internal Server Error" + err.message} ));
     }
 }
 

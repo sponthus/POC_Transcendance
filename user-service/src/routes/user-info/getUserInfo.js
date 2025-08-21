@@ -6,7 +6,7 @@ export default async function   getUserInfo (request, reply)
     try
     {
        const user = db.prepare("   SELECT \
-                                        username, nickname, avatar, slug \
+                                        id, username, nickname, avatar, slug, created_at \
                                     FROM \
                                         users \
                                     WHERE \

@@ -1,6 +1,7 @@
 import { navigate } from '../router.js';
-import { checkLog } from "../api/user-service/check-log.js";
-import { getUserInfo, modifyUserAvatar, updateUsername } from "../api/user-service/user.js";
+import { checkLog } from "../api/user-service/connection/check-log.js";
+import  {modifyUserAvatar } from "../api/user-service/user.js";
+import { getUserInfo } from '../api/user-service/user-info/getUserInfo.js';
 // import {getUserInfo} from "../api/user-service/getUserInfo.js" //adapter user info qvec l'id
 import { uploadAvatar } from "../api/avatar.js";
 import { BasePage } from "./BasePage.js";
@@ -31,9 +32,9 @@ export class UserPage extends BasePage {
         }
         const connectedUser = res.user.slug;
 
-        const req = await getUserInfo(this.slug);
+        const req = await getUserInfo();
         if (req.ok) {
-            const userData = req.user;
+            const userData = req.userInfo;
             console.log(`user data = ` + JSON.stringify(userData));
             const isOwnProfile = this.slug === connectedUser;
             if (isOwnProfile) {

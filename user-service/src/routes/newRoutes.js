@@ -8,6 +8,7 @@ import getUserInfo from "./user-info/getUserInfo.js";
 import { getCharacterAsset, changeCharacterAsset } from "./menu/characterAsset.js";
 import { getNpcAsset, changeNpcAsset } from "./menu/npcAsset.js";
 import { changeBackgroundColor, getBackgroundColor } from "./menu/backgroundColor.js";
+import { addFriend } from "./menu/friendsList.js";
 
 //TODO
 // Faire la verif de username et du pass dans register
@@ -41,5 +42,7 @@ export default async function newRoutes(fastify, options)
     fastify.get("/menu/npc/asset", { preHandler: [fastify.authenticate] }, getNpcAsset);
     fastify.patch("/menu/color", { preHandler: [fastify.authenticate] }, changeBackgroundColor);
     fastify.get("/menu/color", { preHandler: [fastify.authenticate] }, getBackgroundColor);
+
+    fastify.post("/menu/friendslist", { preHandler: [fastify.authenticate] }, addFriend);
 
 }

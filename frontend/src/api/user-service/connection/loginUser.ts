@@ -1,4 +1,4 @@
-import { state } from "../../ui/state.js";
+import { state } from "../../../ui/state.js";
 
 type UserBasic = {
     username: string;
@@ -8,24 +8,24 @@ type UserBasic = {
 type AuthSuccess = { ok: true; token: string; user: UserBasic };
 type Failure = { ok: false; error: string };
 
-export type RegisterResult = AuthSuccess | Failure;
+export type LoginResult = AuthSuccess | Failure;
 
-export async function   registerUser(username: string, password: string): Promise<RegisterResult> 
+export async function loginUser(username: string, password: string): Promise<LoginResult> 
 {
-    const res = await fetch('/api/user/register', 
+    const res = await fetch('/api/user/login', 
     {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
     });
-    const data = await res.json();    
+    const data = await res.json();
     if (res.ok) 
     {
-        console.log('token is ' + data.token);
         localStorage.setItem("token", data.token);
-        state.login(data.username, data.slug);
+        state.login(data.username, data.slug); // Login in local state
+        console.log('token is ' + data.token);
+        console.log('slug is ' + data.slug);
         return { ok: true, token: data.token, user: { username: data.username, slug: data.slug } };
-    }
-    //alert("Error : " + error?.error || "Account creation impossible"); //enlever alert ?
+    } 
     return { ok: false, error: data.error};
 }
