@@ -50,7 +50,7 @@ fastify.decorate("authenticate", async function (request, reply)
 
 //enregistre le plugin JWT dans fastify
 fastify.register(fastifyJwt, {
-    secret: env.secret,
+    secret: env.hashKey,
 });
 
 fastify.register(dbConnector);

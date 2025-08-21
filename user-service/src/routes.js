@@ -18,7 +18,7 @@ export default async function routes(fastify, options) {
             postRoutes.post("/login",
                 loginUser);
         }
-        // { prefix: "/api" }
+        // { prefix: "/api/user/" }
     );
 
     // Register get routes
@@ -28,10 +28,13 @@ export default async function routes(fastify, options) {
             getRoutes.get('/protected',
                 {onRequest: [fastify.authenticate]},
                 async (req, reply) => {
-                    req.log.info({userId: req.user.id}, 'User accessed /me');
+                    req.log.info({userId: req.user.id}, `User ${req.user.id} accessed /me`);
+                    const user = req.user;
+                    console.log(user);
                     return {
-                        username: req.user.username,
-                        slug: req.user.slug,
+                        username: user.username,
+                        slug: user.slug,
+                        id: user.id,
                     };
                 });
 

@@ -1,8 +1,11 @@
 dist
 */node_modules
+background.gif
 */dist/*
 test*
 .idea
 node_modules/*
 *-lock.json
 *.db
+secrets
+.env

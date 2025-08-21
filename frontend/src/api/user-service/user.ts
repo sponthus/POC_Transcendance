@@ -26,7 +26,7 @@ export type AvatarUploadResult = AvatarUploadSuccess | Failure;
 export type UserModificationResult = UserModificationSuccess | Failure;
 
 // GET /api/user/:slug request to get user infos
-export async function getUserInfo(slug: string): Promise<GetUserResult> {
+/*export async function getUserInfo(slug: string): Promise<GetUserResult> {
     const token = localStorage.getItem("token");
     if (!token) {
         return { ok: false, error: "No token found" };
@@ -55,7 +55,7 @@ export async function getUserInfo(slug: string): Promise<GetUserResult> {
         return { ok: false,
             error: error?.error || "Info not received from back" };
     }
-}
+}*/
 
 // PUT /api/user/:slug/avatar request to change avatar path
 export async function modifyUserAvatar(slug: string, avatar: string): Promise<AvatarUploadResult> {

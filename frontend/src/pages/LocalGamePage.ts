@@ -1,9 +1,8 @@
-import { state } from '../ui/state.js';
-import { navigate } from '../router.js';
-import { checkLog } from "../api/user-service/connection/check-log.js";
-// import { startLocalGame } from "../api/game.js";
-import { PongGame } from "../game/pong_game.js";
+import { PongGame } from "../babylon/pong/pong_game.js";
 import { BasePage } from "./BasePage.js";
+import { State } from "../core/state.js";
+
+const state = State.getInstance();
 
 export class LocalGamePage extends BasePage {
     constructor() {
@@ -12,14 +11,13 @@ export class LocalGamePage extends BasePage {
 
     // Possibility : If several game modes are available = inherits from a game page with several players
     async render(): Promise<void> {
-        this.renderBanner();
-
-        // Check user connexion
-        const res = await checkLog();
-        if (!res.ok) {
-            await navigate('/login');
-            return;
-        }
+        await this.renderBanner();
+        // TODO = Check user connexion
+        // const res = await checkLog();
+        // if (!res.ok) {
+        //     await navigate('/login');
+        //     return;
+        // }
 
         this.app.innerHTML = `<h1>Loading game...</h1>`;
         // Insert here logic to check which game to join + ws initialization

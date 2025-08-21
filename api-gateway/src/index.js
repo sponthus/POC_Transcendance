@@ -38,7 +38,7 @@ console.log('Parameters for app are being set'); // debug
 
 
 app.register(fastifyJwt, {
-    secret: env.secret,
+    secret: env.hashKey,
 });
 
 app.decorate("authenticate", async function (request, reply) {
