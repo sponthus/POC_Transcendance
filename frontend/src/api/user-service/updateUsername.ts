@@ -10,13 +10,13 @@ type UserModificationSuccess = { ok: true; user: UserBasic; token: string}
 
 export type UserModificationResult = UserModificationSuccess | Failure;
 
-export async function updateUsername(slug: string, username: string): Promise<UserModificationResult> 
+export async function updateUsername(username: string): Promise<UserModificationResult> 
 {
     const token = localStorage.getItem("token");
     if (!token) {
         return { ok: false, error: "No token found" };
     }
-    const res = await fetch(`/api/user/user-info/${slug}`, {
+    const res = await fetch(`/api/user/user-info/username`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

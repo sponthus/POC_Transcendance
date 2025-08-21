@@ -6,18 +6,21 @@ export async function   addFriend(request, reply)
 
     try
     {
-        //faire un check si already friend PAS COMME EN DESSOUS
-        /*const alreadyFriend = db.prepare("  SELECT \
-                                                1 \
-                                            FROM \
-                                                friends \")*/
-
+       
         const idFriend = db.prepare("   SELECT \
                                             id \
                                         FROM \
                                             users \
                                         WHERE \
                                             username = ?").get(friendUsername);
+
+         //faire un check si already friend dans la ta table friend PAS COMME EN DESSOUS
+         //faire un check que l'utilisateur existe aussi dans la base donnée ?
+        /*const alreadyFriend = db.prepare("  SELECT \
+                                                1 \
+                                            FROM \
+                                                friends \")*/
+
         const statement = db.prepare("  INSERT INTO \
                                             friends (frie_user_id, frie_friend_user_id) \
                                         VALUES \

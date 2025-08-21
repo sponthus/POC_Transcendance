@@ -10,6 +10,7 @@ export default async function   updateNickname (request, reply)
     const idUser = request.user.idUser;      
     try
     {
+        //faire un message comme quoi on a deja ce nickname si veut changer avec le meme 
         const existingNickname = db.prepare('   SELECT \
                                                     1 \
                                                 FROM \

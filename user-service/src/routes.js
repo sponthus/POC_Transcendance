@@ -1,3 +1,5 @@
+//FICHIER OBSOLETE
+
 import { createUser, getUser, loginUser, modifyUser, modifyAvatar } from "./users.controller.js";
 
 // TODO implement routes

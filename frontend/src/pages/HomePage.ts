@@ -6,6 +6,8 @@ import { changeCharacterAsset, getCharacterAsset } from "../api/user-service/cha
 import { changeNpcAsset, getNpcAsset } from "../api/user-service/npcAsset.js";
 
 import { getBackgroundColor, changeBackgroundColor } from "../api/user-service/backgroundColor.js";
+import { getUserInfo } from "../api/user-service/getUserInfo.js";
+import { updateUsername } from "../api/user-service/updateUsername.js";
 
 export class HomePage extends BasePage {
     constructor() {
@@ -28,30 +30,34 @@ export class HomePage extends BasePage {
             <button id="play-btn">Play</button>
         `;
 
-            let res = await getBackgroundColor();
+            let res2 = await getUserInfo();
+            if (res2.ok)
+            {
+                console.log('userInfo = ', res2.userInfo);
+            }
+            else
+                console.log('Error = ', res2.error);
+
+
+
+            let res = await updateUsername("TOM");
             if (res.ok)
             {
-                console.log('asset = ', res.rgbColor);
+                console.log('userInfo = ', res.user);
             }
             else
                 console.log('Error = ', res.error);
 
-            res = await changeBackgroundColor(12, 254, 102);
-            if (res.ok)
+            res2 = await getUserInfo();
+            if (res2.ok)
             {
-                console.log('asset = ', res.rgbColor);
+                console.log('userInfo = ', res2.userInfo);
             }
             else
-                console.log('Error = ', res.error);
+                console.log('Error = ', res2.error);
 
-            res = await getBackgroundColor();
-            if (res.ok)
-            {
-                console.log('asset = ', res.rgbColor);
-            }
-            else
-                console.log('Error = ', res.error);
-        }
+
+       }
         else {
             this.app.innerHTML = `
             <h1>Welcome to Pong !</h1>
