@@ -135,7 +135,6 @@ export class availableGames {
 					return ;
 				}
 			})
-			alert("please choose a Party");
 		})
 	}
 
