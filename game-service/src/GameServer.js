@@ -26,7 +26,7 @@ export default class GameServer {
                 type: "stateUpdate",
                 gameState: game.getState()
             });
-			console.log("helllo");
+			
             // balance le message a tout les players connecté
             if (this.ws.readyState === 1)
 			{
@@ -35,14 +35,15 @@ export default class GameServer {
         }, 16); // 60fps
 
         // quand un client se connecte
-        this.ws.on("connection", (ws) => {
+        //this.ws.on("connection", (ws) => {
             this.ws.on("message", (msg) => {
                 let data;
 
                 try
                 {
                     data = JSON.parse(msg);
-                } catch (err)
+                }
+				catch (err)
                 {
                     console.error("ERR: JSON :", msg);
                     return;
@@ -60,8 +61,7 @@ export default class GameServer {
                     default:
                         console.warn("ERR: Type inconnu :", data.type);
                 }
-            });
-
+        //    });
         });
     }
 

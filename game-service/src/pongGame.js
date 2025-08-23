@@ -1,7 +1,7 @@
 export class PongGame {
 	constructor() {
-		this.gameMode = 1;
-		this.gameOption = 0;
+		 this.gameMode = 0;
+		 this.gameOption = 0;
 
 		this.inputs = {}; // { player1: {...}, player2: {...} }
 		this.input1 = {};
@@ -202,7 +202,7 @@ export class PongGame {
 		if (this.input1.x && this.specialCooldown1 < 0 && this.die1 === false)
 		{
 			this.isSpellGo1 = true;
-			this.specialCooldown1 = 10;
+			this.specialCooldown1 = 50;
 		}
 		if (this.gameMode === 1 && this.die2 === false)
 		{

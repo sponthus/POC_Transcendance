@@ -14,7 +14,7 @@ interface BallMesh extends Mesh {
 
 export class GamePhysics {
 	private _dt = 0.01666;
-	private _gameMode = 0; // 1 = bot, autre = qq1                                 a mettre dans constructeur
+	private _gameMode = 1; // 0 = bot, 1 = qq1                                 a mettre dans constructeur
 	private _gameOption = 1; // // 0 pong classique, 1 crabmeha, 2 4x4, 3 les 2    a mettre dans constructeur
 	private _ball: BallMesh;
 	private _scene: Scene;
@@ -56,7 +56,6 @@ export class GamePhysics {
 	private setupControls()
 	{
 		const	playerId = "player1"; // prompt("t ki ? player1 ou player2 ?") || "player1";
-		const	gameOption = 1; 
 		const	inputMap: Record<string, boolean> = {};
 		const	socket = state.ws;
 		if (!socket || !socket.ws)
@@ -76,8 +75,7 @@ export class GamePhysics {
 				inputMap[evt.sourceEvent.key.toLowerCase()] = false;
 			})
 		);
-		socket.ws.onopen = () => {
-			console.log("🟢 WebSocket connectée");
+		
 			socket.send(JSON.stringify({
 				type: "gameMode",
 				playerId: playerId,
@@ -92,7 +90,6 @@ export class GamePhysics {
 					input: inputMap
 				}));
 			}, 33); // 30fps
-		}
 		// stocke l’état serveur
 		socket.ws.onmessage = (event) => {
 			const data = JSON.parse(event.data); // Traduire en variable
