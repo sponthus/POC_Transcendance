@@ -72,10 +72,9 @@ export class GamePhysics {
 
 		this._scene.actionManager.registerAction(
 			new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, evt => {
-				inputMap[evt.sourceEvent.key.toLowerCase()] = false;
+				delete inputMap[evt.sourceEvent.key.toLowerCase()];
 			})
 		);
-		
 			socket.send(JSON.stringify({
 				type: "gameMode",
 				playerId: playerId,

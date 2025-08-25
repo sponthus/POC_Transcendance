@@ -1,7 +1,7 @@
 export class PongGame {
 	constructor() {
 		 this.gameMode = 0;
-		 this.gameOption = 0;
+		 this.gameOption = 1;
 
 		this.inputs = {}; // { player1: {...}, player2: {...} }
 		this.input1 = {};
