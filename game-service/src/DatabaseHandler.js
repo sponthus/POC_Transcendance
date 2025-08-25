@@ -15,7 +15,8 @@ export default class DatabaseHandler {
                 name TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 began_at DATETIME,
-                finished_at DATETIME
+                finished_at DATETIME,
+                winner TEXT
             );
         `);
 
@@ -234,6 +235,19 @@ export default class DatabaseHandler {
                     gameId,
                     winner
                 });
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    async createTournament(name, userId, players) {
+        return new Promise((resolve, reject) => {
+            try {
+                const stmt = this.db.prepare(`
+                INSERT INTO tournaments(status, id_user, name) VALUES (?, ?, ?);
+                `);
+                const res = stmt.run("pending", userId, name);
             } catch (err) {
                 reject(err);
             }

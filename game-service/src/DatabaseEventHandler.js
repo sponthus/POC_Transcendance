@@ -50,7 +50,6 @@ class DatabaseEventHandler {
         await this.DatabaseHandler.updateGameStatus(eventData.gameId, 'finished');
         await this.DatabaseHandler.updateScore(eventData.gameId, eventData.scoreA, eventData.scoreB);
         await this.DatabaseHandler.recordWinner(eventData.gameId);
-        // await this.DatabaseHandler.updateGameDuration(eventData.gameId, eventData.duration);
     }
 }
 
