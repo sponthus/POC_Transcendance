@@ -1,27 +1,38 @@
 import { navigate } from '../core/router.js';
 import { checkLog } from "../api/check-log.js";
 import { BasePage } from "./BasePage.js";
+import * as BABYLON from "@babylonjs/core";
 import { State } from "../core/state.js";
 import { createLocalGame, getAvailableGames, startGame, deleteGame } from "../api/game.js"
+import { popUp } from '../Utils/popUp.js';
+import { renderScene } from '../babylon/displaying/renderScene.js';
 
 const state = State.getInstance();
 
-export class GamePage extends BasePage {
-    constructor() {
-        super();
+export class GamePage extends popUp {
+
+	private Page!: HTMLElement;
+
+	private scene: BABYLON.Scene;
+	private engine: BABYLON.Engine;
+	private render: renderScene;
+	// private PopUp?: popUp;
+
+    constructor(scene: BABYLON.Scene, engine: BABYLON.Engine, render: renderScene) {
+		super("Create Game");
+		this.scene = scene as  BABYLON.Scene;
+		this.engine = engine;
+		this.render = render;
+		console.log("generate Game Page");
+		this.Page = document.createElement('div');
+		this.Page.className = "h-full w-full"
+		this.initPopUpPage();
+		this.generateGamePage();
     }
 
-    async render(): Promise<void> {
-        await this.renderBanner();
-        // TODO = Check user connexion
-        // const res = await checkLog();
-        // if (!res.ok) {
-        //     await navigate('/login');
-        //     return;
-        // }
-
-        await this.generateGamePage();
-    }
+	initPopUpPage() {
+		this._Body.className = "h-[50%] w-[50%] bg-orange-300 rounded-xl border-2 border-orange-400";
+	}
 
     async launchGame(gameId: number) {
         try {
@@ -30,8 +41,31 @@ export class GamePage extends BasePage {
                 throw new Error('Unable to start game : ' + request.error);
             }
             state.launchGame(gameId);
-            await navigate(`/local`);
+			this.removeOverlayToWindow();
+			let lastTime = 0;
+			const targetFPS = 120;
+			const frameDuration = 1000 / targetFPS;
+			let now;
+			let delta;
+			window.addEventListener('keydown', (ev) => {
+			if (ev.key == "Escape") {
+				console.log("escape has been called")
+				this.engine.stopRenderLoop();
+				const state = 0;
+				this.render.setState = 0;
+				this.render.callRenderLoop();
+				}
+			});
 
+			this.engine.runRenderLoop(() => {
+				now = performance.now();
+				delta = now - lastTime;
+				if (delta >= frameDuration) {
+					lastTime = now;
+					this.scene.render();
+				}
+			})
+           
         } catch (error) {
             alert(error);
             await navigate('/game');
@@ -55,7 +89,7 @@ export class GamePage extends BasePage {
         const availableGamesDiv = document.getElementById('available-games');
         if (!availableGamesDiv || !state.user?.id) {
             console.log('availableGames debug');
-            this.app.innerHTML = `Error`;
+            this.Page.innerHTML = `Error`;
             return;
         }
 
@@ -120,9 +154,9 @@ export class GamePage extends BasePage {
 
     // Add functionality : only 1 checkbox is available
     meCheckBox1ChoiceOnly(playerAMeCheckbox: HTMLInputElement, 
-            playerBMeCheckbox: HTMLInputElement, 
-            playerAInput: HTMLInputElement, 
-            playerBInput: HTMLInputElement) {
+        playerBMeCheckbox: HTMLInputElement, 
+        playerAInput: HTMLInputElement, 
+        playerBInput: HTMLInputElement) {
         playerAMeCheckbox?.addEventListener('change', () => {
             if (playerAMeCheckbox.checked) {
                 if (playerBMeCheckbox.checked) {
@@ -255,7 +289,8 @@ export class GamePage extends BasePage {
     }
 
     async generate1v1GamePage() {
-        this.app.innerHTML = `
+		console.log("generate 1v1 Game Page");
+        this.Page.innerHTML = `
             <h1></h1>
             <h1>1v1 game page</h1>
             <p>Welcome, <strong>${state.user?.username}</strong>!</p>
@@ -272,10 +307,10 @@ export class GamePage extends BasePage {
         await this.refreshAvailableGames();
 
         // Add functionality : click on local-games open the form to say who plays
-        const newGameDiv = document.getElementById('new-game');
+			const newGameDiv = document.getElementById('new-game');
         if (!newGameDiv) {
             console.log('availableGames debug');
-            this.app.innerHTML = `Error`;
+            this.Page.innerHTML = `Error`;
             return;
         }
         document.getElementById('new-btn')?.addEventListener('click', async () => {
@@ -283,9 +318,16 @@ export class GamePage extends BasePage {
         });
     }
 
+	async Manage1v1Event() {
+		document.getElementById('1v1-btn')?.addEventListener('click', async () => {
+			await this.generate1v1GamePage();
+		});
+	}
+
     async generateGamePage() {
         // Show game options
-        this.app.innerHTML = `
+		console.log("generate Game Page");
+        this.Page.innerHTML = `
             <h1></h1>
             <h1>Choose your game mode</h1>
             <p>Welcome, <strong>${state.user?.username}</strong>!</p>
@@ -295,8 +337,15 @@ export class GamePage extends BasePage {
             </div>
         `
 
-        document.getElementById('1v1-btn')?.addEventListener('click', async () => {
-            await this.generate1v1GamePage();
-        });
     }
+
+	renderGamePage() {
+		this._Body.appendChild(this.Page);
+		document.body.appendChild(this._Overlay);
+		this.Manage1v1Event();
+	}
+
+	get _Page(): HTMLElement {
+		return this.Page;
+	}
 }
