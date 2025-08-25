@@ -25,16 +25,17 @@ export default async function registerUser(request, reply)
     const pw_hash = bcrypt.hashSync(password, saltRounds);
     try 
     {
-        const statement = db.prepare('INSERT INTO users (username, slug, avatar, last_username_change, pw_hash) VALUES (?, ?, ?, ?, ?)');
-        const result = statement.run(username, slug, avatar, pw_hash, CURRENT_TIMESTAMP);
+        const statement = db.prepare('INSERT INTO users (username, slug, avatar, last_username_change, pw_hash) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)');
+        const result = statement.run(username, slug, avatar, pw_hash);
         idUser = result.lastInsertRowid;
         //generation token : pas mis de date d'expiration
-        const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '10s'});
+        const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '1h'});
         return reply.code(200).send({ token: token, username: username, slug: slug }); //mettre token, username, slug
     }
     catch (err)
     {
         db.prepare("DELETE FROM users WHERE id = ?").run(idUser);
+        console.log("ERRRREUR " + err.message);
         return (reply.code(500).send( {error : "Internal Server Error"} ));
     }
     //mettre status a la place de code ?? 
