@@ -20,12 +20,5 @@
     "tailwindcss": "^3.4.1",
     "typescript": "~5.8.3",
     "vite": "^6.3.5"
-<<<<<<< HEAD
-  },
-  "dependencies": {
-    "@babylonjs/core": "^8.24.0",
-    "@babylonjs/loaders": "^8.24.0"
-=======
->>>>>>> master
   }
 }

@@ -1,6 +1,7 @@
 import { navigate } from '../core/router.js';
 import { State } from "../core/state.js";
-import { getUserInfo, modifyUserAvatar , modifyUserInfo } from "../api/user.js";
+import { modifyUserAvatar , modifyUserInfo } from "../api/user.js";
+import { getUserInfo } from '../api/user-service/user-info/getUserInfo.js';
 
 const wrapper = document.createElement('div');
 const userInfo = document.createElement('div');
@@ -121,12 +122,12 @@ function setLoginUserInfo() {
 
 async function setTextLoginUserInfo(usersForm: HTMLElement) {
 
-	const req = await getUserInfo(state.user?.slug!);
+	const req = await getUserInfo();
 	if (!req.ok) {
 		return ;
 	}
 
-	const userData = req.user;
+	const userData = req.userInfo;
 
 	const userState = document.createElement('h1');
 	userState.id = "user-state";

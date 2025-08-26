@@ -2,6 +2,7 @@
 // Has render() and destroy()
 import {renderBaseBanner, renderLoggedInBanner, renderLoggedOutBanner} from "./Banner";
 import { State } from "../core/state.js";
+import { checkLog } from "../api/user-service/connection/check-log";
 
 const state = State.getInstance();
 
@@ -27,16 +28,29 @@ export abstract class BasePage {
 	protected async renderBanner(): Promise<void> {
 		renderBaseBanner(this.banner);
 
-        if (state.isLoggedIn()) {
+        const res = await checkLog();
+		if (res.ok)
+		{
+            await renderLoggedInBanner(this.banner);
+		}
+		else 
+		{
+            await renderLoggedOutBanner(this.banner);
+			//alert(res.error); pas d'alerte peut etre la 
+		}
+        
+      /*  if (state.isLoggedIn())
+        {
             const user: null | { username: string, slug: string, id: number } = state.user;
-            if (user) {
+            if (user)
+            {
                 await renderLoggedInBanner(this.banner);
             }
             else
                 await renderLoggedOutBanner(this.banner);
         }
         else
-            await renderLoggedOutBanner(this.banner);
+            await renderLoggedOutBanner(this.banner);*/
     }
 
 	protected initBackground(): HTMLElement {

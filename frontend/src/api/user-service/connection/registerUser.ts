@@ -23,7 +23,7 @@ export async function   registerUser(username: string, password: string): Promis
     {
         console.log('token is ' + data.token);
         localStorage.setItem("token", data.token);
-        state.login(data.username, data.slug); //Problem
+       // state.login(data.username, data.slug); //Problem
         return { ok: true, token: data.token, user: { username: data.username, slug: data.slug } };
     }
     //alert("Error : " + error?.error || "Account creation impossible"); //enlever alert ?
