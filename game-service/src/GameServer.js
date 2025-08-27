@@ -1,5 +1,6 @@
 import { gameEventEmitter } from "./GameEventEmitter.js";
 import { PongGame } from "./pongGame.js";
+import GameMaster from "./GameMaster.js";
 
 // Handles game logic for one game actually running
 export default class GameServer {
@@ -91,5 +92,6 @@ export default class GameServer {
     destroy() {
         console.log("🔴 GameServer stopped");
         clearInterval(this.intervalId);
+        GameMaster.getInstance().endServer(this.gameId);
     }
 }

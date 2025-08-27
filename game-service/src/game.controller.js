@@ -1,4 +1,4 @@
-import State from './state.js';
+import GameMaster from './GameMaster.js';
 
 export async function createGame(request, reply) {
     const { userId, player_a, player_b, maxScore } = request.body;
@@ -96,7 +96,7 @@ export async function startGame(request, reply) {
 
     try {
         // console.log("Trying to create game server with gameId " + gameId + " and userId " + userId);
-        State.getInstance().getGameMaster().createServer(gameId, userId, maxScore);
+        GameMaster.getInstance().createServer(gameId, userId, maxScore);
         // console.log("sending data : " + gameId + status + player_a + player_b);
         return reply.status(200).send({ 
             gameId: gameId, 

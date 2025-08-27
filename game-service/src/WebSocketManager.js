@@ -1,6 +1,6 @@
-import State from './state.js';
+import GameMaster from './GameMaster.js';
 
-const state = State.getInstance();
+const gameMaster = GameMaster.getInstance();
 
 export default class WebSocketManager {
     constructor(wss) {
@@ -72,12 +72,12 @@ export default class WebSocketManager {
 
     authenticateUser(ws, userId) {
         if (userId) {
-            if (state.isUserConnected(userId)) {
-                const oldClient = state.getClientByUserId(userId);
+            if (gameMaster.isUserConnected(userId)) {
+                const oldClient = gameMaster.getClientByUserId(userId);
                 console.log(`User ${userId} already connected, closing old connection`);
                 oldClient.ws.close(1000, 'New session started');
             }
-            state.addUser(ws, userId);
+            gameMaster.addUser(ws, userId);
             // console.log("Authenticated user = " + userId);
 
             this.sendToUser(userId, {
@@ -91,14 +91,14 @@ export default class WebSocketManager {
     }
 
     handleDisconnection(ws) {
-        const userId = state.getUserIdByWs(ws);
+        const userId = gameMaster.getUserIdByWs(ws);
         if (userId) {
-            state.disconnectUser(userId);
+            gameMaster.disconnectUser(userId);
         }
     }
 
     sendToUser(userId, message) {
-        const ws = state.getWsByUserId(userId);
+        const ws = gameMaster.getWsByUserId(userId);
         if (ws && ws.readyState === 1) { // WebSocket.OPEN
             ws.send(JSON.stringify(message));
             console.log(`Message sent to user ${userId}:`, message.type);
