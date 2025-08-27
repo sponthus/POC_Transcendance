@@ -27,7 +27,7 @@ export default async function loginUser (request, reply)
         const idUser = userData.id;
         const slug = userData.slug;
         const token = await reply.jwtSign({ idUser, username, slug }, {expiresIn: '1h'});
-        return reply.code(200).send({ token: token, username: userData.username, slug: userData.slug });
+        return reply.code(200).send({ token: token, username: userData.username, slug: userData.slug, id: userData.id });
     }
     catch (err)
     {

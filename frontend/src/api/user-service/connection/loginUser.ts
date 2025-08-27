@@ -1,4 +1,4 @@
-import { State } from "../../../core/state.js";
+import { Socket } from "../../../core/Socket.js";
 
 type UserBasic = {
     username: string;
@@ -22,7 +22,7 @@ export async function loginUser(username: string, password: string): Promise<Log
     if (res.ok) 
     {
         localStorage.setItem("token", data.token);
-        state.login(data.username, data.slug); // Login in local state
+        const socket = Socket.getInstance(data.id);
         console.log('token is ' + data.token);
         console.log('slug is ' + data.slug);
         return { ok: true, token: data.token, user: { username: data.username, slug: data.slug } };
