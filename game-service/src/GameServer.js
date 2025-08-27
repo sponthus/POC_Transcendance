@@ -15,10 +15,10 @@ export default class GameServer {
         this.scoreB = 0;
 
         // TODO : Don't forget to start game when player launches the game (press space ?)
-        // this.startGame();
+        this.startGame();
         // à chaque tick du serveur
         const game = new PongGame();
-        setInterval(() => {
+        this.intervalId = setInterval(() => {
             // Appliquer les inputs pour déplacer le paddle
             game.update();
             // broadcast du nouvel état
@@ -26,23 +26,29 @@ export default class GameServer {
                 type: "stateUpdate",
                 gameState: game.getState()
             });
-			console.log("helllo");
+            this.scoreA = game.getState().score.s1;
+			this.scoreB = game.getState().score.s2;
             // balance le message a tout les players connecté
             if (this.ws.readyState === 1)
 			{
 				this.ws.send(stateMsg);
 			}
+			if(this.scoreA >= 5 || this.scoreB >= 5)
+            {
+				this.endGame();
+            }
         }, 16); // 60fps
 
         // quand un client se connecte
-        this.ws.on("connection", (ws) => {
+        //this.ws.on("connection", (ws) => {
             this.ws.on("message", (msg) => {
                 let data;
 
                 try
                 {
                     data = JSON.parse(msg);
-                } catch (err)
+                }
+				catch (err)
                 {
                     console.error("ERR: JSON :", msg);
                     return;
@@ -60,8 +66,7 @@ export default class GameServer {
                     default:
                         console.warn("ERR: Type inconnu :", data.type);
                 }
-            });
-
+        //    });
         });
     }
 
