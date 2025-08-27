@@ -1,4 +1,4 @@
-import {createGame, getGamesForUserId, startGame, deleteGame } from "./game.controller.js"
+import { createGame, getGamesForUserId, startGame, deleteGame, getStatusForUserId } from "./game.controller.js"
 
 export default async function routes (fastify, options) {
     console.log(`Registering routes`);
@@ -16,6 +16,8 @@ export default async function routes (fastify, options) {
         async function (getRoutes) {
             getRoutes.get(`/:userId/games`,
                 getGamesForUserId);
+            getRoutes.get(`/:userId/status`,
+                getStatusForUserId);
         }
     );
 

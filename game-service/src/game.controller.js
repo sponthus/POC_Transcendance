@@ -56,6 +56,26 @@ export async function getGamesForUserId(request, reply) {
     }
 }
 
+// test OK
+export async function getStatusForUserId(request, reply) {
+    const { userId } = request.params;
+    console.log('User accessed GET /:userId/status');
+    if (!userId) {
+        return reply.status(400).send({error: 'No userId found in request.'});
+    }
+
+    const gameMaster = GameMaster.getInstance();
+    if (!gameMaster) {
+        return reply.status(500).send({error: 'Internal server error while fetching users'});
+    }
+    console.log(`Looking for user`);
+    const status = gameMaster.getUserStatus(userId);
+    if (status === 'not found') {
+        return reply.status(404).send({error: 'No user found in the server.'});
+    }
+    return reply.status(200).send({ userId: userId, status: status });
+}
+
 // Test ok normal case
 export async function startGame(request, reply) {
     const { gameId } = request.params;

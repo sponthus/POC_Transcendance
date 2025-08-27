@@ -21,15 +21,16 @@ export default class GameMaster {
     }
 
     addUser(ws, userId) {
-        this.clients.set(userId, {
+        this.clients.set(Number(userId), {
             ws,
             status: 'online',
-            currentGame: 0
+            currentGame: 0,
+            messages: []
         });
     }
 
     deleteUser(userId) {
-        const deleted = this.clients.delete(userId);
+        const deleted = this.clients.delete(Number(userId));
         if (deleted) {
             console.log(`User ${userId} removed. Remaining clients: ${this.clients.size}`);
         }
@@ -43,21 +44,21 @@ export default class GameMaster {
         //     console.log(`User ${userId} not found`);
         //     return;
         // }
-        if (!this.isUserConnected(userId)) {
+        if (!this.isUserConnected(Number(userId))) {
             console.log(`User ${userId} not connected when trying to disconnect`);
             return;
         }
-        const client = this.clients.get(userId);
+        const client = this.clients.get(Number(userId));
         client.status = 'disconnected';
         client.currentGame = 0;
     }
 
     getClientByUserId(userId) {
-        return this.clients.get(userId);
+        return this.clients.get(Number(userId));
     }
 
     getWsByUserId(userId) {
-        const client = this.clients.get(userId);
+        const client = this.clients.get(Number(userId));
         return client ? client.ws : null;
     }
 
@@ -75,20 +76,23 @@ export default class GameMaster {
     }
 
     isUserConnected(userId) {
-        const client = this.clients.get(userId);
-        return client && client.status === 'online';
+        const client = this.clients.get(Number(userId));
+        return client && client.status !== 'disconnected';
     }
 
     getUserStatus(userId) {
-        const client = this.clients.get(userId);
-        if (!client)
+        const client = this.clients.get(Number(userId));
+        if (!client) {
+            console.log('Not found');
             return 'not found';
+        }
+        console.log(`User ${userId} is ${client.status}`);
         return client.status;
     }
 
     // gameId has been checked when server creation is called
     createServer(gameId, userId, maxScore) {
-        const client = this.clients.get(userId);
+        const client = this.clients.get(Number(userId));
         if (!client) {
             console.log(`user not found`);
             throw new Error('user not found for userId ' + userId);

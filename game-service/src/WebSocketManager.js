@@ -72,8 +72,8 @@ export default class WebSocketManager {
 
     authenticateUser(ws, userId) {
         if (userId) {
+            const oldClient = gameMaster.getClientByUserId(userId);
             if (gameMaster.isUserConnected(userId)) {
-                const oldClient = gameMaster.getClientByUserId(userId);
                 console.log(`User ${userId} already connected, closing old connection`);
                 oldClient.ws.close(1000, 'New session started');
             }
@@ -85,6 +85,14 @@ export default class WebSocketManager {
                 userId: userId,
                 timestamp: Date.now()
             });
+            if (oldClient && oldClient.messages.length > 0) {
+                for (const message of oldClient.messages) {
+                    this.sendToUser(userId, {
+                        type: 'message',
+                        message: message
+                    });
+                }
+            }
         } else {
             console.warn('Authentication failed: no userId provided');
         }
