@@ -116,9 +116,13 @@ export async function startGame(request, reply) {
 
     try {
         // console.log("Trying to create game server with gameId " + gameId + " and userId " + userId);
-        GameMaster.getInstance().createServer(gameId, userId, maxScore);
+        const gameMaster = GameMaster.getInstance();
+        if (!gameMaster) {
+            return reply.status(500).send({error: 'Internal server error while fetching users'});
+        }
+        gameMaster.createServer(gameId, userId, maxScore);
         // console.log("sending data : " + gameId + status + player_a + player_b);
-        return reply.status(200).send({ 
+        return reply.status(201).send({
             gameId: gameId, 
             status: status, 
             player_a: player_a, 
@@ -129,6 +133,46 @@ export async function startGame(request, reply) {
     catch (error) {
         console.error('Error creating game server:', error);
         return reply.status(400).send({error: 'Internal server error while creating games'});
+    }
+}
+
+export async function sendMessageToUser(request, reply) {
+    const { userId } = request.params;
+    // TODO = Allow use only from another service, identify sender via JWT
+    const { sender, message } = request.body;
+
+    if (!sender || !message) {
+        return reply.status(400).send({
+            error: 'Incomplete message : No sender or message found in request.' });
+    }
+    const gameMaster = GameMaster.getInstance();
+    if (!gameMaster) {
+        return reply.status(500).send({
+            error: 'Internal server error while fetching users' });
+    }
+
+    try {
+        switch (gameMaster.sendMessageToUser(userId, sender, message)) {
+            case 1 :
+                return reply.status(202).send({
+                    userId: userId,
+                    sender: sender,
+                    message: message,
+                    status: 'accepted' });
+            case 2 :
+                return reply.status(404).send({
+                    error: 'Cannot find user' });
+            default:
+                return reply.status(200).send({
+                    userId: userId,
+                    sender: sender,
+                    message: message,
+                    status: 'sent' });
+        }
+    } catch (error) {
+        console.log(error);
+        return reply.status(500).send({
+            error: error.message });
     }
 }
 

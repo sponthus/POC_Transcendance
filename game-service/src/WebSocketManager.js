@@ -15,7 +15,7 @@ export default class WebSocketManager {
             ws.on('message', (data) => {
                 try {
                     const message = JSON.parse(data);
-                    console.log('Message received : ' + message);
+                    console.log('Message received :', message);
                     this.handleMessage(ws, message);
                 } catch (error) {
                     console.error('Invalid JSON:', error);
@@ -71,30 +71,33 @@ export default class WebSocketManager {
     // }
 
     authenticateUser(ws, userId) {
-        if (userId) {
-            const oldClient = gameMaster.getClientByUserId(userId);
-            if (gameMaster.isUserConnected(userId)) {
-                console.log(`User ${userId} already connected, closing old connection`);
-                oldClient.ws.close(1000, 'New session started');
-            }
-            gameMaster.addUser(ws, userId);
-            // console.log("Authenticated user = " + userId);
-
-            this.sendToUser(userId, {
-                type: 'auth_success',
-                userId: userId,
-                timestamp: Date.now()
-            });
-            if (oldClient && oldClient.messages.length > 0) {
-                for (const message of oldClient.messages) {
-                    this.sendToUser(userId, {
-                        type: 'message',
-                        message: message
-                    });
-                }
-            }
-        } else {
+        if (!userId) {
             console.warn('Authentication failed: no userId provided');
+            return;
+        }
+
+        let oldMessages = [];
+        const oldClient = gameMaster.getClientByUserId(userId);
+        if (oldClient !== undefined) {
+            console.log(`User ${userId} already connected, closing old connection`);
+            // console.log(oldClient);
+            oldClient.ws.close(1000, 'New session started');
+            oldClient.ws = null;
+            oldMessages = oldClient.messages;
+            // console.log(oldMessages);
+        }
+
+        gameMaster.addUser(ws, userId);
+        // console.log("Authenticated user = " + userId);
+        this.sendToUser(userId, {
+            type: 'auth_success',
+            userId: userId,
+            timestamp: Date.now()
+        });
+
+        // TODO = Check this part : socket is refreshed (page refresh) after msg has been sent
+        if (oldMessages.length > 0) {
+            gameMaster.sendListOfMessagesToUser(userId, oldMessages);
         }
     }
 
@@ -109,7 +112,7 @@ export default class WebSocketManager {
         const ws = gameMaster.getWsByUserId(userId);
         if (ws && ws.readyState === 1) { // WebSocket.OPEN
             ws.send(JSON.stringify(message));
-            console.log(`Message sent to user ${userId}:`, message.type);
+            console.log(`Message sent to user ${userId}:`, message);
             return true;
         } else {
             console.warn(`Cannot send message to user ${userId}: not connected`);

@@ -80,6 +80,46 @@ export default class GameMaster {
         return client && client.status !== 'disconnected';
     }
 
+    sendMessageToUser(userId, sender, message) {
+        const client = this.getClientByUserId(userId);
+        if (!client) {
+            return 2;
+        }
+        if (this.isUserConnected(Number(userId)) && client.status !== 'playing') {
+            if (client.ws.readyState === 1) {
+                client.ws.send(JSON.stringify({
+                    type: 'message',
+                    sender: sender,
+                    message: message}));
+                // console.log('out');
+                return 0;
+            } else
+                throw new Error(`Internal server error : Websocket connection failed`);
+        } else {
+            console.log(`User ${userId} is not connected or playing, storing the message`);
+            client.messages.push(JSON.stringify({
+                sender: sender,
+                message: message,
+            }));
+            return 1;
+        }
+    }
+
+    sendListOfMessagesToUser(userId, messages) {
+        console.log(`messages to send ${messages.length}`);
+        for (const message of messages) {
+            let trMessage = JSON.parse(message);
+            this.sendMessageToUser(userId, trMessage.sender, trMessage.message);
+        }
+    }
+
+    sendStoredMessagesToUser(userId) {
+        const client = this.getClientByUserId(userId);
+        const messages = client.messages;
+
+        this.sendListOfMessagesToUser(userId, messages);
+    }
+
     getUserStatus(userId) {
         const client = this.clients.get(Number(userId));
         if (!client) {
@@ -131,5 +171,6 @@ export default class GameMaster {
         } else {
             console.log(`No server associated with gameId ${gameId}`);
         }
+        this.sendStoredMessagesToUser(userId);
     }
 }
