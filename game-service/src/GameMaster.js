@@ -22,7 +22,7 @@ export default class GameMaster {
     }
 
     // gameId has been checked when server creation is called
-    createServer(gameId, userId) {
+    createServer(gameId, userId, maxScore) {
         const ws = this.state.getWsByUserId(userId);
         if (!ws) {
             console.log(`user ws not found`);
@@ -32,7 +32,7 @@ export default class GameMaster {
             console.log(`user not connected`);
             throw new Error('not connected: userId ' + userId);
         }
-        this.games.set(gameId, new GameServer(gameId, userId, ws));
+        this.games.set(gameId, new GameServer(gameId, userId, ws, maxScore));
     }
 
     // TODO = Destroy the GameServer class if game is finished

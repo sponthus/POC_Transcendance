@@ -1,7 +1,7 @@
 import State from './state.js';
 
 export async function createGame(request, reply) {
-    const { userId, player_a, player_b } = request.body;
+    const { userId, player_a, player_b, maxScore } = request.body;
     const { db } = request.server;
 
     console.log('User accessed POST /game');
@@ -15,7 +15,12 @@ export async function createGame(request, reply) {
     }
 
     try {
-        const result = await db.createGame(userId, player_a, player_b, 0);
+        let result;
+        if (maxScore) {
+            result = await db.createGame(userId, player_a, player_b, 0, maxScore);
+        } else {
+            result = await db.createGame(userId, player_a, player_b, 0);
+        }
         return reply.status(201).send(result);
     }
     catch (error) {
@@ -69,6 +74,7 @@ export async function startGame(request, reply) {
     let player_a = '';
     let player_b = '';
     let status = '';
+    let maxScore = 7;
     // Check if the game exists and is available to play
     try {
         // console.log("Trying to find games with gameId " + gameId);
@@ -81,6 +87,7 @@ export async function startGame(request, reply) {
         player_a = games[0].player_a;
         player_b = games[0].player_b;
         status = games[0].status;
+        maxScore = games[0].maxScore;
     }
     catch (error) {
         console.error('Error fetching games:', error);
@@ -89,13 +96,14 @@ export async function startGame(request, reply) {
 
     try {
         // console.log("Trying to create game server with gameId " + gameId + " and userId " + userId);
-        State.getInstance().getGameMaster().createServer(gameId, userId);
+        State.getInstance().getGameMaster().createServer(gameId, userId, maxScore);
         // console.log("sending data : " + gameId + status + player_a + player_b);
         return reply.status(200).send({ 
             gameId: gameId, 
             status: status, 
             player_a: player_a, 
-            player_b: player_b 
+            player_b: player_b,
+            maxScore: maxScore,
         });
     }
     catch (error) {

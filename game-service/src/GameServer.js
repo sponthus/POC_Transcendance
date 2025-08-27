@@ -3,11 +3,12 @@ import { gameEventEmitter } from "./GameEventEmitter.js";
 // Handles game logic for one game actually running
 export default class GameServer {
     
-    constructor(gameId, userId, ws) {
+    constructor(gameId, userId, ws, maxScore) {
         this.gameId = gameId;
         this.userId = userId;
         this.ws = ws;
         this.state = 'paused';
+        this.maxScore = maxScore;
         console.log("Game server up");
 
         this.scoreA = 0;
