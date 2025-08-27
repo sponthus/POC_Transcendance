@@ -107,7 +107,7 @@ export async function startGame(request, reply) {
         player_a = games[0].player_a;
         player_b = games[0].player_b;
         status = games[0].status;
-        maxScore = games[0].maxScore;
+        maxScore = games[0].score;
     }
     catch (error) {
         console.error('Error fetching games:', error);

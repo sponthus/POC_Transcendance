@@ -18,7 +18,7 @@ class DatabaseEventHandler {
     }
 
     async   handleGameStarted(eventData) {
-        console.log('💾 Updating DB: Game ended', eventData.gameId);
+        console.log('💾 Updating DB: Game started', eventData.gameId);
 
         try {
             await this.DatabaseHandler.updateGameStatus(eventData.gameId, 'ongoing');

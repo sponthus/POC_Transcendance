@@ -153,7 +153,6 @@ export default class GameMaster {
 
     // Call when a game is finished to destroy its object completely
     endServer(userId) {
-        console.log('trying to delete GameServer');
         const client = this.clients.get(userId);
         if (!client) {
             console.log(`user not found`);

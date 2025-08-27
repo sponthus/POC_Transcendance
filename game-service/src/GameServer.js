@@ -15,6 +15,7 @@ export default class GameServer {
 
         this.scoreA = 0;
         this.scoreB = 0;
+        this.end = false;
 
         // TODO : Don't forget to start game when player launches the game (press space ?)
         this.startGame();
@@ -31,12 +32,11 @@ export default class GameServer {
             this.scoreA = game.getState().score.s1;
 			this.scoreB = game.getState().score.s2;
             // balance le message a tout les players connecté
-            if (this.ws.readyState === 1)
-			{
+            if (this.ws.readyState === 1) {
 				this.ws.send(stateMsg);
 			}
-			if(this.scoreA >= 5 || this.scoreB >= 5)
-            {
+			if ((this.scoreA >= this.maxScore || this.scoreB >= this.maxScore) && this.end === false) {
+                this.end = true;
 				this.endGame();
             }
         }, 16); // 60fps
@@ -63,6 +63,10 @@ export default class GameServer {
 
                     case "gameMode":
                         game.setGameMode(data.mode, data.option);
+                        break;
+
+                    case "ping":
+                        ws.send(JSON.stringify({ type: 'pong' }));
                         break;
 
                     default:
@@ -95,8 +99,7 @@ export default class GameServer {
     }
 
     destroy() {
-        console.log("🔴 GameServer stopped");
         clearInterval(this.intervalId);
-        GameMaster.getInstance().endServer(this.gameId);
+        GameMaster.getInstance().endServer(this.userId);
     }
 }

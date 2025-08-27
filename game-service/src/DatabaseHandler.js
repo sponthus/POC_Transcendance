@@ -58,6 +58,7 @@ export default class DatabaseHandler {
 
     // Test ok
     async   createGame(userId, playerA, playerB, tournamentId, maxScore = 7) {
+        console.log(`maxScore: ${maxScore}`);
         return new Promise((resolve, reject) => {
             try {
                 let res;
