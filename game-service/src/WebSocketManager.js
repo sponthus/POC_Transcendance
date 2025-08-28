@@ -82,8 +82,10 @@ export default class WebSocketManager {
         if (oldClient !== undefined) {
             console.log(`User ${userId} already connected, closing old connection`);
             // console.log(oldClient);
-            oldClient.ws.close(1000, 'New session started');
-            oldClient.ws = null;
+            if (oldClient.ws) {
+                oldClient.ws.close(1000, 'New session started');
+                oldClient.ws = null;
+            }
             oldMessages = oldClient.messages;
             // console.log(oldMessages);
         }

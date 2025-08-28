@@ -39,11 +39,6 @@ export default class GameMaster {
 
     // TODO check me, add a way to disconnect someone on purpose ?
     disconnectUser(userId) {
-        // const ws = this.getWsByUserId(userId);
-        // if (!ws) {
-        //     console.log(`User ${userId} not found`);
-        //     return;
-        // }
         if (!this.isUserConnected(Number(userId))) {
             console.log(`User ${userId} not connected when trying to disconnect`);
             return;
@@ -51,6 +46,7 @@ export default class GameMaster {
         const client = this.clients.get(Number(userId));
         client.status = 'disconnected';
         client.currentGame = 0;
+        client.ws = null;
     }
 
     getClientByUserId(userId) {
@@ -167,6 +163,9 @@ export default class GameMaster {
             this.games.delete(gameId);
             console.log("🔴 GameServer stopped");
             client.currentGame = 0;
+            if (client.ws.readyState === 1) {
+                client.status = 'online';
+            }
         } else {
             console.log(`No server associated with gameId ${gameId}`);
         }
